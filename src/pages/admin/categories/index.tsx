@@ -16,7 +16,7 @@ interface Category {
 
 const CategoriesPage: NextPage = () => {
   const router = useRouter();
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, isLoading: authLoading } = useAuth();
   const supabase = useSupabaseClient();
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -40,18 +40,24 @@ const CategoriesPage: NextPage = () => {
   };
 
   useEffect(() => {
+    // Don't do anything while auth is loading
+    if (!user && authLoading) return;
+
+    // Redirect if not authenticated
     if (!user) {
-      router.push('/login');
+      router.push('/auth/login');
       return;
     }
 
+    // Redirect if not admin
     if (!isAdmin) {
+      toast.error('You do not have permission to access this page');
       router.push('/dashboard');
       return;
     }
 
     fetchCategories();
-  }, [user, isAdmin]);
+  }, [user, isAdmin, authLoading, router]);
 
   const handleAddCategory = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -31,10 +31,37 @@ export async function middleware(req: NextRequest) {
 
     if (profileError) {
       console.error('Error fetching profile:', profileError);
+      // If we can't verify the role, deny access to protected routes
+      return new NextResponse('Error verifying user role', { status: 500 });
     }
 
-    console.log('Profile found:', profile);
-    userRole = profile?.role || 'user';
+    if (!profile) {
+      console.log('No profile found, creating new profile...');
+      const isAdminEmail = session.user.email === 'admin@itwala.com';
+      const isMetadataAdmin = session.user.user_metadata?.role === 'admin';
+      
+      const { data: newProfile, error: createError } = await supabase
+        .from('profiles')
+        .upsert({
+          id: session.user.id,
+          email: session.user.email,
+          role: (isAdminEmail || isMetadataAdmin) ? 'admin' : 'user',
+          full_name: session.user.user_metadata?.full_name || 'User',
+          created_at: new Date().toISOString()
+        })
+        .select()
+        .single();
+
+      if (createError) {
+        console.error('Error creating profile:', createError);
+        return new NextResponse('Error creating user profile', { status: 500 });
+      }
+
+      userRole = newProfile.role;
+    } else {
+      userRole = profile.role;
+    }
+    
     console.log('User role:', userRole);
   }
 
@@ -44,7 +71,9 @@ export async function middleware(req: NextRequest) {
     '/admin/courses': ['admin'],
     '/admin/students': ['admin'],
     '/admin/content': ['admin'],
+    '/admin/categories': ['admin'],
     '/admin/revenue': ['admin'],
+    '/admin/settings': ['admin'],
     '/admin/instructors': ['admin'],
     '/dashboard': ['admin', 'instructor', 'user'],
     '/dashboard/settings': ['admin', 'instructor', 'user'],
@@ -53,10 +82,13 @@ export async function middleware(req: NextRequest) {
     '/dashboard/profile': ['admin', 'instructor', 'user'],
   };
 
-  // Check if the current route is protected
-  const matchedRoute = Object.entries(protectedRoutes).find(([route]) => 
-    req.nextUrl.pathname.startsWith(route)
-  );
+  // Get the most specific matching route
+  const currentPath = req.nextUrl.pathname;
+  const matchedRoutes = Object.entries(protectedRoutes)
+    .filter(([route]) => currentPath.startsWith(route))
+    .sort((a, b) => b[0].length - a[0].length); // Sort by route length, longest first
+  
+  const matchedRoute = matchedRoutes[0]; // Get the most specific match
 
   console.log('Matched route:', matchedRoute?.[0]);
 
@@ -76,7 +108,7 @@ export async function middleware(req: NextRequest) {
     // If user's role is not allowed, redirect appropriately
     if (!matchedRoute[1].includes(userRole)) {
       console.log('Access denied: User role not allowed');
-      return new NextResponse('Access Denied', { status: 403 });
+      return NextResponse.redirect(new URL('/dashboard', req.url));
     }
   }
 
