@@ -1,0 +1,179 @@
+import { Course } from '../types/course';
+
+// New courses to be added to courses.ts
+export const newCourses: Course[] = [
+  {
+    id: "6",
+    slug: "prompt-engineering-mastery",
+    title: "Prompt Engineering Mastery",
+    description: "Master the art of crafting effective prompts for AI language models. Learn advanced techniques for optimizing AI interactions.",
+    image: "https://picsum.photos/800/600?random=6",
+    category: "Artificial Intelligence",
+    level: "Beginner",
+    status: "published",
+    enrollments: 0,
+    price: 3999,
+    originalPrice: 3999,
+    publishedDate: "2025-05-01",
+    resources: 15,
+    instructor: {
+      name: "Industry Expert",
+      bio: "An industry professional with extensive experience in prompt engineering and AI systems optimization.",
+      image: "https://picsum.photos/200/200?random=6"
+    },
+    learningOutcomes: [
+      "Understand prompt engineering principles",
+      "Master different prompting techniques",
+      "Learn chain-of-thought prompting",
+      "Implement system and user role prompts",
+      "Create effective few-shot learning prompts",
+      "Optimize prompts for specific use cases",
+      "Handle complex multi-step tasks",
+      "Build AI applications with prompt engineering"
+    ],
+    requirements: [
+      "Basic understanding of AI concepts",
+      "No coding experience required",
+      "Curiosity about AI and language models",
+      "A computer with internet connection"
+    ],
+    modules: [
+      {
+        id: "pe-m1",
+        title: "Introduction to Prompt Engineering",
+        description: "Understand the fundamentals of prompt engineering and its importance in AI.",
+        lessons: [
+          {
+            id: "pe-m1-l1",
+            title: "What is Prompt Engineering?",
+            type: "video",
+            content: "Overview of prompt engineering and its role in AI systems."
+          },
+          {
+            id: "pe-m1-l2",
+            title: "Types of Language Models",
+            type: "video",
+            content: "Understanding different language models and their capabilities."
+          }
+        ]
+      },
+      {
+        id: "pe-m2",
+        title: "Prompt Design Patterns",
+        description: "Learn effective patterns for designing prompts.",
+        lessons: [
+          {
+            id: "pe-m2-l1",
+            title: "Basic Prompt Structures",
+            type: "lab",
+            content: "Practice creating different types of prompts."
+          },
+          {
+            id: "pe-m2-l2",
+            title: "Role-based Prompting",
+            type: "video",
+            content: "Learn how to use system and user roles in prompts."
+          }
+        ]
+      }
+    ],
+    reviews: [],
+    faqs: [
+      {
+        question: "What is prompt engineering?",
+        answer: "Prompt engineering is the practice of designing and optimizing inputs to AI language models to get desired outputs effectively."
+      },
+      {
+        question: "Do I need programming experience?",
+        answer: "No programming experience is required. This course focuses on understanding and crafting effective prompts for AI models."
+      }
+    ]
+  },
+  {
+    id: "7",
+    slug: "agentic-ai-development",
+    title: "Agentic AI Development",
+    description: "Learn to build autonomous AI agents that can perform complex tasks independently. Master the creation of AI systems that can plan, reason, and execute multi-step operations.",
+    image: "https://picsum.photos/800/600?random=7",
+    category: "Artificial Intelligence",
+    level: "Advanced",
+    status: "published",
+    enrollments: 0,
+    price: 3999,
+    originalPrice: 3999,
+    publishedDate: "2025-05-15",
+    resources: 20,
+    instructor: {
+      name: "Industry Expert",
+      bio: "An industry professional with extensive experience in autonomous AI systems and multi-agent architectures.",
+      image: "https://picsum.photos/200/200?random=7"
+    },
+    learningOutcomes: [
+      "Understand AI agent architectures",
+      "Implement planning and reasoning systems",
+      "Create task-oriented AI agents",
+      "Build multi-agent systems",
+      "Develop memory systems for agents",
+      "Learn agent communication protocols",
+      "Implement safety measures in AI agents",
+      "Deploy autonomous AI systems"
+    ],
+    requirements: [
+      "Strong programming background",
+      "Understanding of AI and ML concepts",
+      "Experience with Python",
+      "Familiarity with NLP concepts"
+    ],
+    modules: [
+      {
+        id: "aa-m1",
+        title: "Fundamentals of Agentic AI",
+        description: "Introduction to AI agents and their core components.",
+        lessons: [
+          {
+            id: "aa-m1-l1",
+            title: "What are AI Agents?",
+            type: "video",
+            content: "Understanding the concept of autonomous AI agents."
+          },
+          {
+            id: "aa-m1-l2",
+            title: "Agent Architectures",
+            type: "video",
+            content: "Different approaches to building AI agents."
+          }
+        ]
+      },
+      {
+        id: "aa-m2",
+        title: "Building Autonomous Agents",
+        description: "Practical implementation of AI agents.",
+        lessons: [
+          {
+            id: "aa-m2-l1",
+            title: "Planning Systems",
+            type: "lab",
+            content: "Implementing planning algorithms for AI agents."
+          },
+          {
+            id: "aa-m2-l2",
+            title: "Memory and State Management",
+            type: "video",
+            content: "Building memory systems for long-term task execution."
+          }
+        ]
+      }
+    ],
+    reviews: [],
+    faqs: [
+      {
+        question: "What are AI agents?",
+        answer: "AI agents are autonomous systems that can perceive their environment and take actions to achieve specific goals."
+      },
+      {
+        question: "Is this course suitable for beginners?",
+        answer: "This is an advanced course that requires prior experience with AI concepts and programming."
+      }
+    ]
+  }
+];

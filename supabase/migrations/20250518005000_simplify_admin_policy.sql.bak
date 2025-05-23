@@ -1,0 +1,33 @@
+-- Drop existing policies to start fresh
+DROP POLICY IF EXISTS "Admin can view all profiles" ON public.profiles;
+DROP POLICY IF EXISTS "Admin can update all profiles" ON public.profiles;
+DROP POLICY IF EXISTS "Admins have full access" ON public.profiles;
+
+-- Create a simplified admin policy that checks only auth.users
+-- This avoids recursion by not referencing the profiles table in its own policy
+CREATE POLICY "Admin Access Policy"
+ON public.profiles
+FOR ALL
+USING (
+  -- Check if current user is admin either by email or metadata
+  EXISTS (
+    SELECT 1 FROM auth.users
+    WHERE auth.uid() = id
+    AND (
+      email = 'admin@itwala.com'  -- Direct admin email check
+      OR raw_user_meta_data->>'role' = 'admin'  -- Check admin role in metadata
+    )
+  )
+);
+
+-- Basic user access policy
+CREATE POLICY "User Self Access"
+ON public.profiles
+FOR ALL
+USING (auth.uid() = id);
+
+-- Everyone can view profiles
+CREATE POLICY "Public Read Access"
+ON public.profiles
+FOR SELECT
+USING (true);

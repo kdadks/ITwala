@@ -1,0 +1,58 @@
+-- Run this in Supabase SQL Editor to fix the RLS policy recursion issue
+DO $$ 
+BEGIN
+  -- First drop all existing policies
+  DROP POLICY IF EXISTS "Users can view their own profile" ON public.profiles;
+  DROP POLICY IF EXISTS "Users can update their own profile" ON public.profiles;
+  DROP POLICY IF EXISTS "Admin can view all profiles" ON public.profiles;
+  DROP POLICY IF EXISTS "Admin can update all profiles" ON public.profiles;
+  DROP POLICY IF EXISTS "Public profiles are viewable by everyone" ON public.profiles;
+  DROP POLICY IF EXISTS "Admins have full access" ON public.profiles;
+
+  -- Create simplified policies that don't cause recursion
+  -- Allow everyone to read profiles
+  CREATE POLICY "Public profiles are viewable by everyone"
+    ON public.profiles FOR SELECT
+    USING (true);
+
+  -- Allow users to update their own profiles
+  CREATE POLICY "Users can update their own profile"
+    ON public.profiles FOR UPDATE
+    USING (auth.uid() = id);
+
+  -- Admin access based on metadata only (to avoid recursion)
+  CREATE POLICY "Admins have full access"
+    ON public.profiles FOR ALL
+    USING (
+      EXISTS (
+        SELECT 1 FROM auth.users
+        WHERE auth.uid() = auth.uid()  -- This ensures we're checking the current user
+        AND raw_user_meta_data->>'role' = 'admin'
+      )
+    );
+END $$;
+
+-- Ensure admin user has correct metadata
+UPDATE auth.users
+SET raw_user_meta_data = jsonb_build_object(
+  'role', 'admin',
+  'full_name', 'Admin User',
+  'email', email
+)
+WHERE email = 'admin@itwala.com';
+
+-- Ensure admin profile exists with correct role
+INSERT INTO public.profiles (id, email, role, full_name, created_at)
+SELECT 
+  id,
+  email,
+  'admin',
+  'Admin User',
+  now()
+FROM auth.users
+WHERE email = 'admin@itwala.com'
+ON CONFLICT (id) DO UPDATE
+SET 
+  role = 'admin',
+  full_name = 'Admin User',
+  email = EXCLUDED.email;

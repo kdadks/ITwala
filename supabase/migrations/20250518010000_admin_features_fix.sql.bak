@@ -1,0 +1,115 @@
+-- Create categories table if it doesn't exist
+CREATE TABLE IF NOT EXISTS categories (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    name VARCHAR NOT NULL UNIQUE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+-- Create content_sections table if it doesn't exist
+CREATE TABLE IF NOT EXISTS content_sections (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    title VARCHAR NOT NULL,
+    content TEXT NOT NULL,
+    page_id VARCHAR NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+-- Create analytics_data table if it doesn't exist
+CREATE TABLE IF NOT EXISTS analytics_data (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    page_views INTEGER DEFAULT 0,
+    unique_visitors INTEGER DEFAULT 0,
+    total_time INTEGER DEFAULT 0,
+    bounce_rate FLOAT DEFAULT 0,
+    date DATE NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+-- Create payments table if it doesn't exist
+CREATE TABLE IF NOT EXISTS payments (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    user_id UUID REFERENCES auth.users(id),
+    course_id UUID REFERENCES courses(id),
+    amount DECIMAL(10,2) NOT NULL,
+    status VARCHAR NOT NULL,
+    payment_method VARCHAR,
+    transaction_id VARCHAR,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+-- Add status column to courses if it doesn't exist
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS status VARCHAR DEFAULT 'draft';
+
+-- Create enrollments table if it doesn't exist
+CREATE TABLE IF NOT EXISTS enrollments (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    user_id UUID REFERENCES auth.users(id),
+    course_id UUID REFERENCES courses(id),
+    progress INTEGER DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+    UNIQUE(user_id, course_id)
+);
+
+-- Add policies
+ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Categories are viewable by everyone" ON categories FOR SELECT USING (true);
+CREATE POLICY "Categories are editable by admins" ON categories FOR ALL USING (
+    auth.role() = 'authenticated' AND EXISTS (
+        SELECT 1 FROM profiles
+        WHERE profiles.id = auth.uid() AND profiles.role = 'admin'
+    )
+);
+
+ALTER TABLE content_sections ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Content sections are viewable by everyone" ON content_sections FOR SELECT USING (true);
+CREATE POLICY "Content sections are editable by admins" ON content_sections FOR ALL USING (
+    auth.role() = 'authenticated' AND EXISTS (
+        SELECT 1 FROM profiles
+        WHERE profiles.id = auth.uid() AND profiles.role = 'admin'
+    )
+);
+
+ALTER TABLE analytics_data ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Analytics are viewable by admins" ON analytics_data FOR SELECT USING (
+    auth.role() = 'authenticated' AND EXISTS (
+        SELECT 1 FROM profiles
+        WHERE profiles.id = auth.uid() AND profiles.role = 'admin'
+    )
+);
+
+ALTER TABLE payments ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Payments are viewable by admins" ON payments FOR SELECT USING (
+    auth.role() = 'authenticated' AND EXISTS (
+        SELECT 1 FROM profiles
+        WHERE profiles.id = auth.uid() AND profiles.role = 'admin'
+    )
+);
+CREATE POLICY "Users can view their own payments" ON payments FOR SELECT USING (
+    auth.uid() = user_id
+);
+
+-- Create or replace function to update course status
+CREATE OR REPLACE FUNCTION update_course_status()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE courses
+    SET status = CASE 
+        WHEN EXISTS (
+            SELECT 1 FROM enrollments 
+            WHERE course_id = NEW.course_id
+            LIMIT 1
+        ) THEN 'active'
+        ELSE 'draft'
+    END
+    WHERE id = NEW.course_id;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create trigger for course status update
+DROP TRIGGER IF EXISTS enrollments_update_course_status ON enrollments;
+CREATE TRIGGER enrollments_update_course_status
+    AFTER INSERT OR DELETE ON enrollments
+    FOR EACH ROW
+    EXECUTE FUNCTION update_course_status();

@@ -1,0 +1,86 @@
+-- Clear admin state and reset
+DO $$ 
+BEGIN
+  -- 1. Drop all existing policies
+  DROP POLICY IF EXISTS "Users can view their own profile" ON public.profiles;
+  DROP POLICY IF EXISTS "Users can update their own profile" ON public.profiles;
+  DROP POLICY IF EXISTS "Admin can view all profiles" ON public.profiles;
+  DROP POLICY IF EXISTS "Admin can update all profiles" ON public.profiles;
+  DROP POLICY IF EXISTS "Public profiles are viewable by everyone" ON public.profiles;
+  DROP POLICY IF EXISTS "Admins have full access" ON public.profiles;
+
+  -- 2. Ensure profiles table exists with correct structure
+  CREATE TABLE IF NOT EXISTS public.profiles (
+    id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    full_name TEXT,
+    role TEXT DEFAULT 'user',
+    email TEXT,
+    avatar_url TEXT,
+    bio TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc', now()),
+    phone TEXT
+  );
+
+  -- 3. Enable RLS
+  ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+
+  -- 4. Create new policies
+  -- Allow public read access to profiles
+  CREATE POLICY "Public profiles are viewable by everyone"
+    ON public.profiles FOR SELECT
+    USING (true);
+
+  -- Allow users to update their own profiles
+  CREATE POLICY "Users can update their own profile"
+    ON public.profiles FOR UPDATE
+    USING (auth.uid() = id);
+
+  -- Grant admin full access based on either metadata or profile role
+  CREATE POLICY "Admins have full access"
+    ON public.profiles FOR ALL
+    USING (
+      EXISTS (
+        SELECT 1 FROM auth.users
+        WHERE auth.uid() = profiles.id
+        AND (
+          raw_user_meta_data->>'role' = 'admin'
+          OR EXISTS (
+            SELECT 1 FROM profiles p2
+            WHERE p2.id = auth.uid()
+            AND p2.role = 'admin'
+          )
+        )
+      )
+    );
+
+  -- 5. Update admin user metadata
+  UPDATE auth.users
+  SET raw_user_meta_data = jsonb_set(
+    jsonb_set(
+      COALESCE(raw_user_meta_data, '{}'::jsonb),
+      '{role}',
+      '"admin"'
+    ),
+    '{full_name}',
+    '"Admin User"'
+  ),
+  email_confirmed_at = now()
+  WHERE email = 'admin@itwala.com';
+
+  -- 6. Ensure admin profile exists
+  INSERT INTO public.profiles (id, email, role, full_name, created_at)
+  SELECT 
+    id,
+    email,
+    'admin',
+    'Admin User',
+    now()
+  FROM auth.users
+  WHERE email = 'admin@itwala.com'
+  ON CONFLICT (id) DO UPDATE
+  SET 
+    role = 'admin',
+    full_name = 'Admin User',
+    email = EXCLUDED.email;
+
+END $$;
