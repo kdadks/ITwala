@@ -1,35 +1,26 @@
 // @ts-check
-const { createClient } = require('@supabase/supabase-js');
-require('dotenv').config({ path: '.env.local' });
+const { supabase, supabaseAdmin } = require('./utils/supabaseClient');
 
-if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-  console.error('Missing required environment variables');
-  console.log('URL:', process.env.NEXT_PUBLIC_SUPABASE_URL ? 'present' : 'missing');
-  console.log('KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'present' : 'missing');
+if (!supabaseAdmin) {
+  console.error('Service role key is required for admin operations');
   process.exit(1);
 }
 
-console.log('Using Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
+const adminClient = supabaseAdmin; // TypeScript will now know this is not null
 
 async function setupAdmin() {
   try {
     console.log('Setting up admin account...');
 
-    // 1. Sign up admin user
+    // 1. Create admin user using admin client
     console.log('1. Creating admin user...');
-    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+    const { data: signUpData, error: signUpError } = await adminClient.auth.admin.createUser({
       email: 'admin@itwala.com',
       password: 'Admin@123',
-      options: {
-        data: {
-          role: 'admin',
-          full_name: 'Admin User'
-        }
+      email_confirm: true,
+      user_metadata: {
+        role: 'admin',
+        full_name: 'Admin User'
       }
     });
 
@@ -42,27 +33,13 @@ async function setupAdmin() {
 
     console.log('Sign up response:', signUpData);
 
-    // 2. Try to sign in
-    console.log('\n2. Signing in as admin...');
-    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-      email: 'admin@itwala.com',
-      password: 'Admin@123'
-    });
-
-    if (signInError) {
-      console.error('Sign in error:', signInError);
-      throw signInError;
-    }
-
-    console.log('Sign in successful:', signInData.user?.id);
-
-    // 3. Create or update admin profile
-    console.log('\n3. Setting up admin profile...');
-    const { data: profile, error: upsertError } = await supabase
+    // 2. Create or update admin profile
+    console.log('\n2. Setting up admin profile...');
+    const { data: profile, error: upsertError } = await adminClient
       .from('profiles')
       .upsert({
-        id: signInData.user.id,
-        email: signInData.user.email,
+        id: signUpData?.user?.id,
+        email: 'admin@itwala.com',
         full_name: 'Admin User',
         role: 'admin',
         created_at: new Date().toISOString()
@@ -76,7 +53,6 @@ async function setupAdmin() {
     }
 
     console.log('Admin profile created:', profile);
-
     console.log('\nAdmin setup completed successfully!');
     console.log('\nYou can now log in with:');
     console.log('Email: admin@itwala.com');

@@ -13,22 +13,22 @@ body {
   @apply outline-none ring-2 ring-primary-500 ring-opacity-50;
 }
 
-/* Custom scrollbar */
+/* Custom scrollbar with education theme */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-gray-200;
+  @apply bg-secondary-50;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-gray-400 rounded-full;
+  @apply bg-secondary-300 rounded-full transition-colors duration-200;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-gray-500;
+  @apply bg-secondary-400;
 }
 
 /* Additional common styles */
@@ -146,23 +146,43 @@ select {
 
 /* Button styles */
 .btn {
-  @apply inline-flex justify-center items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2;
+  @apply inline-flex justify-center items-center px-5 py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200;
 }
 
 .btn-primary {
-  @apply bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500;
+  @apply bg-primary-500 text-white hover:bg-primary-600 focus:ring-primary-400 transform hover:-translate-y-0.5;
 }
 
 .btn-secondary {
-  @apply bg-secondary-600 text-white hover:bg-secondary-700 focus:ring-secondary-500;
+  @apply bg-secondary-500 text-white hover:bg-secondary-600 focus:ring-secondary-400 transform hover:-translate-y-0.5;
 }
 
 .btn-accent {
-  @apply bg-accent-600 text-white hover:bg-accent-700 focus:ring-accent-500;
+  @apply bg-accent-500 text-white hover:bg-accent-600 focus:ring-accent-400 transform hover:-translate-y-0.5;
 }
 
 .btn-outline {
-  @apply bg-white text-gray-700 border-gray-300 hover:bg-gray-50 focus:ring-primary-500;
+  @apply bg-white text-primary-600 border-2 border-primary-500 hover:bg-primary-50 hover:text-primary-700 focus:ring-primary-400;
+}
+
+/* Hero button styles */
+.btn-hero-primary {
+  @apply inline-flex items-center px-8 py-3 text-lg font-semibold bg-white text-primary-600 rounded-full 
+         shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 
+         hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white 
+         focus:ring-offset-primary-600;
+}
+
+.btn-hero-secondary {
+  @apply inline-flex items-center px-8 py-3 text-lg font-semibold border-2 border-white text-white 
+         rounded-full hover:bg-white hover:text-primary-600 transition-all duration-300 transform 
+         hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white 
+         focus:ring-offset-primary-600;
+}
+
+/* Custom background gradients */
+.bg-gradient-hero {
+  @apply bg-gradient-to-br from-primary-600 via-primary-700 to-secondary-600;
 }
 
 /* Badge styles */

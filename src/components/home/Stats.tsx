@@ -26,7 +26,7 @@ const Stats = () => {
             <div className="inline-flex items-center justify-center w-16 h-16 mb-6 bg-primary-600 text-white rounded-full">
               <FaUserGraduate className="w-8 h-8" />
             </div>
-            <div className="text-4xl font-bold mb-2">5,000+</div>
+            <div className="text-4xl font-bold mb-2">500+</div>
             <div className="text-gray-400">Students Enrolled</div>
           </motion.div>
           
@@ -54,7 +54,7 @@ const Stats = () => {
             <div className="inline-flex items-center justify-center w-16 h-16 mb-6 bg-accent-500 text-white rounded-full">
               <FaUsers className="w-8 h-8" />
             </div>
-            <div className="text-xl sm:text-2xl font-bold text-gray-900">20+</div>
+            <div className="text-4xl font-bold mb-2">20+</div>
             <div className="text-gray-400">Learning Tracks</div>
           </motion.div>
           

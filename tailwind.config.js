@@ -4,54 +4,55 @@ module.exports = {
     "./src/pages/**/*.{js,ts,jsx,tsx}",
     "./src/components/**/*.{js,ts,jsx,tsx}",
     "./src/app/**/*.{js,ts,jsx,tsx}",
+    "./src/styles/**/*.css",
   ],
   theme: {
     extend: {
       colors: {
         primary: {
-          50: '#e6f0f9',
-          100: '#cce1f4',
-          200: '#99c3e9',
-          300: '#66a5de',
-          400: '#3387d3',
-          500: '#0C4DA2', // primary blue
-          600: '#0a3e82',
-          700: '#072e61',
-          800: '#051f41',
-          900: '#020f20',
+          50: '#f0f4fe',
+          100: '#e1e9fd',
+          200: '#c3d4fb',
+          300: '#a4bef9',
+          400: '#86a9f7',
+          500: '#4B6FA6', // Navy blue - trustworthy, professional education
+          600: '#3c5985',
+          700: '#2d4364',
+          800: '#1e2c42',
+          900: '#0f1621',
         },
         secondary: {
-          50: '#e7f7f4',
-          100: '#d0efe9',
-          200: '#a0dfd3',
-          300: '#71cfbd',
-          400: '#41bfa7',
-          500: '#16A085', // secondary teal
-          600: '#12806a',
-          700: '#0d6050',
-          800: '#094035',
-          900: '#04201a',
+          50: '#f4f7f9',
+          100: '#e9eff3',
+          200: '#d3dfe7',
+          300: '#bdcfdb',
+          400: '#a7bfcf',
+          500: '#7E57C2', // Purple - creativity and wisdom
+          600: '#65469b',
+          700: '#4c3474',
+          800: '#32234d',
+          900: '#191126',
         },
         accent: {
-          50: '#fef6e7',
-          100: '#fdecce',
-          200: '#fbd99d',
-          300: '#f9c76c',
-          400: '#f7b43b',
-          500: '#F39C12', // accent orange
-          600: '#c27d0e',
-          700: '#915e0a',
-          800: '#613e07',
-          900: '#301f03',
+          50: '#fef5f3',
+          100: '#fdebe7',
+          200: '#fbd7cf',
+          300: '#f9c3b7',
+          400: '#f7af9f',
+          500: '#E65100', // Deep Orange - energy and enthusiasm
+          600: '#b84100',
+          700: '#8a3100',
+          800: '#5c2000',
+          900: '#2e1000',
         },
         success: {
-          500: '#10B981', // emerald green
+          500: '#2E7D32', // Forest green - growth and achievement
         },
         warning: {
-          500: '#F59E0B', // amber
+          500: '#ED6C02', // Deep amber - attention and caution
         },
         error: {
-          500: '#EF4444', // red
+          500: '#D32F2F', // Deep red - errors and important alerts
         },
         gray: {
           50: '#f9fafb',
@@ -117,5 +118,9 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/typography'),
+    require('@tailwindcss/aspect-ratio'),
+  ],
 }

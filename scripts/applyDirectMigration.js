@@ -17,7 +17,7 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey, {
 async function applyMigration() {
   try {
     // Read the migration file
-    const migrationPath = path.join(__dirname, '..', 'supabase', 'migrations', '20250519090000_fix_tables_and_policies.sql');
+    const migrationPath = path.join(__dirname, '..', 'supabase', 'migrations', '20250523001000_add_site_settings.sql');
     const migrationSQL = await fs.readFile(migrationPath, 'utf8');
 
     // Split the migration into individual statements

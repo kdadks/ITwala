@@ -38,6 +38,8 @@ const MyCoursesPage: NextPage = () => {
 
   useEffect(() => {
     const fetchEnrolledCourses = async () => {
+      if (!user) return;
+      
       try {
         const { data, error } = await supabase
           .from('enrollments')
@@ -45,16 +47,16 @@ const MyCoursesPage: NextPage = () => {
             id,
             enrolled_at,
             status,
+            progress,
             course:courses (
               id,
               title,
               description,
               image,
               slug
-            ),
-            progress
+            )
           `)
-          .eq('user_id', user?.id)
+          .eq('user_id', user.id)
           .order('enrolled_at', { ascending: false });
 
         if (error) throw error;
@@ -63,13 +65,13 @@ const MyCoursesPage: NextPage = () => {
         const transformedData: EnrolledCourse[] = (data || []).map(item => ({
           id: item.id,
           enrolled_at: item.enrolled_at,
-          status: item.status as 'active' | 'completed' | 'paused',
-          progress: item.progress,
+          status: item.status,
+          progress: item.progress || 0,
           course: Array.isArray(item.course) ? item.course[0] : item.course
         }));
 
         setEnrolledCourses(transformedData);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error fetching enrolled courses:', error);
         toast.error('Failed to load your courses');
       } finally {
@@ -81,6 +83,36 @@ const MyCoursesPage: NextPage = () => {
       fetchEnrolledCourses();
     }
   }, [user, supabase]);
+
+  const handleUpdateProgress = async (enrollmentId: string, newProgress: number) => {
+    try {
+      const { error } = await supabase
+        .from('enrollments')
+        .update({ 
+          progress: newProgress,
+          status: newProgress === 100 ? 'completed' : 'active'
+        })
+        .eq('id', enrollmentId);
+
+      if (error) throw error;
+
+      setEnrolledCourses(prev => prev.map(course => {
+        if (course.id === enrollmentId) {
+          return {
+            ...course,
+            progress: newProgress,
+            status: newProgress === 100 ? 'completed' : course.status
+          };
+        }
+        return course;
+      }));
+
+      toast.success(newProgress === 100 ? 'Course completed!' : 'Progress updated');
+    } catch (error: any) {
+      console.error('Error updating progress:', error);
+      toast.error('Failed to update progress');
+    }
+  };
 
   if (!user || authLoading) {
     return (

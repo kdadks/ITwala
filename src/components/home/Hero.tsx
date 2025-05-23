@@ -3,143 +3,89 @@ import { motion } from 'framer-motion';
 
 const Hero = () => {
   return (
-    <section className="relative bg-gradient-to-r from-primary-600 to-primary-800 text-white py-24 md:py-32 overflow-hidden">
-      {/* Background pattern */}
-      <div className="absolute top-0 left-0 w-full h-full opacity-10">
-        <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-          <defs>
-            <pattern id="grid" width="8" height="8" patternUnits="userSpaceOnUse">
-              <path d="M 8 0 L 0 0 0 8" fill="none" stroke="currentColor" strokeWidth="0.5" />
-            </pattern>
-          </defs>
-          <rect width="100" height="100" fill="url(#grid)" />
-        </svg>
+    <section className="relative overflow-hidden bg-gradient-to-br from-primary-600 via-primary-700 to-secondary-600 text-white">
+      {/* Abstract shapes background */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-1/2 -right-1/2 w-[1000px] h-[1000px] rounded-full bg-secondary-500 opacity-20 blur-3xl"></div>
+        <div className="absolute -bottom-1/2 -left-1/2 w-[800px] h-[800px] rounded-full bg-accent-500 opacity-20 blur-3xl"></div>
       </div>
 
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      {/* Floating elements */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="absolute inset-0"
+      >
+        <div className="absolute top-20 left-10 w-12 h-12 bg-white rounded-lg opacity-10 transform rotate-12"></div>
+        <div className="absolute bottom-20 right-10 w-16 h-16 bg-accent-400 rounded-full opacity-10"></div>
+        <div className="absolute top-1/3 right-1/4 w-8 h-8 bg-secondary-300 rounded-lg opacity-10 transform -rotate-12"></div>
+      </motion.div>
+
+      <div className="container mx-auto px-4 py-20 md:py-28 relative z-10">
+        <div className="max-w-5xl mx-auto text-center mb-12">
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">
-              Innovate today for better tomorrow
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-primary-100">
+              Transform Your Future with IT Excellence
             </h1>
-            <p className="text-xl text-primary-100 mb-8 max-w-lg">
-              Specialized IT training designed to advance your career. Learn from industry professionals with real-world experience.
+            <p className="text-xl md:text-2xl text-primary-100 mb-8 max-w-2xl mx-auto">
+              Master cutting-edge technologies with industry experts and hands-on projects
             </p>
-            <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-              <Link href="/courses">
-                <div className="bg-white text-primary-600 hover:bg-gray-100 py-3 px-6 rounded-md font-semibold shadow-lg transition-colors text-center">
-                  Explore Courses
-                </div>
-              </Link>
-              <Link href="/contact">
-                <div className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary-600 py-3 px-6 rounded-md font-semibold transition-colors text-center">
-                  Contact Us
-                </div>
-              </Link>
-            </div>
           </motion.div>
-          
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="flex justify-center lg:justify-end"
-          >
-            <div className="relative w-full max-w-md">
-              <div className="relative bg-white p-6 rounded-lg shadow-2xl">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Featured Course</h3>
-                <div className="aspect-w-16 aspect-h-9 rounded-md overflow-hidden mb-4">
-                  <img 
-                    src="https://images.pexels.com/photos/3861964/pexels-photo-3861964.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" 
-                    alt="AI Course" 
-                    className="object-cover w-full h-full"
-                  />
-                </div>
-                <h4 className="text-lg font-semibold text-gray-900 mb-2">AI & Machine Learning Fundamentals</h4>
-                <p className="text-gray-600 text-sm mb-4">Master the fundamentals of AI and machine learning with hands-on projects</p>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div className="flex text-yellow-400">
-                      <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                      </svg>
-                      <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                      </svg>
-                      <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                      </svg>
-                      <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                      </svg>
-                      <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                      </svg>
-                    </div>
-                    <span className="text-gray-600 text-sm ml-1">(128)</span>
-                  </div>
-                  <span className="text-primary-600 font-bold">₹3,999</span>
-                </div>
-                <Link href="/courses/ai-machine-learning-fundamentals">
-                  <div className="block bg-primary-500 hover:bg-primary-600 text-white py-2 px-4 rounded font-medium text-center transition-colors">
-                    View Course
-                  </div>
-                </Link>
-              </div>
-              
-              {/* Decorative elements */}
-              <div className="absolute -top-4 -left-4 w-24 h-24 bg-accent-500 rounded-lg -z-10 opacity-70"></div>
-              <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-secondary-500 rounded-lg -z-10 opacity-70"></div>
-            </div>
-          </motion.div>
-        </div>
 
-        <div className="mt-16 pt-10 border-t border-primary-400 border-opacity-30">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="flex flex-col items-center md:items-start"
-            >
-              <div className="text-3xl lg:text-4xl font-bold mb-2">20+</div>
-              <div className="text-primary-200">Industry Partners</div>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="flex flex-col items-center md:items-start"
-            >
-              <div className="text-3xl lg:text-4xl font-bold mb-2">50+</div>
-              <div className="text-primary-200">Specialized Courses</div>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
-              className="flex flex-col items-center md:items-start"
-            >
-              <div className="text-3xl lg:text-4xl font-bold mb-2">5000+</div>
-              <div className="text-primary-200">Successful Students</div>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.6 }}
-              className="flex flex-col items-center md:items-start"
-            >
-              <div className="text-3xl lg:text-4xl font-bold mb-2">98%</div>
-              <div className="text-primary-200">Satisfaction Rate</div>
-            </motion.div>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="flex flex-col sm:flex-row justify-center gap-4 mb-12"
+          >
+            <Link href="/courses">
+              <div className="inline-flex items-center px-8 py-3 text-lg font-semibold bg-white text-primary-600 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white focus:ring-offset-primary-600">
+                Get Started
+                <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </div>
+            </Link>
+            <Link href="/courses">
+              <div className="inline-flex items-center px-8 py-3 text-lg font-semibold border-2 border-white text-white rounded-full hover:bg-white hover:text-primary-600 transition-all duration-300 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white focus:ring-offset-primary-600">
+                Browse Courses
+                <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+                </svg>
+              </div>
+            </Link>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="flex justify-center items-center space-x-8 text-sm md:text-base"
+          >
+            <div className="flex items-center">
+              <svg className="w-5 h-5 mr-2 text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+              <span>500+ Students</span>
+            </div>
+            <div className="flex items-center">
+              <svg className="w-5 h-5 mr-2 text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+              <span>7+ Courses</span>
+            </div>
+            <div className="flex items-center">
+              <svg className="w-5 h-5 mr-2 text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              <span>100% Job Ready</span>
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>

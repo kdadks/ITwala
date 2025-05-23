@@ -42,12 +42,12 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link href="/privacy">
+                <Link href="/privacy-policy">
                   <div className="text-gray-400 hover:text-white transition-colors">Privacy Policy</div>
                 </Link>
               </li>
               <li>
-                <Link href="/terms">
+                <Link href="/terms-of-service">
                   <div className="text-gray-400 hover:text-white transition-colors">Terms of Service</div>
                 </Link>
               </li>
@@ -142,12 +142,12 @@ const Footer = () => {
             &copy; {currentYear} kdadks service private ltd. All rights reserved.
           </p>
           <div className="flex space-x-6">
-            <Link href="/privacy">
+            <Link href="/privacy-policy">
               <div className="text-gray-400 hover:text-white text-sm transition-colors">
                 Privacy Policy
               </div>
             </Link>
-            <Link href="/terms">
+            <Link href="/terms-of-service">
               <div className="text-gray-400 hover:text-white text-sm transition-colors">
                 Terms of Service
               </div>
