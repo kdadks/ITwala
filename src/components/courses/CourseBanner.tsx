@@ -13,9 +13,14 @@ interface Course {
 interface CourseBannerProps {
   course: Course;
   onEnroll: () => void;
+  enrollmentsEnabled?: boolean;
 }
 
-const CourseBanner: React.FC<CourseBannerProps> = ({ course, onEnroll }) => {
+const CourseBanner: React.FC<CourseBannerProps> = ({ 
+  course, 
+  onEnroll,
+  enrollmentsEnabled = true 
+}) => {
   return (
     <div className="relative bg-gray-900 py-16">
       {/* Background Image with Overlay */}
@@ -56,9 +61,14 @@ const CourseBanner: React.FC<CourseBannerProps> = ({ course, onEnroll }) => {
 
           <button
             onClick={onEnroll}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200"
+            className={`px-8 py-3 rounded-lg font-medium transition-colors duration-200 ${
+              enrollmentsEnabled 
+                ? 'bg-indigo-600 hover:bg-indigo-700 text-white' 
+                : 'bg-gray-400 cursor-not-allowed text-gray-100'
+            }`}
+            disabled={!enrollmentsEnabled}
           >
-            Enroll Now
+            {enrollmentsEnabled ? 'Enroll Now' : 'Enrollment Disabled'}
           </button>
         </motion.div>
       </div>
