@@ -7,7 +7,7 @@ export const courseData: Course[] = [
     slug: "ai-machine-learning-fundamentals",
     title: "AI & Machine Learning Fundamentals",
     description: "Master the fundamentals of artificial intelligence and machine learning with hands-on projects. Learn how to build and deploy machine learning models that solve real-world problems.",
-    image: "https://picsum.photos/800/600?random=1",
+    image: "/images/Cybernetic Workspace.jpeg",
     category: "Artificial Intelligence",
     level: "Beginner",
     duration: "8 weeks",
@@ -121,7 +121,7 @@ export const courseData: Course[] = [
     slug: "AI product-management",
     title: "AI Product Management",
     description: "Learn how to build and manage successful AI products from ideation to launch. Develop skills in market research, user experience design, and agile product development.",
-    image: "https://picsum.photos/800/600?random=1",  // Placeholder for course image
+    image: "/images/Professional Woman at Planning Board.jpeg",  // Updated to relevant course image
     category: "Product Management",
     level: "Intermediate",
     resources: 22,
@@ -320,7 +320,7 @@ export const courseData: Course[] = [
     slug: "java-programming-masterclass",
     title: "Java Programming Masterclass",
     description: "Comprehensive Java programming course covering everything from basics to advanced topics. Perfect for beginners and those looking to enhance their Java skills.",
-    image: "https://picsum.photos/800/600?random=1",  // Placeholder for course image
+    image: "/images/Tech Professional at Work.jpeg",  // Updated to relevant course image
     category: "Software Development",
     level: "Beginner to Advanced",
     resources: 35,
@@ -518,7 +518,7 @@ export const courseData: Course[] = [
     slug: "AI software-testing",
     title: "AI Software Testing",
     description: "Learn modern approaches to AI software testing automation using industry-standard tools and frameworks. Build a strong foundation in quality assurance principles.",
-    image: "https://picsum.photos/800/600?random=1",  // Placeholder for course image
+    image: "/images/Control Room Activity.jpeg",  // Updated to relevant course image
     category: "Software Testing",
     level: "Intermediate",
     resources: 25,
@@ -716,7 +716,7 @@ export const courseData: Course[] = [
     slug: "salesforce-development-fundamentals",
     title: "Salesforce Development Fundamentals",
     description: "Learn to build custom applications on the Salesforce platform. Master Apex programming, Lightning components, and integration with external systems.",
-    image: "https://picsum.photos/800/600?random=1",  // Placeholder for course image
+    image: "/images/Team Presentation Scene.jpeg",  // Updated to relevant course image
     category: "Software Development",
     level: "Beginner to Intermediate",
     resources: 28,

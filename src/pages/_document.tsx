@@ -15,7 +15,7 @@ export default function Document() {
         <meta property="og:description" content="Specialized IT training for career advancement. Learn from industry professionals with real-world experience." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://academy.it-wala.com" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" href="/images/IT - WALA_logo (1).png" />
       </Head>
       <body>
         <Main />

@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/hooks/useAuth';
 
+import { allCourses } from '@/data/allCourses';
+
 const Navbar = () => {
   const router = useRouter();
   const { user, isAdmin, profile, signOut } = useAuth();
@@ -14,15 +16,30 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+// DEBUG: Log allCourses for autocomplete troubleshooting
+useEffect(() => {
+  console.log('allCourses:', allCourses.length, allCourses);
+}, []);
+const [searchQuery, setSearchQuery] = useState('');
+const [suggestions, setSuggestions] = useState<string[]>([]);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-    
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    if (searchQuery.trim().length > 0) {
+      const filtered = allCourses
+        .filter(course =>
+          course.title.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+        .map(course => course.title)
+        .slice(0, 5);
+      setSuggestions(filtered);
+    } else {
+      setSuggestions([]);
+    }
+  }, [searchQuery]);
+
+  // DEBUG: Log allCourses for autocomplete troubleshooting
+  useEffect(() => {
+    console.log('allCourses:', allCourses.length, allCourses);
   }, []);
 
   const handleLogout = async () => {
@@ -74,6 +91,12 @@ const Navbar = () => {
           <div className="flex items-center">
             <Link href="/">
               <div className="flex items-center">
+                <img
+                  src="/images/IT - WALA_logo (1).png"
+                  alt="ITwala Academy Logo"
+                  className="h-10 w-auto mr-3"
+                  style={{ maxWidth: 48 }}
+                />
                 <span className="text-xl font-bold text-primary-500">ITwala Academy</span>
               </div>
             </Link>

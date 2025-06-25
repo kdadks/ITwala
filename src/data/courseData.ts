@@ -10,7 +10,7 @@ const courseList: Course[] = [
     rating: 4.8,
     reviews: [],
     enrollments: 345,
-    image: "https://images.pexels.com/photos/3861964/pexels-photo-3861964.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+    image: "/images/Focused Individual at Computer.jpeg",
     category: "Artificial Intelligence",
     level: "Intermediate",
     learningOutcomes: ["Learn AI fundamentals", "Build ML models", "Deploy solutions"],

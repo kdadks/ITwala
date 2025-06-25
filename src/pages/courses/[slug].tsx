@@ -14,6 +14,7 @@ import { useState } from 'react';
 import EnrollmentModal from '../../components/courses/EnrollmentModal';
 import LoadingState from '../../components/common/LoadingState';
 import ErrorBoundary from '../../components/common/ErrorBoundary';
+import { useEffect } from 'react';
 
 interface CoursePageProps {
   course: Course;
@@ -23,6 +24,31 @@ interface CoursePageProps {
 const CoursePage: NextPage<CoursePageProps> = ({ course, relatedCourses }) => {
   const router = useRouter();
   const [isEnrollmentModalOpen, setIsEnrollmentModalOpen] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setShareUrl(window.location.href);
+    }
+  }, []);
+
+  const getFacebookShareUrl = () =>
+    `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+  const getTwitterShareUrl = () =>
+    `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(course?.title ?? '')}`;
+  const getLinkedInShareUrl = () =>
+    `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(course?.title ?? '')}&summary=${encodeURIComponent(course?.description ?? '')}`;
+  const getWhatsAppShareUrl = () =>
+    `https://wa.me/?text=${encodeURIComponent(course?.title + ' - ' + shareUrl)}`;
+
+  const handleCopyLink = async () => {
+    if (typeof window !== 'undefined' && shareUrl) {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    }
+  };
 
   if (router.isFallback) {
     return <LoadingState />;
@@ -147,27 +173,62 @@ const CoursePage: NextPage<CoursePageProps> = ({ course, relatedCourses }) => {
                     
                     <div className="bg-white rounded-lg shadow-md p-6">
                       <h3 className="text-xl font-semibold text-gray-900 mb-4">Share This Course</h3>
-                      <div className="flex space-x-4">
-                        <a href="#" className="text-blue-600 hover:text-blue-800">
+                      <div className="flex space-x-4 mb-4">
+                        <a
+                          href={getFacebookShareUrl()}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label="Share on Facebook"
+                          className="text-blue-600 hover:text-blue-800"
+                        >
                           <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                           </svg>
                         </a>
-                        <a href="#" className="text-blue-400 hover:text-blue-600">
+                        <a
+                          href={getTwitterShareUrl()}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label="Share on Twitter"
+                          className="text-blue-400 hover:text-blue-600"
+                        >
                           <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723 9.99 9.99 0 01-3.128 1.195 4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
                           </svg>
                         </a>
-                        <a href="#" className="text-blue-500 hover:text-blue-700">
+                        <a
+                          href={getLinkedInShareUrl()}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label="Share on LinkedIn"
+                          className="text-blue-500 hover:text-blue-700"
+                        >
                           <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
                           </svg>
                         </a>
-                        <a href="#" className="text-green-500 hover:text-green-700">
+                        <a
+                          href={getWhatsAppShareUrl()}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label="Share on WhatsApp"
+                          className="text-green-500 hover:text-green-700"
+                        >
                           <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0c3.197.016 6.202 1.245 8.457 3.5 2.254 2.254 3.48 5.259 3.476 8.45-.013 6.554-5.35 11.892-11.9 11.892-1.984-.001-3.934-.5-5.661-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.896-9.884.002-2.641-1.025-5.122-2.889-6.991-1.865-1.869-4.35-2.9-6.989-2.902-5.448 0-9.878 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.1-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.297-.496.1-.198.05-.372-.025-.522-.074-.148-.668-1.614-.916-2.205-.241-.579-.486-.5-.668-.51-.173-.01-.371-.012-.57-.012-.198 0-.52.074-.792.372-.273.297-1.04 1.016-1.04 2.48 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.747.325 1.332.518 1.812.605.524.127 1 .109 1.377.068.42-.063 1.291-.52 1.478-1.03.185-.507.185-.942.136-1.034-.047-.092-.173-.147-.371-.247z" />
                           </svg>
                         </a>
+                        <button
+                          onClick={handleCopyLink}
+                          className="ml-2 px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded transition text-sm border border-gray-200"
+                          aria-label="Copy course link"
+                          type="button"
+                        >
+                          {copied ? 'Copied!' : 'Copy Link'}
+                        </button>
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        Shareable link: <span className="break-all">{shareUrl}</span>
                       </div>
                     </div>
                   </div>

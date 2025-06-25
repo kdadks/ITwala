@@ -1,17 +1,26 @@
 import { NextPage } from 'next';
 import Head from 'next/head';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import CourseFilter from '@/components/courses/CourseFilter';
 import CourseGrid from '../../components/courses/CourseGrid';
 import { motion } from 'framer-motion';
 import { allCourses as courseData } from '@/data/allCourses';
 
 const CoursesPage: NextPage = () => {
+  const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedLevel, setSelectedLevel] = useState<string>('all');
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 50000]);
   const [sortBy, setSortBy] = useState<string>('popular');
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  // Sync searchQuery with URL param
+  useEffect(() => {
+    if (typeof router.query.search === 'string') {
+      setSearchQuery(router.query.search);
+    }
+  }, [router.query.search]);
 
   // Get unique categories from all courses
   const categories = Array.from(new Set(courseData.map(course => course.category)));

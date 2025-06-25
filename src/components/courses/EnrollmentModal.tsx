@@ -245,6 +245,25 @@ const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ isOpen, onClose, cour
         throw enrollmentError;
       }
 
+      // Send enrollment notification email
+      const notificationResponse = await fetch('/api/enrollment/notify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          courseId: course.id,
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone
+        }),
+      });
+
+      if (!notificationResponse.ok) {
+        console.error('Failed to send enrollment notification');
+      }
+
       toast.success('Successfully enrolled in the course!');
       router.push('/dashboard/courses');
       onClose();

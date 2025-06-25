@@ -102,7 +102,7 @@ const ContactInfo = () => {
               </svg>
             </a>
             <a 
-              href="https://www.linkedin.com/company/itwala/" 
+              href="https://www.linkedin.com/company/it-wala.com"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-400 hover:text-primary-600 transition-colors"

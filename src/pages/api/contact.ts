@@ -12,11 +12,20 @@ export default async function handler(
   try {
     const { name, email, phone, subject, message, toEmail } = req.body;
 
+    // Debug information
+    console.log('Contact form submission:');
+    console.log('- Name:', name);
+    console.log('- Email:', email);
+    console.log('- Subject:', subject);
+    console.log('- To Email:', toEmail);
+    console.log('- SMTP User:', process.env.SMTP_USER);
+    console.log('- SMTP From:', process.env.SMTP_FROM);
+    
     // Create a transporter using SMTP
     const transporter = createTransport({
-      host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: process.env.SMTP_SECURE === 'true',
+      host: 'smtp.hostinger.com',
+      port: 465,
+      secure: true,
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
@@ -42,6 +51,22 @@ export default async function handler(
     return res.status(200).json({ message: 'Email sent successfully' });
   } catch (error) {
     console.error('Error sending email:', error);
-    return res.status(500).json({ message: 'Error sending email' });
+    
+    // More detailed error logging
+    if (error.code === 'EAUTH') {
+      console.error('Authentication error - check SMTP_USER and SMTP_PASS');
+      return res.status(500).json({ message: 'Authentication error with email server' });
+    } else if (error.code === 'ESOCKET') {
+      console.error('Socket error - check SMTP host and port');
+      return res.status(500).json({ message: 'Connection error with email server' });
+    } else if (error.code === 'EENVELOPE') {
+      console.error('Envelope error - check from/to email addresses');
+      return res.status(500).json({ message: 'Invalid sender or recipient email' });
+    }
+    
+    return res.status(500).json({
+      message: 'Error sending email',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 }

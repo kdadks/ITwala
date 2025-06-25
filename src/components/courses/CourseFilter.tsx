@@ -28,58 +28,52 @@ const CourseFilter: React.FC<CourseFilterProps> = ({
   setSortBy
 }) => {
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="bg-white p-6 rounded-lg shadow-md mb-8"
+      className="bg-white p-6 rounded-lg shadow-md mb-8 flex flex-col gap-6"
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
-            Category
-          </label>
-          <select
-            id="category"
-            value={selectedCategory}
-            onChange={(e) => onCategoryChange(e.target.value)}
-            className="w-full rounded-md border border-gray-300 py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-          >
-            <option value="all">All Categories</option>
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-        </div>
+      {/* Category Filter */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-3">Category</h3>
+        <select
+          id="category"
+          value={selectedCategory}
+          onChange={(e) => onCategoryChange(e.target.value)}
+          className="w-full rounded-md border border-gray-300 py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+        >
+          <option value="all">All Categories</option>
+          {categories.map((category) => (
+            <option key={category} value={category}>
+              {category}
+            </option>
+          ))}
+        </select>
+      </div>
 
-        <div>
-          <label htmlFor="level" className="block text-sm font-medium text-gray-700 mb-2">
-            Level
-          </label>
-          <select
-            id="level"
-            value={selectedLevel}
-            onChange={(e) => onLevelChange(e.target.value)}
-            className="w-full rounded-md border border-gray-300 py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-          >
-            <option value="all">All Levels</option>
-            {levels.map((level) => (
-              <option key={level} value={level}>
-                {level}
-              </option>
-            ))}
-          </select>
-        </div>
+      {/* Level Filter */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-3">Level</h3>
+        <select
+          id="level"
+          value={selectedLevel}
+          onChange={(e) => onLevelChange(e.target.value)}
+          className="w-full rounded-md border border-gray-300 py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+        >
+          <option value="all">All Levels</option>
+          {levels.map((level) => (
+            <option key={level} value={level}>
+              {level}
+            </option>
+          ))}
+        </select>
       </div>
 
       {/* Price Range Filter */}
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Price Range (₹)
-        </label>
-        <div className="flex items-center space-x-4">
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-3">Price Range (₹)</h3>
+        <div className="flex items-center gap-2">
           <input
             type="number"
             value={priceRange[0]}
@@ -98,6 +92,20 @@ const CourseFilter: React.FC<CourseFilterProps> = ({
           />
         </div>
       </div>
+
+      {/* Reset Filters Button */}
+      <button
+        type="button"
+        className="mt-2 py-2 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md border border-gray-300 transition"
+        onClick={() => {
+          onCategoryChange('all');
+          onLevelChange('all');
+          setPriceRange([0, 50000]);
+          setSortBy('popular');
+        }}
+      >
+        Reset Filters
+      </button>
     </motion.div>
   );
 };

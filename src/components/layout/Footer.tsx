@@ -14,7 +14,7 @@ const Footer = () => {
               Let us shape your career
             </p>
             <div className="flex space-x-4">
-              <a href="https://www.linkedin.com/company/it-wala.com/about/" 
+              <a href="https://www.linkedin.com/company/it-wala.com"
                  target="_blank" 
                  rel="noopener noreferrer" 
                  className="text-gray-400 hover:text-white transition-colors">

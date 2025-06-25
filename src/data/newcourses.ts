@@ -7,7 +7,7 @@ export const newCourses: Course[] = [
     slug: "prompt-engineering-mastery",
     title: "Prompt Engineering Mastery",
     description: "Master the art of crafting effective prompts for AI language models. Learn advanced techniques for optimizing AI interactions.",
-    image: "https://picsum.photos/800/600?random=6",
+    image: "/images/Colorful Sticky Notes Brainstorming.jpeg",
     category: "Prompt Engineering",
     level: "Beginner",
     duration: "6 weeks",
@@ -100,7 +100,7 @@ export const newCourses: Course[] = [
     slug: "agentic-ai-development",
     title: "Agentic AI Development",
     description: "Learn to build autonomous AI agents that can perform complex tasks independently. Master the creation of AI systems that can plan, reason, and execute multi-step operations.",
-    image: "https://picsum.photos/800/600?random=7",
+    image: "/images/Robotic Hand Typing.jpeg",
     category: "Agentic AI",
     level: "Advanced",
     duration: "10 weeks",
@@ -185,6 +185,175 @@ export const newCourses: Course[] = [
       {
         question: "Is this course suitable for beginners?",
         answer: "This is an advanced course that requires prior experience with AI concepts and programming."
+      }
+    ]
+  },
+  {
+    id: "8",
+    slug: "ml-devops-basic",
+    title: "Machine Learning DevOps (ML DevOps) Basic",
+    description: "Learn the fundamentals of MLOps and DevOps practices for machine learning projects. Master the tools and workflows for deploying, monitoring, and maintaining ML models in production environments.",
+    image: "/images/Tech-Savvy Professional in a Multiscreen Workspace.jpeg",
+    category: "Machine Learning",
+    level: "Intermediate",
+    duration: "8 weeks",
+    status: "published",
+    students: 0,
+    enrollmentStatus: "Open",
+    rating: 5.0,
+    ratingCount: 0,
+    resources: 22,
+    price: 3999,
+    originalPrice: 7999,
+    publishedDate: "2025-06-15",
+    enrollments: 0,
+    instructor: {
+      name: "Industry Expert",
+      bio: "An experienced ML engineer with expertise in deploying and maintaining machine learning systems at scale.",
+      image: "https://picsum.photos/200/200?random=8"
+    },
+    learningOutcomes: [
+      "Understand MLOps principles and workflows",
+      "Build CI/CD pipelines for ML projects",
+      "Implement model versioning and tracking",
+      "Deploy ML models to production environments",
+      "Monitor model performance and drift",
+      "Automate model retraining processes",
+      "Implement A/B testing for model deployment",
+      "Apply best practices for ML system architecture"
+    ],
+    requirements: [
+      "Basic understanding of machine learning concepts",
+      "Familiarity with Python programming",
+      "Experience with at least one ML framework (TensorFlow, PyTorch, etc.)",
+      "Basic knowledge of Docker and containerization"
+    ],
+    modules: [
+      {
+        id: "mlops-m1",
+        title: "Introduction to ML DevOps",
+        description: "Understand the fundamentals of MLOps and its importance in the ML lifecycle.",
+        lessons: [
+          {
+            id: "mlops-m1-l1",
+            title: "What is ML DevOps?",
+            type: "video",
+            content: "Overview of ML DevOps and how it differs from traditional DevOps.",
+            isPreview: true
+          },
+          {
+            id: "mlops-m1-l2",
+            title: "The ML Lifecycle",
+            type: "video",
+            content: "Understanding the end-to-end machine learning lifecycle and where MLOps fits in."
+          },
+          {
+            id: "mlops-m1-l3",
+            title: "Setting Up Your MLOps Environment",
+            type: "lab",
+            content: "Configure your development environment with essential MLOps tools and frameworks."
+          }
+        ]
+      },
+      {
+        id: "mlops-m2",
+        title: "Version Control for ML Projects",
+        description: "Learn how to effectively version control ML models, data, and code.",
+        lessons: [
+          {
+            id: "mlops-m2-l1",
+            title: "Git for ML Projects",
+            type: "video",
+            content: "Best practices for using Git with machine learning projects."
+          },
+          {
+            id: "mlops-m2-l2",
+            title: "Data Versioning",
+            type: "lab",
+            content: "Implement data versioning using DVC (Data Version Control)."
+          },
+          {
+            id: "mlops-m2-l3",
+            title: "Model Versioning and Registry",
+            type: "lab",
+            content: "Set up and use a model registry to track model versions and metadata."
+          }
+        ]
+      },
+      {
+        id: "mlops-m3",
+        title: "CI/CD for Machine Learning",
+        description: "Build continuous integration and deployment pipelines for ML projects.",
+        lessons: [
+          {
+            id: "mlops-m3-l1",
+            title: "CI/CD Principles for ML",
+            type: "video",
+            content: "Understanding how CI/CD applies to machine learning workflows."
+          },
+          {
+            id: "mlops-m3-l2",
+            title: "Building ML Pipelines",
+            type: "lab",
+            content: "Create automated pipelines for data processing, model training, and evaluation."
+          },
+          {
+            id: "mlops-m3-l3",
+            title: "Automated Testing for ML Models",
+            type: "lab",
+            content: "Implement tests for data quality, model performance, and system integration."
+          }
+        ]
+      },
+      {
+        id: "mlops-m4",
+        title: "Model Deployment and Monitoring",
+        description: "Learn strategies for deploying ML models and monitoring them in production.",
+        lessons: [
+          {
+            id: "mlops-m4-l1",
+            title: "Deployment Strategies",
+            type: "video",
+            content: "Explore different approaches to deploying ML models to production."
+          },
+          {
+            id: "mlops-m4-l2",
+            title: "Containerizing ML Models",
+            type: "lab",
+            content: "Package ML models using Docker for consistent deployment."
+          },
+          {
+            id: "mlops-m4-l3",
+            title: "Model Monitoring and Observability",
+            type: "lab",
+            content: "Set up monitoring for model performance, drift, and system health."
+          },
+          {
+            id: "mlops-m4-l4",
+            title: "Automated Retraining Workflows",
+            type: "video",
+            content: "Design systems for detecting when models need retraining and automating the process."
+          }
+        ]
+      }
+    ],
+    reviews: [],
+    faqs: [
+      {
+        question: "What is ML DevOps?",
+        answer: "ML DevOps (or MLOps) is a set of practices that combines Machine Learning, DevOps, and Data Engineering to deploy and maintain ML systems in production reliably and efficiently."
+      },
+      {
+        question: "Is this course suitable for beginners in machine learning?",
+        answer: "This course requires basic understanding of machine learning concepts. If you're new to ML, we recommend taking our 'AI & Machine Learning Fundamentals' course first."
+      },
+      {
+        question: "Will I learn how to build ML models in this course?",
+        answer: "This course focuses on the operational aspects of ML systems rather than model building. We assume you already have some experience with creating ML models."
+      },
+      {
+        question: "What tools will we use in this course?",
+        answer: "You'll work with industry-standard tools like Git, DVC, Docker, Kubernetes, MLflow, Kubeflow, and various cloud services for ML deployment."
       }
     ]
   }
