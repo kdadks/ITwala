@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog } from '@headlessui/react';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
 import { useUser } from '@supabase/auth-helpers-react';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/router';
+import { getSiteSettings } from '@/utils/siteSettings';
 
 interface Course {
   id: string;
@@ -19,6 +20,8 @@ interface EnrollmentModalProps {
 
 const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ isOpen, onClose, course }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [enrollmentsEnabled, setEnrollmentsEnabled] = useState(true);
+  const [isCheckingSettings, setIsCheckingSettings] = useState(true);
   const supabase = useSupabaseClient();
   const user = useUser();
   const router = useRouter();
@@ -37,6 +40,31 @@ const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ isOpen, onClose, cour
     degreeName: '',
     hasLaptop: false
   });
+
+  useEffect(() => {
+    const checkEnrollmentSettings = async () => {
+      try {
+        const settings = await getSiteSettings();
+        setEnrollmentsEnabled(settings.enrollmentsEnabled);
+        
+        // If enrollments are disabled and modal is open, show an error and close the modal
+        if (!settings.enrollmentsEnabled && isOpen) {
+          toast.error('Enrollment is currently disabled. Please try again later.');
+          onClose();
+        }
+      } catch (error) {
+        console.error('Error fetching site settings:', error);
+        // Default to true if we can't fetch settings
+        setEnrollmentsEnabled(true);
+      } finally {
+        setIsCheckingSettings(false);
+      }
+    };
+    
+    if (isOpen) {
+      checkEnrollmentSettings();
+    }
+  }, [isOpen, onClose]);
 
   // Indian states list
   const indianStates = [
@@ -206,6 +234,12 @@ const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ isOpen, onClose, cour
     try {
       if (!user) {
         throw new Error('You must be logged in to enroll in a course');
+      }
+
+      // Check if enrollments are enabled
+      const settings = await getSiteSettings();
+      if (!settings.enrollmentsEnabled) {
+        throw new Error('Enrollment is currently disabled. Please try again later.');
       }
 
       // First, update the user's profile with additional info if needed

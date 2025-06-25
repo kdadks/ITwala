@@ -10,11 +10,12 @@ import CourseContent from '../../components/courses/CourseContent';
 import CourseReviews from '../../components/courses/CourseReviews';
 import CourseFAQ from '../../components/courses/CourseFAQ';
 import RelatedCourses from '../../components/courses/RelatedCourses';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import EnrollmentModal from '../../components/courses/EnrollmentModal';
 import LoadingState from '../../components/common/LoadingState';
 import ErrorBoundary from '../../components/common/ErrorBoundary';
-import { useEffect } from 'react';
+import { getSiteSettings } from '@/utils/siteSettings';
+import { toast } from 'react-hot-toast';
 
 interface CoursePageProps {
   course: Course;
@@ -24,6 +25,8 @@ interface CoursePageProps {
 const CoursePage: NextPage<CoursePageProps> = ({ course, relatedCourses }) => {
   const router = useRouter();
   const [isEnrollmentModalOpen, setIsEnrollmentModalOpen] = useState(false);
+  const [enrollmentsEnabled, setEnrollmentsEnabled] = useState(true);
+  const [isCheckingSettings, setIsCheckingSettings] = useState(true);
   const [shareUrl, setShareUrl] = useState('');
   const [copied, setCopied] = useState(false);
 
@@ -31,6 +34,21 @@ const CoursePage: NextPage<CoursePageProps> = ({ course, relatedCourses }) => {
     if (typeof window !== 'undefined') {
       setShareUrl(window.location.href);
     }
+  }, []);
+
+  useEffect(() => {
+    const checkEnrollmentSettings = async () => {
+      try {
+        const settings = await getSiteSettings();
+        setEnrollmentsEnabled(settings.enrollmentsEnabled);
+      } catch (error) {
+        console.error('Error fetching site settings:', error);
+        setEnrollmentsEnabled(true);
+      } finally {
+        setIsCheckingSettings(false);
+      }
+    };
+    checkEnrollmentSettings();
   }, []);
 
   const getFacebookShareUrl = () =>
@@ -50,7 +68,15 @@ const CoursePage: NextPage<CoursePageProps> = ({ course, relatedCourses }) => {
     }
   };
 
-  if (router.isFallback) {
+  const handleEnrollClick = () => {
+    if (enrollmentsEnabled) {
+      setIsEnrollmentModalOpen(true);
+    } else {
+      toast.error('Enrollment is currently disabled. Please try again later.');
+    }
+  };
+
+  if (router.isFallback || isCheckingSettings) {
     return <LoadingState />;
   }
 
@@ -81,7 +107,8 @@ const CoursePage: NextPage<CoursePageProps> = ({ course, relatedCourses }) => {
         <main>
           <CourseBanner 
             course={course} 
-            onEnroll={() => setIsEnrollmentModalOpen(true)} 
+            onEnroll={handleEnrollClick}
+            enrollmentsEnabled={enrollmentsEnabled}
           />
           
           <section className="py-12 bg-white">
@@ -138,10 +165,14 @@ const CoursePage: NextPage<CoursePageProps> = ({ course, relatedCourses }) => {
                         </div>
                         
                         <button 
-                          onClick={() => setIsEnrollmentModalOpen(true)}
-                          className="w-full py-3 px-6 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-md transition duration-200 mb-4"
+                          onClick={handleEnrollClick}
+                          className={`w-full py-3 px-6 font-semibold rounded-md transition duration-200 mb-4 ${
+                            enrollmentsEnabled 
+                              ? 'bg-primary-500 hover:bg-primary-600 text-white' 
+                              : 'bg-gray-300 cursor-not-allowed text-gray-600'
+                          }`}
                         >
-                          Enroll Now
+                          {enrollmentsEnabled ? 'Enroll Now' : 'Enrollment Disabled'}
                         </button>
                         
                         <div className="text-center text-gray-500 text-sm mb-6">Tuition fee will be discussed post registration</div>
@@ -239,11 +270,13 @@ const CoursePage: NextPage<CoursePageProps> = ({ course, relatedCourses }) => {
           
           <RelatedCourses courses={relatedCourses} />
           
-          <EnrollmentModal 
-            isOpen={isEnrollmentModalOpen} 
-            onClose={() => setIsEnrollmentModalOpen(false)} 
-            course={course} 
-          />
+          {enrollmentsEnabled && (
+            <EnrollmentModal 
+              isOpen={isEnrollmentModalOpen} 
+              onClose={() => setIsEnrollmentModalOpen(false)} 
+              course={course} 
+            />
+          )}
         </main>
       </>
     </ErrorBoundary>
