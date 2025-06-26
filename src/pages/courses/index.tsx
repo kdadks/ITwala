@@ -114,7 +114,7 @@ const CoursesPage: NextPage = () => {
       </Head>
 
       <main>
-        <section className="bg-gradient-to-r from-primary-600 to-primary-800 py-16 md:py-24">
+        <section className="bg-gradient-to-r from-primary-600 to-primary-800 py-12 md:py-24">
           <div className="container mx-auto px-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -122,8 +122,8 @@ const CoursesPage: NextPage = () => {
               transition={{ duration: 0.5 }}
               className="max-w-4xl mx-auto text-center"
             >
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">Explore Our Courses</h1>
-              <p className="text-xl text-primary-100 mb-8">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 md:mb-6 px-2">Explore Our Courses</h1>
+              <p className="text-lg sm:text-xl text-primary-100 mb-6 md:mb-8 px-2">
                 Discover specialized IT training designed to advance your career and skills.
               </p>
             </motion.div>
@@ -134,13 +134,13 @@ const CoursesPage: NextPage = () => {
                 placeholder="Search for courses..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full py-3 px-6 rounded-full bg-white shadow-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-400"
+                className="w-full py-3 px-4 sm:px-6 rounded-full bg-white shadow-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-400 text-sm sm:text-base"
               />
             </div>
           </div>
         </section>
 
-        <section className="py-12 bg-gray-50">
+        <section className="py-8 md:py-12 bg-gray-50">
           <div className="container mx-auto px-4">
             {error ? (
               <div className="text-center py-12">

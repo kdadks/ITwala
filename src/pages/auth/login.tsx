@@ -32,6 +32,41 @@ const Login: NextPage = () => {
       // If sign in succeeds, we're done
       if (!signInError) {
         toast.success('Logged in successfully!');
+        
+        // Check for enrollment intent
+        const enrollmentIntent = localStorage.getItem('enrollmentIntent');
+        if (enrollmentIntent && router.query.redirect === 'enrollment') {
+          try {
+            const intent = JSON.parse(enrollmentIntent);
+            localStorage.removeItem('enrollmentIntent');
+            
+            // Proceed with enrollment
+            const enrollmentResponse = await fetch('/api/enrollment/enroll', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                courseId: intent.courseId,
+                userDetails: intent.userDetails
+              }),
+            });
+
+            const enrollmentData = await enrollmentResponse.json();
+
+            if (enrollmentResponse.ok) {
+              toast.success(`Successfully enrolled in ${intent.courseTitle}! You are now a ${enrollmentData.userRole}.`);
+              router.push('/dashboard/courses');
+              return;
+            } else {
+              toast.error(enrollmentData.message || 'Failed to complete enrollment');
+            }
+          } catch (enrollmentError) {
+            console.error('Enrollment error:', enrollmentError);
+            toast.error('Failed to complete enrollment after login');
+          }
+        }
+        
         router.push('/dashboard');
         return;
       }

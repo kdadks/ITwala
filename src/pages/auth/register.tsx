@@ -38,11 +38,24 @@ const Register: NextPage = () => {
       });
 
       if (error) {
+        // Show a user-friendly message if the user is already registered
+        if (error.message && error.message.toLowerCase().includes('user already registered')) {
+          toast.error('An account with this email already exists. Please log in or use a different email.');
+          setIsLoading(false);
+          return;
+        }
         throw new Error(error.message);
       }
 
-      toast.success('Registration successful! Please check your email to confirm your account.');
-      router.push('/auth/login');
+      // Check if there's an enrollment intent
+      const enrollmentIntent = localStorage.getItem('enrollmentIntent');
+      if (enrollmentIntent) {
+        toast.success('Registration successful! Please check your email to confirm your account, then you can complete your course enrollment.');
+        router.push('/auth/login?redirect=enrollment');
+      } else {
+        toast.success('Registration successful! Please check your email to confirm your account.');
+        router.push('/auth/login');
+      }
     } catch (error: any) {
       toast.error(error.message || 'Registration failed. Please try again.');
       console.error('Registration error:', error);

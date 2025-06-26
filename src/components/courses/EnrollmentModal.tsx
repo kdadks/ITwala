@@ -232,76 +232,73 @@ const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ isOpen, onClose, cour
     setIsLoading(true);
 
     try {
-      if (!user) {
-        throw new Error('You must be logged in to enroll in a course');
-      }
-
       // Check if enrollments are enabled
       const settings = await getSiteSettings();
       if (!settings.enrollmentsEnabled) {
         throw new Error('Enrollment is currently disabled. Please try again later.');
       }
 
-      // First, update the user's profile with additional info if needed
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .update({
-          full_name: formData.name,
-          phone: formData.phone,
-          address_line1: formData.addressLine1,
-          address_line2: formData.addressLine2,
-          state: formData.state,
-          city: formData.city,
-          country: formData.country,
-          pincode: formData.pincode,
-          highest_qualification: formData.highestQualification,
-          degree_name: formData.degreeName,
-          has_laptop: formData.hasLaptop
-        })
-        .eq('id', user.id);
-
-      if (profileError) throw profileError;
-
-      // Create enrollment record
-      const { error: enrollmentError } = await supabase
-        .from('enrollments')
-        .insert({
-          user_id: user.id,
-          course_id: course.id,
-          status: 'active',
-          progress: 0
-        });
-
-      if (enrollmentError) {
-        if (enrollmentError.code === '23505') { // Unique violation
-          throw new Error('You are already enrolled in this course');
-        }
-        throw enrollmentError;
+      // If user is not logged in, redirect to login with enrollment intent
+      if (!user) {
+        // Store enrollment intent in localStorage
+        localStorage.setItem('enrollmentIntent', JSON.stringify({
+          courseId: course.id,
+          courseTitle: course.title,
+          userDetails: formData
+        }));
+        
+        toast.error('Please log in to enroll in this course');
+        router.push('/auth/login?redirect=enrollment');
+        return;
       }
 
-      // Send enrollment notification email
-      const notificationResponse = await fetch('/api/enrollment/notify', {
+      // Use the new enrollment API endpoint
+      const enrollmentResponse = await fetch('/api/enrollment/enroll', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: user.id,
           courseId: course.id,
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone
+          userDetails: {
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            addressLine1: formData.addressLine1,
+            addressLine2: formData.addressLine2,
+            state: formData.state,
+            city: formData.city,
+            country: formData.country,
+            pincode: formData.pincode,
+            highestQualification: formData.highestQualification,
+            degreeName: formData.degreeName,
+            hasLaptop: formData.hasLaptop
+          }
         }),
       });
 
-      if (!notificationResponse.ok) {
-        console.error('Failed to send enrollment notification');
+      const enrollmentData = await enrollmentResponse.json();
+
+      if (!enrollmentResponse.ok) {
+        if (enrollmentData.requiresAuth) {
+          // Store enrollment intent and redirect to login
+          localStorage.setItem('enrollmentIntent', JSON.stringify({
+            courseId: course.id,
+            courseTitle: course.title,
+            userDetails: formData
+          }));
+          
+          toast.error('Please log in to enroll in this course');
+          router.push('/auth/login?redirect=enrollment');
+          return;
+        }
+        throw new Error(enrollmentData.message || 'Failed to enroll in the course');
       }
 
-      toast.success('Successfully enrolled in the course!');
+      toast.success(`Successfully enrolled in the course! You are now a ${enrollmentData.userRole}.`);
       router.push('/dashboard/courses');
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       toast.error(error.message || 'Failed to enroll in the course');
     } finally {
       setIsLoading(false);

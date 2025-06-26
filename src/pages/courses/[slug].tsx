@@ -312,10 +312,6 @@ const CoursePage: NextPage = () => {
                       <span className="font-medium">{course.level}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Students:</span>
-                      <span className="font-medium">{course.students || 0}</span>
-                    </div>
-                    <div className="flex justify-between">
                       <span>Language:</span>
                       <span className="font-medium">{course.language || 'English'}</span>
                     </div>

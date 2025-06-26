@@ -48,22 +48,22 @@ const FeaturedCourses = () => {
   };
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-12 md:py-16 bg-white">
       <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center mb-10">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Featured Courses</h2>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-10 gap-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">Featured Courses</h2>
           <Link href="/courses">
-            <div className="text-primary-500 hover:text-primary-600 font-medium flex items-center">
+            <div className="text-primary-500 hover:text-primary-600 font-medium flex items-center text-sm sm:text-base">
               View All Courses
-              <svg className="w-5 h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
               </svg>
             </div>
           </Link>
         </div>
 
-        <div 
-          className="overflow-x-auto pb-6 no-scrollbar"
+        <div
+          className="overflow-x-auto pb-6 no-scrollbar -mx-4 px-4"
           ref={sliderRef}
           onMouseDown={handleMouseDown}
           onMouseLeave={handleMouseLeave}
@@ -71,14 +71,14 @@ const FeaturedCourses = () => {
           onMouseMove={handleMouseMove}
           style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
         >
-          <div className="flex space-x-6">
+          <div className="flex space-x-4 md:space-x-6">
             {featuredCourses.map((course) => (
               <motion.div
                 key={course.id}
                 whileHover={{ y: -5 }}
                 transition={{ duration: 0.2 }}
-                className="flex-shrink-0 w-full sm:w-1/2 md:w-1/3 lg:w-1/4"
-                style={{ minWidth: '300px' }}
+                className="flex-shrink-0 w-72 sm:w-80 md:w-1/3 lg:w-1/4"
+                style={{ minWidth: '280px' }}
               >
                 <Link href={`/courses/${course.slug}`}>
                   <div className="bg-white rounded-xl shadow-md overflow-hidden h-full hover:shadow-lg transition-shadow duration-300">

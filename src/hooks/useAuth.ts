@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 interface Profile {
   id: string;
   full_name?: string;
-  role: 'admin' | 'instructor' | 'user';
+  role: 'admin' | 'instructor' | 'user' | 'student';
   email: string;
   avatar_url?: string;
   bio?: string;

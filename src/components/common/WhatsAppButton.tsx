@@ -14,11 +14,12 @@ const WhatsAppButton: React.FC = () => {
       initial={{ scale: 0.8, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       whileHover={{ scale: 1.1 }}
-      className="fixed bottom-6 right-6 bg-green-500 text-white p-4 rounded-full shadow-lg z-50 flex items-center justify-center hover:bg-green-600 transition-colors duration-300"
+      whileTap={{ scale: 0.95 }}
+      className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 bg-green-500 text-white p-3 sm:p-4 rounded-full shadow-lg z-50 flex items-center justify-center hover:bg-green-600 transition-all duration-300 touch-manipulation"
       aria-label="Contact us on WhatsApp"
     >
       <svg
-        className="w-6 h-6"
+        className="w-5 h-5 sm:w-6 sm:h-6"
         fill="currentColor"
         viewBox="0 0 24 24"
         xmlns="http://www.w3.org/2000/svg"

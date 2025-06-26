@@ -16,12 +16,13 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-// DEBUG: Log allCourses for autocomplete troubleshooting
-useEffect(() => {
-  console.log('allCourses:', allCourses.length, allCourses);
-}, []);
-const [searchQuery, setSearchQuery] = useState('');
-const [suggestions, setSuggestions] = useState<string[]>([]);
+
+  // DEBUG: Log allCourses for autocomplete troubleshooting
+  useEffect(() => {
+    console.log('allCourses:', allCourses.length, allCourses);
+  }, []);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [suggestions, setSuggestions] = useState<string[]>([]);
 
   useEffect(() => {
     if (searchQuery.trim().length > 0) {
@@ -80,24 +81,33 @@ const [suggestions, setSuggestions] = useState<string[]>([]);
     ] : [])
   ] : [];
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <header
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-white shadow-md' : 'bg-transparent'
-      }`}
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 backdrop-blur-md ${isScrolled ? 'bg-white/80 border-b border-gray-200 shadow-md' : 'bg-white/40 border-b border-transparent'} dark:${isScrolled ? 'bg-gray-900/80 border-b border-gray-700' : 'bg-gray-900/40 border-b border-transparent'}`}
     >
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <Link href="/">
-              <div className="flex items-center">
-                <img
-                  src="/images/IT - WALA_logo (1).png"
-                  alt="ITwala Academy Logo"
-                  className="h-10 w-auto mr-3"
-                  style={{ maxWidth: 48 }}
-                />
-                <span className="text-xl font-bold text-primary-500">ITwala Academy</span>
+              <div className="flex flex-col items-start">
+                <div className="flex items-center">
+                  <img
+                    src="/images/IT - WALA_logo (1).png"
+                    alt="ITwala Academy Logo"
+                    className="h-10 w-auto mr-3"
+                    style={{ maxWidth: 48 }}
+                  />
+                  <span className="text-xl font-bold text-primary-500">ITwala Academy</span>
+                </div>
+                <span className="text-xs md:text-sm text-primary-700 font-medium mt-1 ml-1 tracking-wide">IT- Simple Hain | Let us shape your career</span>
               </div>
             </Link>
           </div>
@@ -195,10 +205,23 @@ const [suggestions, setSuggestions] = useState<string[]>([]);
             </div>
           </div>
 
-          <div className="md:hidden flex items-center">
+          <div className="md:hidden flex items-center space-x-3">
+            {/* Mobile Search Button */}
             <button
-              className="text-gray-700 hover:text-primary-500 transition-colors focus:outline-none"
+              className="text-gray-700 hover:text-primary-500 transition-colors p-2"
+              onClick={() => setIsSearchOpen(true)}
+              aria-label="Search"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+            </button>
+            
+            {/* Mobile Menu Button */}
+            <button
+              className="text-gray-700 hover:text-primary-500 transition-colors focus:outline-none p-2"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label="Toggle menu"
             >
               {isMenuOpen ? (
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -221,46 +244,86 @@ const [suggestions, setSuggestions] = useState<string[]>([]);
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="md:hidden bg-white border-t border-gray-200 overflow-hidden"
+            className="md:hidden bg-white border-t border-gray-200 overflow-hidden shadow-lg"
           >
-            <div className="container mx-auto px-4 py-4">
-              <nav className="flex flex-col space-y-3">
+            <div className="container mx-auto px-4 py-6">
+              <nav className="flex flex-col space-y-1">
                 {navItems.map((item) => (
                   <Link key={item.href} href={item.href}>
                     <div
-                      className={`text-sm font-medium ${router.pathname === item.href ? 'text-primary-500' : 'text-gray-700'}`}
+                      className={`block px-4 py-3 text-base font-medium rounded-lg transition-colors ${
+                        router.pathname === item.href
+                          ? 'text-primary-600 bg-primary-50'
+                          : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
+                      }`}
                       onClick={() => setIsMenuOpen(false)}
                     >
                       {item.label}
                     </div>
                   </Link>
                 ))}
-                {user && userMenuItems.map((item) => (
-                  <Link key={item.href} href={item.href}>
-                    <div
-                      className={`text-sm font-medium ${router.pathname === item.href ? 'text-primary-500' : 'text-gray-700'}`}
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      {item.label}
-                    </div>
-                  </Link>
-                ))}
-                {user ? (
-                  <button
-                    onClick={signOut}
-                    className="block w-full text-left pl-3 pr-4 py-2 text-base font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-50"
-                  >
-                    Sign out
-                  </button>
-                ) : (
+                
+                {user && (
                   <>
+                    <div className="border-t border-gray-200 my-2"></div>
+                    <div className="px-4 py-2">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center">
+                          <span className="text-primary-600 font-medium text-sm">
+                            {profile?.full_name?.[0] || user.email?.[0]?.toUpperCase()}
+                          </span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">
+                            {profile?.full_name || user.email}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {userMenuItems.map((item) => (
+                      <Link key={item.href} href={item.href}>
+                        <div
+                          className={`block px-4 py-3 text-base font-medium rounded-lg transition-colors ${
+                            router.pathname === item.href
+                              ? 'text-primary-600 bg-primary-50'
+                              : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
+                          }`}
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          {item.label}
+                        </div>
+                      </Link>
+                    ))}
+                    
+                    <button
+                      onClick={() => {
+                        signOut();
+                        setIsMenuOpen(false);
+                      }}
+                      className="block w-full text-left px-4 py-3 text-base font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+                    >
+                      Sign out
+                    </button>
+                  </>
+                )}
+                
+                {!user && (
+                  <>
+                    <div className="border-t border-gray-200 my-2"></div>
                     <Link href="/auth/login">
-                      <div className="block pl-3 pr-4 py-2 text-base font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-50">
+                      <div
+                        className="block px-4 py-3 text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-lg transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
                         Log in
                       </div>
                     </Link>
                     <Link href="/auth/register">
-                      <div className="block pl-3 pr-4 py-2 text-base font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-50">
+                      <div
+                        className="block px-4 py-3 text-base font-medium bg-primary-500 text-white hover:bg-primary-600 rounded-lg transition-colors text-center"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
                         Sign up
                       </div>
                     </Link>
@@ -268,46 +331,6 @@ const [suggestions, setSuggestions] = useState<string[]>([]);
                 )}
               </nav>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {isSearchOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
-            className="absolute top-16 left-0 w-full bg-white shadow-md p-4 z-50"
-          >
-            <form onSubmit={handleSearch} className="container mx-auto flex items-center">
-              <input
-                type="text"
-                placeholder="Search courses..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1 p-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                autoFocus
-              />
-              <button
-                type="submit"
-                className="p-2 bg-primary-500 text-white rounded-r-md hover:bg-primary-600 transition-colors"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-              </button>
-              <button
-                type="button"
-                className="ml-2 p-2 text-gray-700 hover:text-primary-500 transition-colors"
-                onClick={() => setIsSearchOpen(false)}
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-              </button>
-            </form>
           </motion.div>
         )}
       </AnimatePresence>
