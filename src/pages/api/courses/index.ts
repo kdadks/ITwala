@@ -39,12 +39,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         resources,
         published_date,
         enrollments,
-        learning_outcomes,
-        requirements,
         instructor,
         tags,
         fees_discussed_post_enrollment,
-        modules
+        thumbnail
       `)
       .eq('status', 'published');
 
@@ -118,13 +116,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       resources: course.resources,
       publishedDate: course.published_date,
       enrollments: course.enrollments,
-      learningOutcomes: course.learning_outcomes,
-      requirements: course.requirements,
       instructor: course.instructor,
       tags: course.tags,
       feesDiscussedPostEnrollment: course.fees_discussed_post_enrollment,
-      modules: course.modules,
-      reviews: [] // Reviews will be fetched separately if needed
+      thumbnail: course.thumbnail
     })) || [];
 
     res.status(200).json({ courses: transformedCourses });

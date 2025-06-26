@@ -28,6 +28,12 @@ const CoursePage: NextPage = () => {
   const [isCheckingSettings, setIsCheckingSettings] = useState(true);
   const [shareUrl, setShareUrl] = useState('');
   const [copied, setCopied] = useState(false);
+  const [modules, setModules] = useState<any[] | null>(null);
+  const [faqs, setFaqs] = useState<any[] | null>(null);
+  const [reviews, setReviews] = useState<any[] | null>(null);
+  const [modulesLoading, setModulesLoading] = useState(false);
+  const [faqsLoading, setFaqsLoading] = useState(false);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -91,6 +97,15 @@ const CoursePage: NextPage = () => {
 
     fetchCourse();
   }, [slug]);
+
+  useEffect(() => {
+    if (!course) return;
+    // Lazy load modules, faqs, reviews in parallel
+    setModulesLoading(true); setFaqsLoading(true); setReviewsLoading(true);
+    fetch(`/api/courses/${course.slug}/modules`).then(r => r.json()).then(d => setModules(d.modules || [])).finally(() => setModulesLoading(false));
+    fetch(`/api/courses/${course.slug}/faqs`).then(r => r.json()).then(d => setFaqs(d.faqs || [])).finally(() => setFaqsLoading(false));
+    fetch(`/api/courses/${course.slug}/reviews`).then(r => r.json()).then(d => setReviews(d.reviews || [])).finally(() => setReviewsLoading(false));
+  }, [course]);
 
   const getFacebookShareUrl = () =>
     `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
@@ -231,16 +246,18 @@ const CoursePage: NextPage = () => {
                         ))}
                       </ul>
                     </div>
-                    {course.modules && course.modules.length > 0 && (
+                    {modulesLoading ? (
+                      <div className="h-24 bg-gray-100 animate-pulse rounded mb-4" />
+                    ) : modules && modules.length > 0 && (
                       <div>
                         <h3 className="text-lg font-semibold mb-2">Course Modules</h3>
                         <div className="space-y-2">
-                          {course.modules.map((module, index) => (
+                          {modules.map((module, index) => (
                             <div key={module.id} className="border rounded-lg p-4">
                               <h4 className="font-medium">{index + 1}. {module.title}</h4>
                               <p className="text-gray-600 text-sm mt-1">{module.description}</p>
                               <p className="text-sm text-gray-500 mt-2">
-                                {module.lessons.length} lessons
+                                {module.lessons?.length || 0} lessons
                               </p>
                             </div>
                           ))}
@@ -249,16 +266,37 @@ const CoursePage: NextPage = () => {
                     )}
                   </div>
                 </div>
-                
                 {/* FAQ Section */}
-                {course.faqs && course.faqs.length > 0 && (
+                {faqsLoading ? (
+                  <div className="h-24 bg-gray-100 animate-pulse rounded mb-4" />
+                ) : faqs && faqs.length > 0 && (
                   <div className="bg-white rounded-lg shadow-md p-6">
                     <h2 className="text-2xl font-bold mb-4">Frequently Asked Questions</h2>
                     <div className="space-y-4">
-                      {course.faqs.map((faq, index) => (
+                      {faqs.map((faq, index) => (
                         <div key={index} className="border-b pb-4">
                           <h3 className="font-semibold mb-2">{faq.question}</h3>
                           <p className="text-gray-700">{faq.answer}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {/* Reviews Section */}
+                {reviewsLoading ? (
+                  <div className="h-24 bg-gray-100 animate-pulse rounded mb-4" />
+                ) : reviews && reviews.length > 0 && (
+                  <div className="bg-white rounded-lg shadow-md p-6">
+                    <h2 className="text-2xl font-bold mb-4">Student Reviews</h2>
+                    <div className="space-y-4">
+                      {reviews.map((review, index) => (
+                        <div key={review.id} className="border-b pb-4">
+                          <div className="flex items-center mb-2">
+                            <span className="font-semibold text-gray-900 mr-2">{review.user}</span>
+                            <span className="text-yellow-500">{'★'.repeat(review.rating)}</span>
+                            <span className="ml-2 text-xs text-gray-500">{review.date}</span>
+                          </div>
+                          <p className="text-gray-700">{review.comment}</p>
                         </div>
                       ))}
                     </div>
