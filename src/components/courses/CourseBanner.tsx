@@ -8,6 +8,7 @@ interface Course {
   level: string;
   price: number;
   image: string;
+  feesDiscussedPostEnrollment?: boolean;
 }
 
 interface CourseBannerProps {
@@ -54,8 +55,14 @@ const CourseBanner: React.FC<CourseBannerProps> = ({
               <p className="text-white font-medium">{course.level}</p>
             </div>
             <div>
-              <p className="text-gray-400 text-sm">Price</p>
-              <p className="text-white font-medium">₹{course.price.toLocaleString()}</p>
+              <p className="text-gray-400 text-sm">Registration Fee</p>
+              {course.feesDiscussedPostEnrollment ? (
+                <p className="text-yellow-400 font-medium text-sm">
+                  Tuition fees will be discussed post enrollment
+                </p>
+              ) : (
+                <p className="text-white font-medium">₹{course.price.toLocaleString()}</p>
+              )}
             </div>
           </div>
 

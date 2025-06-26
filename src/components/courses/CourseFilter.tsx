@@ -72,7 +72,7 @@ const CourseFilter: React.FC<CourseFilterProps> = ({
 
       {/* Price Range Filter */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-3">Price Range (₹)</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-3">Registration Fee Range (₹)</h3>
         <div className="flex items-center gap-2">
           <input
             type="number"

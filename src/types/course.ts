@@ -64,4 +64,5 @@ export interface Course {
     question: string;
     answer: string;
   }>;
+  feesDiscussedPostEnrollment?: boolean;
 }

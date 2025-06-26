@@ -38,12 +38,14 @@ interface CourseFormData {
   }>;
 }
 
-const CreateCourse: NextPage = () => {
+const EditCourse: NextPage = () => {
   const router = useRouter();
+  const { slug } = router.query;
   const supabase = useSupabaseClient();
   const user = useUser();
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [courseId, setCourseId] = useState<string>('');
   const [formData, setFormData] = useState<CourseFormData>({
     title: '',
     slug: '',
@@ -75,31 +77,76 @@ const CreateCourse: NextPage = () => {
   const [selectedModuleIndex, setSelectedModuleIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    const checkAdmin = async () => {
-      if (!user) return;
+    const checkAdminAndFetchCourse = async () => {
+      if (!user || !slug) return;
 
       try {
-        const { data, error } = await supabase
+        // Check admin status
+        const { data: profileData, error: profileError } = await supabase
           .from('profiles')
           .select('role')
           .eq('id', user.id)
           .single();
 
-        if (error) throw error;
+        if (profileError) throw profileError;
 
-        if (data.role !== 'admin') {
+        if (profileData.role !== 'admin') {
           router.push('/dashboard');
+          return;
         }
-      } catch (error) {
-        console.error('Error checking admin status:', error);
-        router.push('/dashboard');
+
+        // Fetch course data
+        console.log('Fetching course with slug:', slug);
+        const { data: courseData, error: courseError } = await supabase
+          .from('courses')
+          .select('*')
+          .eq('slug', slug)
+          .single();
+
+        console.log('Fetched course data:', courseData);
+        console.log('Course fetch error:', courseError);
+
+        if (courseError) throw courseError;
+
+        if (!courseData) {
+          toast.error('Course not found');
+          router.push('/admin/courses');
+          return;
+        }
+
+        // Populate form with course data
+        setCourseId(courseData.id);
+        setFormData({
+          title: courseData.title || '',
+          slug: courseData.slug || '',
+          description: courseData.description || '',
+          category: courseData.category || '',
+          image: courseData.image || '',
+          price: courseData.price || 0,
+          original_price: courseData.original_price || 0,
+          level: courseData.level || 'Beginner',
+          duration: courseData.duration || '',
+          status: courseData.status || 'draft',
+          learning_outcomes: courseData.learning_outcomes || [],
+          requirements: courseData.requirements || [],
+          tags: courseData.tags || [],
+          language: courseData.language || 'English',
+          certification_included: courseData.certification_included || false,
+          fees_discussed_post_enrollment: courseData.fees_discussed_post_enrollment || false,
+          modules: courseData.modules || []
+        });
+
+      } catch (error: any) {
+        console.error('Error:', error);
+        toast.error(error.message || 'Failed to load course');
+        router.push('/admin/courses');
       } finally {
         setIsLoading(false);
       }
     };
 
-    checkAdmin();
-  }, [user, supabase, router]);
+    checkAdminAndFetchCourse();
+  }, [user, slug, supabase, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -114,14 +161,6 @@ const CreateCourse: NextPage = () => {
       setFormData(prev => ({
         ...prev,
         [name]: value
-      }));
-    }
-
-    // Auto-generate slug from title
-    if (name === 'title') {
-      setFormData(prev => ({
-        ...prev,
-        slug: value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
       }));
     }
   };
@@ -215,8 +254,8 @@ const CreateCourse: NextPage = () => {
       
       setFormData(prev => ({
         ...prev,
-        modules: prev.modules.map((module, index) => 
-          index === selectedModuleIndex 
+        modules: prev.modules.map((module, index) =>
+          index === selectedModuleIndex
             ? { ...module, lessons: [...module.lessons, newLesson] }
             : module
         )
@@ -228,8 +267,8 @@ const CreateCourse: NextPage = () => {
   const handleRemoveLesson = (moduleIndex: number, lessonIndex: number) => {
     setFormData(prev => ({
       ...prev,
-      modules: prev.modules.map((module, index) => 
-        index === moduleIndex 
+      modules: prev.modules.map((module, index) =>
+        index === moduleIndex
           ? { ...module, lessons: module.lessons.filter((_, i) => i !== lessonIndex) }
           : module
       )
@@ -271,8 +310,15 @@ const CreateCourse: NextPage = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/admin/courses/create', {
-        method: 'POST',
+      console.log('Updating course with data:', {
+        id: courseId,
+        title: formData.title,
+        fees_discussed_post_enrollment: formData.fees_discussed_post_enrollment,
+        modules: formData.modules
+      });
+
+      const response = await fetch(`/api/admin/courses/${courseId}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -299,15 +345,25 @@ const CreateCourse: NextPage = () => {
 
       const result = await response.json();
 
+      console.log('Update result:', { response: response.status, result });
+
       if (!response.ok) {
-        throw new Error(result.error || 'Failed to create course');
+        throw new Error(result.error || 'Failed to update course');
       }
 
-      toast.success('Course created successfully');
-      router.push(`/admin/courses/edit/${result.course.slug}`);
+      toast.success('Course updated successfully');
+      router.push('/admin/courses');
     } catch (error: any) {
-      console.error('Error creating course:', error);
-      toast.error(error.message || 'Failed to create course');
+      console.error('Error updating course:', error);
+      
+      // More specific error messages
+      if (error.message?.includes('fees_discussed_post_enrollment')) {
+        toast.error('Database schema error: Please run the database migration first. Check the console for details.');
+      } else if (error.message?.includes('column') && error.message?.includes('does not exist')) {
+        toast.error('Database column missing. Please run the database migration.');
+      } else {
+        toast.error(error.message || 'Failed to update course');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -322,8 +378,8 @@ const CreateCourse: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Create New Course - ITwala Academy Admin</title>
-        <meta name="description" content="Create a new course on ITwala Academy." />
+        <title>Edit Course - ITwala Academy Admin</title>
+        <meta name="description" content="Edit course on ITwala Academy." />
       </Head>
 
       <div className="flex h-screen bg-gray-100">
@@ -335,9 +391,9 @@ const CreateCourse: NextPage = () => {
           <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
             <div className="max-w-4xl mx-auto">
               <div className="mb-8">
-                <h1 className="text-2xl font-bold text-gray-900">Create New Course</h1>
+                <h1 className="text-2xl font-bold text-gray-900">Edit Course</h1>
                 <p className="mt-2 text-sm text-gray-600">
-                  Fill in the course details below. You can add modules and lessons after creating the course.
+                  Update the course details below.
                 </p>
               </div>
 
@@ -758,8 +814,8 @@ const CreateCourse: NextPage = () => {
                                   type="button"
                                   onClick={() => setSelectedModuleIndex(moduleIndex)}
                                   className={`px-2 py-1 text-xs rounded ${
-                                    selectedModuleIndex === moduleIndex 
-                                      ? 'bg-primary-500 text-white' 
+                                    selectedModuleIndex === moduleIndex
+                                      ? 'bg-primary-500 text-white'
                                       : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                                   }`}
                                 >
@@ -843,14 +899,23 @@ const CreateCourse: NextPage = () => {
                     </div>
                   </div>
 
-                  <div className="flex justify-end">
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
-                    >
-                      {isSubmitting ? 'Creating...' : 'Create Course'}
-                    </button>
+                  <div className="pt-5">
+                    <div className="flex justify-end space-x-3">
+                      <button
+                        type="button"
+                        onClick={() => router.back()}
+                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="px-4 py-2 text-sm font-medium text-white bg-primary-500 border border-transparent rounded-md shadow-sm hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {isSubmitting ? 'Updating...' : 'Update Course'}
+                      </button>
+                    </div>
                   </div>
                 </form>
               </div>
@@ -862,4 +927,4 @@ const CreateCourse: NextPage = () => {
   );
 };
 
-export default CreateCourse;
+export default EditCourse;
