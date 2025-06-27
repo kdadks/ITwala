@@ -67,6 +67,7 @@ const Navbar = () => {
 
   const navItems = [
     { label: 'Home', href: '/' },
+    { label: 'Academy', href: '/academy' },
     { label: 'Courses', href: '/courses' },
     { label: 'Consulting', href: '/consulting' },
     { label: 'About', href: '/about' },

@@ -169,7 +169,7 @@ const WhyChooseUs: React.FC = () => {
                   
                   <div className="grid grid-cols-2 gap-4 text-center">
                     <div>
-                      <div className="text-2xl font-bold text-secondary-600">100+</div>
+                      <div className="text-2xl font-bold text-secondary-600">20+</div>
                       <div className="text-sm text-gray-600">Projects Delivered</div>
                     </div>
                     <div>

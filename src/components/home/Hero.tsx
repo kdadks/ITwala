@@ -37,10 +37,10 @@ const Hero = () => {
               Transform Your Future with IT Excellence
             </h1>
             <p className="text-sm sm:text-base md:text-lg font-semibold text-white mb-1 drop-shadow">
-              IT- Simple Hain | Let us shape your career
+              IT- Simple Hain | Let us shape your career & business
             </p>
             <p className="text-base sm:text-lg md:text-xl text-gray-100 mb-4 md:mb-6 max-w-2xl mx-auto px-2 drop-shadow">
-              Master cutting-edge technologies with industry experts and hands-on projects
+              Master cutting-edge technologies with industry experts and hands-on projects. Accelerate your business with our proven consulting solutions.
             </p>
           </motion.div>
 
@@ -61,14 +61,6 @@ const Hero = () => {
             <Link href="/courses">
               <div className="w-full sm:w-auto inline-flex items-center justify-center px-5 sm:px-7 py-2 text-sm sm:text-base font-semibold border-2 border-white text-white rounded-full bg-transparent hover:bg-white hover:text-primary-700 transition-all duration-300 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-200 focus:ring-offset-primary-900">
                 Browse Courses
-                <svg className="w-4 h-4 sm:w-5 sm:h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
-                </svg>
-              </div>
-            </Link>
-            <Link href="/consulting">
-              <div className="w-full sm:w-auto inline-flex items-center justify-center px-5 sm:px-7 py-2 text-sm sm:text-base font-semibold border-2 border-accent-200 text-accent-200 rounded-full bg-transparent hover:bg-accent-200 hover:text-primary-700 transition-all duration-300 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-200 focus:ring-offset-primary-900">
-                Browse Consulting
                 <svg className="w-4 h-4 sm:w-5 sm:h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
                 </svg>
@@ -98,7 +90,7 @@ const Hero = () => {
               <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-accent-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
-              <span>100% Job Ready</span>
+              <span>20+ Projects</span>
             </div>
           </motion.div>
         </div>

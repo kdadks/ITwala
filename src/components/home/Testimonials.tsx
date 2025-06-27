@@ -5,7 +5,7 @@ import { FaQuoteLeft, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 const testimonials = [
 	{
 		id: 1,
-		name: 'Rajesh Kumar',
+		name: 'Luke Smith',
 		role: 'Software Developer at TechCorp',
 		image:
 			'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
@@ -15,8 +15,8 @@ const testimonials = [
 	},
 	{
 		id: 2,
-		name: 'Priya Singh',
-		role: 'Product Manager at Flipkart',
+		name: 'Jenny Kim',
+		role: 'Product Manager at RealTech',
 		image:
 			'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
 		quote:
@@ -32,6 +32,16 @@ const testimonials = [
 		quote:
 			'The AI & Machine Learning Fundamentals course provided the perfect foundation for my career transition. I went from knowing basic Python to implementing complex AI models in just a few months.',
 		rating: 4,
+	},
+	{
+		id: 4,
+		name: 'Sonal Mehra',
+		role: 'Consultant, Digital Transformation',
+		image:
+			'https://images.pexels.com/photos/1130626/pexels-photo-1130626.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
+		quote:
+			"The consulting sessions with ITwala Consulting were invaluable for our business. Their expert advice on digital strategy and technology implementation helped us streamline operations and achieve measurable growth.",
+		rating: 5,
 	},
 ];
 

@@ -21,7 +21,7 @@ interface Stat {
 const stats: Stat[] = [
   {
     icon: <FaProjectDiagram className="w-8 h-8" />,
-    value: '100+',
+    value: '20+',
     label: 'Projects Delivered',
     description: 'Successfully completed projects across various industries',
     color: 'text-blue-600',

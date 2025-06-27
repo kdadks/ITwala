@@ -1,179 +1,185 @@
 import Link from 'next/link';
-import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaYoutube } from 'react-icons/fa';
+import { FaLinkedin, FaEnvelope, FaPhone, FaArrowUp } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
-    <footer className="bg-gradient-to-br from-primary-700 via-primary-600 to-secondary-700 text-white pt-12 md:pt-16 pb-8">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-          <div className="sm:col-span-2 lg:col-span-1">
-            <Link href="/">
-              <div className="flex items-center mb-3 md:mb-4">
-                <img
-                  src="/images/IT - WALA_logo (1).png"
-                  alt="ITwala Academy Logo"
-                  className="h-10 w-auto mr-3"
-                  style={{ maxWidth: 48 }}
-                />
-                <span className="text-xl font-bold text-white">ITwala Consulting & Academy</span>
+    <footer className="bg-gradient-to-br from-primary-700 via-primary-600 to-secondary-700 text-white relative">
+      {/* Scroll to Top Button */}
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-6 right-6 z-50 bg-primary-600 hover:bg-primary-700 text-white p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+          aria-label="Scroll to top"
+        >
+          <FaArrowUp className="w-4 h-4" />
+        </button>
+      )}
+
+      {/* Main Footer Content */}
+      <div className="container mx-auto px-4 py-8">
+        {/* Top Section - Company Info and Contact */}
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 mb-8">
+          {/* Company Info */}
+          <div className="flex flex-col lg:flex-row items-start lg:items-center gap-6">
+            <Link href="/" className="flex items-center space-x-3 group">
+              <img
+                src="/images/IT - WALA_logo (1).png"
+                alt="ITwala Academy Logo"
+                className="h-10 w-auto transition-transform group-hover:scale-105"
+              />
+              <div>
+                <span className="text-xl font-bold text-white">ITwala</span>
+                <p className="text-sm text-white font-medium">IT- Simple Hain</p>
               </div>
             </Link>
-            <h3 className="text-lg md:text-xl font-bold mb-3 md:mb-4 text-white">IT- Simple Hain</h3>
-            <p className="text-white mb-3 md:mb-4 text-sm md:text-base">
-              Let us shape your career
+            
+            <p className="text-white text-sm max-w-md">
+              Empowering professionals with cutting-edge AI and technology skills through comprehensive courses and expert consulting.
             </p>
-            <div className="flex space-x-4">
-              <a href="https://www.linkedin.com/company/it-wala.com"
-                 target="_blank"
-                 rel="noopener noreferrer"
-                 className="text-white hover:text-white transition-colors p-2 hover:bg-primary-800 rounded-lg">
-                <FaLinkedin className="w-5 h-5" />
+          </div>
+
+          {/* Contact & Social */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <div className="flex items-center gap-4 text-sm">
+              <a
+                href="mailto:sales@it-wala.com"
+                className="flex items-center space-x-2 text-white hover:text-white transition-colors duration-200"
+              >
+                <FaEnvelope className="w-4 h-4" />
+                <span>sales@it-wala.com</span>
+              </a>
+              <span className="hidden sm:inline text-white">|</span>
+              <a
+                href="tel:+917982303199"
+                className="flex items-center space-x-2 text-white hover:text-white transition-colors duration-200"
+              >
+                <FaPhone className="w-4 h-4" />
+                <span>+91 7982303199</span>
               </a>
             </div>
-          </div>
-          
-          <div>
-            <h3 className="text-base md:text-lg font-semibold mb-3 md:mb-4 text-white">Useful Links</h3>
-            <ul className="space-y-2 text-sm md:text-base">
-              <li>
-                <Link href="/about">
-                  <div className="text-white hover:text-primary-200 transition-colors py-1">About Us</div>
-                </Link>
-              </li>
-              <li>
-                <Link href="/courses">
-                  <div className="text-white hover:text-primary-200 transition-colors py-1">Courses</div>
-                </Link>
-              </li>
-              <li>
-                <Link href="/consulting">
-                  <div className="text-white hover:text-primary-200 transition-colors py-1">Consulting</div>
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact">
-                  <div className="text-white hover:text-primary-200 transition-colors py-1">Contact Us</div>
-                </Link>
-              </li>
-              <li>
-                <Link href="/privacy-policy">
-                  <div className="text-white hover:text-primary-200 transition-colors py-1">Privacy Policy</div>
-                </Link>
-              </li>
-              <li>
-                <Link href="/terms-of-service">
-                  <div className="text-white hover:text-primary-200 transition-colors py-1">Terms of Service</div>
-                </Link>
-              </li>
-            </ul>
-          </div>
-          
-          <div>
-            <h3 className="text-base md:text-lg font-semibold mb-3 md:mb-4 text-white">Course Categories</h3>
-            <ul className="space-y-2 text-sm md:text-base">
-              <li>
-                <Link href="/courses?category=prompt-engineering">
-                  <div className="text-white hover:text-primary-200 transition-colors py-1">Prompt Engineering</div>
-                </Link>
-              </li>
-              <li>
-                <Link href="/courses?category=agentic-ai">
-                  <div className="text-white hover:text-primary-200 transition-colors py-1">Agentic AI</div>
-                </Link>
-              </li>
-              <li>
-                <Link href="/courses?category=artificial-intelligence">
-                  <div className="text-white hover:text-primary-200 transition-colors py-1">Artificial Intelligence</div>
-                </Link>
-              </li>
-              <li>
-                <Link href="/courses?category=product-management">
-                  <div className="text-white hover:text-primary-200 transition-colors py-1">AI Product Management</div>
-                </Link>
-              </li>
-              <li>
-                <Link href="/courses?category=software-development">
-                  <div className="text-white hover:text-primary-200 transition-colors py-1">Software Development</div>
-                </Link>
-              </li>
-              <li>
-                <Link href="/courses?category=software-testing">
-                  <div className="text-white hover:text-primary-200 transition-colors py-1">AI Software Testing</div>
-                </Link>
-              </li>
-            </ul>
-          </div>
-          
-          <div className="sm:col-span-2 lg:col-span-1">
-            <h3 className="text-base md:text-lg font-semibold mb-3 md:mb-4 text-white">Contact Information</h3>
-            <ul className="space-y-3 text-sm md:text-base">
-              <li className="flex items-start">
-                <svg className="w-4 h-4 md:w-5 md:h-5 mr-2 mt-0.5 text-primary-200 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
-                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
-                </svg>
-                <a href="mailto:sales@it-wala.com" className="text-white hover:text-primary-200 transition-colors break-all">
-                  sales@it-wala.com
-                </a>
-              </li>
-              <li className="flex items-start">
-                <svg className="w-4 h-4 md:w-5 md:h-5 mr-2 mt-0.5 text-primary-200 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
-                </svg>
-                <a href="tel:+917982303199" className="text-white hover:text-primary-200 transition-colors">
-                  +91 7982303199
-                </a>
-              </li>
-              <li className="flex items-start">
-                <svg className="w-4 h-4 md:w-5 md:h-5 mr-2 mt-0.5 text-primary-200 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd"></path>
-                </svg>
-                <span className="text-white">
-                  Office Hours: 9 AM–5 PM
-                </span>
-              </li>
-            </ul>
-            
-            <h3 className="text-base md:text-lg font-semibold mt-6 mb-3 md:mb-4 text-white">Subscribe to Newsletter</h3>
-            <form className="flex flex-col sm:flex-row gap-2">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="py-2 px-3 rounded-md sm:rounded-l-md sm:rounded-r-none text-gray-900 flex-1 focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm md:text-base"
-              />
-              <button
-                type="submit"
-                className="bg-primary-500 hover:bg-primary-600 py-2 px-4 rounded-md sm:rounded-l-none sm:rounded-r-md text-white font-medium transition-colors text-sm md:text-base whitespace-nowrap"
-              >
-                Subscribe
-              </button>
-            </form>
+
+            <a
+              href="https://www.linkedin.com/company/it-wala.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-primary-800 hover:bg-primary-900 p-2 rounded-full transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary-400"
+              aria-label="Follow us on LinkedIn"
+            >
+              <FaLinkedin className="w-5 h-5" />
+            </a>
           </div>
         </div>
-        
-        <div className="mt-12 pt-8 border-t border-primary-800 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-white text-sm mb-4 md:mb-0">
+
+        {/* Links Section */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+          {/* Quick Links */}
+          <div>
+            <h3 className="font-semibold mb-3 text-white text-sm uppercase tracking-wide">
+              Quick Links
+            </h3>
+            <nav className="space-y-2">
+              {[{ href: '/about', label: 'About' }, { href: '/courses', label: 'Courses' }, { href: '/consulting', label: 'Consulting' }, { href: '/contact', label: 'Contact' }].map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="block text-white hover:text-primary-200 transition-colors duration-200 text-sm"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          {/* Course Categories */}
+          <div>
+            <h3 className="font-semibold mb-3 text-white text-sm uppercase tracking-wide">
+              Categories
+            </h3>
+            <nav className="space-y-2">
+              {[{ href: '/courses?category=artificial-intelligence', label: 'AI' }, { href: '/courses?category=agentic-ai', label: 'Agentic AI' }, { href: '/courses?category=prompt-engineering', label: 'Prompt Engineering' }, { href: '/courses?category=software-development', label: 'Development' }].map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="block text-white hover:text-primary-200 transition-colors duration-200 text-sm"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          {/* Services */}
+          <div>
+            <h3 className="font-semibold mb-3 text-white text-sm uppercase tracking-wide">
+              Services
+            </h3>
+            <nav className="space-y-2">
+              {[{ href: '/services/ai-solutions', label: 'AI Solutions' }, { href: '/services/digital-transformation', label: 'Digital Transform' }, { href: '/services/it-staffing', label: 'IT Staffing' }, { href: '/services/technical-consulting', label: 'Consulting' }].map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="block text-white hover:text-primary-200 transition-colors duration-200 text-sm"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          {/* Newsletter */}
+          <div>
+            <h3 className="font-semibold mb-3 text-white text-sm uppercase tracking-wide">
+              Stay Updated
+            </h3>
+            <div className="space-y-3">
+              <p className="text-white text-xs">Get course updates & insights</p>
+              <div className="flex flex-col gap-2">
+                <input
+                  type="email"
+                  placeholder="Your email"
+                  className="px-3 py-2 bg-primary-800 border border-primary-600 rounded text-white placeholder-primary-300 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent"
+                />
+                <button className="px-3 py-2 bg-secondary-600 hover:bg-secondary-700 text-white font-medium rounded text-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-secondary-400">
+                  Subscribe
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="pt-6 border-t border-primary-800 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-white text-xs text-center md:text-left">
             &copy; {currentYear} kdadks service private ltd. All rights reserved.
           </p>
-          <div className="flex space-x-6">
-            <Link href="/privacy-policy">
-              <div className="text-white hover:text-white text-sm transition-colors">
-                Privacy Policy
-              </div>
+          <nav className="flex flex-wrap justify-center md:justify-end gap-4 text-xs">
+            <Link href="/privacy-policy" className="text-white hover:text-primary-200 transition-colors duration-200">
+              Privacy Policy
             </Link>
-            <Link href="/terms-of-service">
-              <div className="text-white hover:text-white text-sm transition-colors">
-                Terms of Service
-              </div>
+            <Link href="/terms-of-service" className="text-white hover:text-primary-200 transition-colors duration-200">
+              Terms of Service
             </Link>
-            <Link href="/sitemap">
-              <div className="text-white hover:text-white text-sm transition-colors">
-                Sitemap
-              </div>
+            <Link href="/sitemap" className="text-white hover:text-primary-200 transition-colors duration-200">
+              Sitemap
             </Link>
-          </div>
+          </nav>
         </div>
       </div>
     </footer>

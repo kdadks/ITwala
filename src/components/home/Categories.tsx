@@ -52,7 +52,7 @@ const Categories = () => {
     <section className="py-12 md:py-16 bg-gray-50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-8 md:mb-12">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 md:mb-4 px-2">Explore Our Categories</h2>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 md:mb-4 px-2">Explore Our Course Categories</h2>
           <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto px-2">
             Discover specialized courses designed to advance your IT career and skills
           </p>

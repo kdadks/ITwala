@@ -1,6 +1,25 @@
+// (Component removed from home page, safe to delete or keep for future use)
+
 import { motion } from 'framer-motion';
-import { FaUserGraduate, FaLaptopCode, FaUsers, FaBriefcase } from 'react-icons/fa';
+import { FaUserGraduate, FaLaptopCode, FaUsers, FaBriefcase, FaProjectDiagram, FaTrophy } from 'react-icons/fa';
 import { allCourses as courseData } from '@/data/allCourses';
+
+const keyConsultingStats = [
+	{
+		icon: <FaProjectDiagram className="w-8 h-8" />,
+		value: '20+',
+		label: 'Projects Delivered',
+		color: 'from-blue-700 to-blue-700',
+		ring: 'ring-blue-500/30',
+	},
+	{
+		icon: <FaTrophy className="w-8 h-8" />,
+		value: '98%',
+		label: 'Client Satisfaction',
+		color: 'from-yellow-600 to-yellow-600',
+		ring: 'ring-yellow-500/30',
+	},
+];
 
 const stats = [
 	{
@@ -31,6 +50,7 @@ const stats = [
 		color: 'from-success-500 to-success-400',
 		ring: 'ring-success-500/30',
 	},
+	...keyConsultingStats,
 ];
 
 const Stats = () => {
