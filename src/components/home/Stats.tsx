@@ -2,81 +2,81 @@ import { motion } from 'framer-motion';
 import { FaUserGraduate, FaLaptopCode, FaUsers, FaBriefcase } from 'react-icons/fa';
 import { allCourses as courseData } from '@/data/allCourses';
 
+const stats = [
+	{
+		icon: <FaUserGraduate className="w-8 h-8" />,
+		value: '500+',
+		label: 'Students Enrolled',
+		color: 'from-primary-600 to-primary-600',
+		ring: 'ring-primary-500/30',
+	},
+	{
+		icon: <FaLaptopCode className="w-8 h-8" />,
+		value: `${courseData.length}+`,
+		label: 'Specialized Courses',
+		color: 'from-secondary-700 to-secondary-700',
+		ring: 'ring-secondary-500/30',
+	},
+	{
+		icon: <FaUsers className="w-8 h-8" />,
+		value: '20+',
+		label: 'Learning Tracks',
+		color: 'from-accent-700 to-accent-700',
+		ring: 'ring-accent-500/30',
+	},
+	{
+		icon: <FaBriefcase className="w-8 h-8" />,
+		value: '80%',
+		label: 'Job Placement Rate',
+		color: 'from-success-500 to-success-400',
+		ring: 'ring-success-500/30',
+	},
+];
+
 const Stats = () => {
-  const courseCount = courseData.length;
-  
-  return (
-    <section className="py-16 bg-gray-900 text-white">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Impact in Numbers</h2>
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-            Our commitment to quality education has made a real difference
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="bg-gray-800 rounded-lg p-8 text-center"
-          >
-            <div className="inline-flex items-center justify-center w-16 h-16 mb-6 bg-primary-600 text-white rounded-full">
-              <FaUserGraduate className="w-8 h-8" />
-            </div>
-            <div className="text-4xl font-bold mb-2">500+</div>
-            <div className="text-gray-400">Students Enrolled</div>
-          </motion.div>
-          
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1, duration: 0.5 }}
-            className="bg-gray-800 rounded-lg p-8 text-center"
-          >
-            <div className="inline-flex items-center justify-center w-16 h-16 mb-6 bg-secondary-500 text-white rounded-full">
-              <FaLaptopCode className="w-8 h-8" />
-            </div>
-            <div className="text-4xl font-bold mb-2">{courseCount}+</div>
-            <div className="text-gray-400">Specialized Courses</div>
-          </motion.div>
-          
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-            className="bg-gray-800 rounded-lg p-8 text-center"
-          >
-            <div className="inline-flex items-center justify-center w-16 h-16 mb-6 bg-accent-500 text-white rounded-full">
-              <FaUsers className="w-8 h-8" />
-            </div>
-            <div className="text-4xl font-bold mb-2">20+</div>
-            <div className="text-gray-400">Learning Tracks</div>
-          </motion.div>
-          
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-            className="bg-gray-800 rounded-lg p-8 text-center"
-          >
-            <div className="inline-flex items-center justify-center w-16 h-16 mb-6 bg-success-500 text-white rounded-full">
-              <FaBriefcase className="w-8 h-8" />
-            </div>
-            <div className="text-4xl font-bold mb-2">80%</div>
-            <div className="text-gray-400">Job Placement Rate</div>
-          </motion.div>
-        </div>
-
-
-      </div>
-    </section>
-  );
+	return (
+		<section className="py-20 bg-green-800 text-white">
+			<div className="container mx-auto px-4">
+				<div className="text-center mb-14">
+					<h2 className="text-4xl md:text-5xl font-extrabold mb-3 tracking-tight">
+						Impact in Numbers
+					</h2>
+					<p className="text-lg md:text-xl text-white-400 max-w-2xl mx-auto">
+						Our commitment to quality education has made a real difference
+					</p>
+				</div>
+				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+					{stats.map((stat, idx) => (
+						<motion.div
+							key={stat.label}
+							initial={{ opacity: 0, y: 30 }}
+							whileInView={{ opacity: 1, y: 0 }}
+							viewport={{ once: true }}
+							transition={{
+								delay: idx * 0.1,
+								duration: 0.6,
+								type: 'spring',
+							}}
+							className={`relative group bg-green-800 ${stat.ring} rounded-2xl p-8 shadow-xl overflow-hidden transition-transform transform hover:-translate-y-2 hover:shadow-2xl border border-green-700 hover:border-green-500 ring-1`}
+						>
+							<div className={`flex items-center justify-center w-16 h-16 mb-6 rounded-full bg-gradient-to-br ${stat.color} text-white shadow-lg border border-white/10 group-hover:scale-110 transition-transform`}>
+								{stat.icon}
+							</div>
+							<div className="text-5xl font-extrabold mb-2 drop-shadow-lg text-white">
+								{stat.value}
+							</div>
+							<div className="text-gray-100 text-lg font-medium tracking-wide">
+								{stat.label}
+							</div>
+							<div className="absolute -top-8 -right-8 opacity-10 text-white text-[7rem] pointer-events-none select-none">
+								{stat.icon}
+							</div>
+						</motion.div>
+					))}
+				</div>
+			</div>
+		</section>
+	);
 };
 
 export default Stats;

@@ -10,40 +10,40 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          50: '#f0f4fe',
-          100: '#e1e9fd',
-          200: '#c3d4fb',
-          300: '#a4bef9',
-          400: '#86a9f7',
-          500: '#4B6FA6', // Navy blue - trustworthy, professional education
-          600: '#3c5985',
-          700: '#2d4364',
-          800: '#1e2c42',
-          900: '#0f1621',
+          50: '#e8fbee',
+          100: '#c6f6d5',
+          200: '#9ae6b4',
+          300: '#68d391',
+          400: '#48bb78',
+          500: '#38a169', // Light green - new theme
+          600: '#2f855a',
+          700: '#276749',
+          800: '#22543d',
+          900: '#1c4532',
         },
         secondary: {
-          50: '#f4f7f9',
-          100: '#e9eff3',
-          200: '#d3dfe7',
-          300: '#bdcfdb',
-          400: '#a7bfcf',
-          500: '#7E57C2', // Purple - creativity and wisdom
-          600: '#65469b',
-          700: '#4c3474',
-          800: '#32234d',
-          900: '#191126',
+          50: '#f0fdf4',
+          100: '#dcfce7',
+          200: '#bbf7d0',
+          300: '#86efac',
+          400: '#4ade80',
+          500: '#22c55e', // Green accent
+          600: '#16a34a',
+          700: '#15803d',
+          800: '#166534',
+          900: '#14532d',
         },
         accent: {
-          50: '#fef5f3',
-          100: '#fdebe7',
-          200: '#fbd7cf',
-          300: '#f9c3b7',
-          400: '#f7af9f',
-          500: '#E65100', // Deep Orange - energy and enthusiasm
-          600: '#b84100',
-          700: '#8a3100',
-          800: '#5c2000',
-          900: '#2e1000',
+          50: '#f0fdf4',
+          100: '#dcfce7',
+          200: '#bbf7d0',
+          300: '#86efac',
+          400: '#4ade80',
+          500: '#22c55e', // Green accent
+          600: '#16a34a',
+          700: '#15803d',
+          800: '#166534',
+          900: '#14532d',
         },
         success: {
           500: '#2E7D32', // Forest green - growth and achievement
