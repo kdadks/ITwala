@@ -66,6 +66,14 @@ const Hero = () => {
                 </svg>
               </div>
             </Link>
+            <Link href="/consulting">
+              <div className="w-full sm:w-auto inline-flex items-center justify-center px-5 sm:px-7 py-2 text-sm sm:text-base font-semibold border-2 border-accent-200 text-accent-200 rounded-full bg-transparent hover:bg-accent-200 hover:text-primary-700 transition-all duration-300 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-200 focus:ring-offset-primary-900">
+                Browse Consulting
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+                </svg>
+              </div>
+            </Link>
           </motion.div>
 
           <motion.div

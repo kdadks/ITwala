@@ -56,21 +56,15 @@ const ContactInfo = () => {
             <div className="ml-4">
               <h3 className="text-lg font-medium text-gray-900">Office Locations</h3>
               <p className="mt-1 text-gray-600">
-                Dublin, Ireland
+                Ireland - Dublin
               </p>
               <p className="mt-1 text-gray-600">
-                Kent, United Kingdom
+                United Kingdom - London
               </p>
               <p className="mt-1 text-gray-600">
-                Lucknow, Uttar Pradesh, India
+                India - Bengaluru, Lucknow
               </p>
-              <p className="mt-1 text-gray-600">
-                Azamgarh, Uttar Pradesh, India
-              </p>
-              <p className="mt-1 text-gray-600">
-                Bangalore, Karnataka, India
-              </p>
-              <p className="mt-1 text-sm text-gray-500">Visit us at any of our offices</p>
+             
             </div>
           </div>
           

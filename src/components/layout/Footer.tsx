@@ -17,7 +17,7 @@ const Footer = () => {
                   className="h-10 w-auto mr-3"
                   style={{ maxWidth: 48 }}
                 />
-                <span className="text-xl font-bold text-white">ITwala Academy</span>
+                <span className="text-xl font-bold text-white">ITwala Consulting & Academy</span>
               </div>
             </Link>
             <h3 className="text-lg md:text-xl font-bold mb-3 md:mb-4 text-white">IT- Simple Hain</h3>
@@ -45,6 +45,11 @@ const Footer = () => {
               <li>
                 <Link href="/courses">
                   <div className="text-white hover:text-primary-200 transition-colors py-1">Courses</div>
+                </Link>
+              </li>
+              <li>
+                <Link href="/consulting">
+                  <div className="text-white hover:text-primary-200 transition-colors py-1">Consulting</div>
                 </Link>
               </li>
               <li>

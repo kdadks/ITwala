@@ -68,6 +68,7 @@ const Navbar = () => {
   const navItems = [
     { label: 'Home', href: '/' },
     { label: 'Courses', href: '/courses' },
+    { label: 'Consulting', href: '/consulting' },
     { label: 'About', href: '/about' },
     { label: 'Contact', href: '/contact' }
   ];
@@ -105,7 +106,7 @@ const Navbar = () => {
                     className="h-10 w-auto mr-3"
                     style={{ maxWidth: 48 }}
                   />
-                  <span className="text-xl font-bold text-primary-500">ITwala Academy</span>
+                  <span className="text-xl font-bold text-primary-500">ITwala </span>
                 </div>
                 <span className="text-xs md:text-sm text-primary-700 font-medium mt-1 ml-1 tracking-wide">IT- Simple Hain | Let us shape your career</span>
               </div>

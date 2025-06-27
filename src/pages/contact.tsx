@@ -6,6 +6,16 @@ import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import ContactInfo from '@/components/contact/ContactInfo';
 import Faqs from '@/components/contact/Faqs';
+import { courseData } from '@/data/courses';
+
+const consultingServices = [
+  "AI Powered Solutions",
+  "Digital Transformation",
+  "IT Staffing Partner",
+  "Product Strategy & Development",
+  "Technical Consulting",
+  "Training & Development"
+];
 
 interface ContactFormData {
   name: string;
@@ -13,11 +23,17 @@ interface ContactFormData {
   phone: string;
   subject: string;
   message: string;
+  service: string; // New field
+  courseName?: string; // New field for Academy
+  consultingType?: string; // New field for Consulting
 }
 
 const Contact: NextPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<ContactFormData>();
+  const [selectedService, setSelectedService] = useState('');
+  const { register, handleSubmit, reset, formState: { errors }, watch } = useForm<ContactFormData>();
+  const watchService = watch('service', selectedService);
+  const courseOptions = courseData.map(course => course.title).sort();
   
   const onSubmit = async (data: ContactFormData) => {
     setIsSubmitting(true);
@@ -30,7 +46,10 @@ const Contact: NextPage = () => {
         },
         body: JSON.stringify({
           ...data,
-          toEmail: 'sales@it-wala.com'
+          toEmail: 'sales@it-wala.com',
+          // Only send courseName or consultingType based on service
+          courseName: data.service === 'Academy' ? data.courseName : undefined,
+          consultingType: data.service === 'Consulting' ? data.consultingType : undefined,
         }),
       });
 
@@ -153,6 +172,56 @@ const Contact: NextPage = () => {
                       ></textarea>
                       {errors.message && <p className="mt-1 text-sm text-red-500">{errors.message.message}</p>}
                     </div>
+
+                    {/* New Services Dropdown */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label htmlFor="service" className="block text-sm font-medium text-gray-700 mb-1">Services *</label>
+                        <select
+                          id="service"
+                          className={`w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 ${errors.service ? 'border-red-500' : 'border-gray-300'}`}
+                          {...register('service', { required: 'Service is required' })}
+                        >
+                          <option value="">Select Service</option>
+                          <option value="Academy">Academy</option>
+                          <option value="Consulting">Consulting</option>
+                        </select>
+                        {errors.service && <p className="mt-1 text-sm text-red-500">{errors.service.message}</p>}
+                      </div>
+                      {/* Conditional Field */}
+                      {watchService === 'Academy' && (
+                        <div>
+                          <label htmlFor="courseName" className="block text-sm font-medium text-gray-700 mb-1">Course Name *</label>
+                          <select
+                            id="courseName"
+                            className={`w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 ${errors.courseName ? 'border-red-500' : 'border-gray-300'}`}
+                            {...register('courseName', { required: 'Course name is required' })}
+                          >
+                            <option value="">Select Course</option>
+                            {courseOptions.map(course => (
+                              <option key={course} value={course}>{course}</option>
+                            ))}
+                          </select>
+                          {errors.courseName && <p className="mt-1 text-sm text-red-500">{errors.courseName.message}</p>}
+                        </div>
+                      )}
+                      {watchService === 'Consulting' && (
+                        <div>
+                          <label htmlFor="consultingType" className="block text-sm font-medium text-gray-700 mb-1">Consulting Type *</label>
+                          <select
+                            id="consultingType"
+                            className={`w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 ${errors.consultingType ? 'border-red-500' : 'border-gray-300'}`}
+                            {...register('consultingType', { required: 'Consulting type is required' })}
+                          >
+                            <option value="">Select Consulting Service</option>
+                            {consultingServices.sort().map(service => (
+                              <option key={service} value={service}>{service}</option>
+                            ))}
+                          </select>
+                          {errors.consultingType && <p className="mt-1 text-sm text-red-500">{errors.consultingType.message}</p>}
+                        </div>
+                      )}
+                    </div>
                     
                     <div>
                       <button
@@ -178,7 +247,7 @@ const Contact: NextPage = () => {
               <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">Our Locations</h2>
               <div className="relative w-full h-[400px] rounded-lg overflow-hidden">
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3600.0429388584654!2d83.1859!3d26.0679!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3991ff77953e65d7%3A0x25ef082e2c5eea8e!2sCivil%20Lines%2C%20Azamgarh%2C%20Uttar%20Pradesh%20276001!5e0!3m2!1sen!2sin!4v1684637298945!5m2!1sen!2sin"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3559.817036747081!2d80.9461593150447!3d26.8466939831587!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x399be2b0b0b0b0b0%3A0x0!2sLucknow%2C%20Uttar%20Pradesh!5e0!3m2!1sen!2sin!4v1684637298945!5m2!1sen!2sin"
                   width="100%"
                   height="100%"
                   style={{ border: 0 }}
