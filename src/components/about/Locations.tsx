@@ -49,7 +49,7 @@ const Locations: React.FC = () => {
         >
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Learning Centers</h2>
           <p className="text-lg text-gray-600">
-            Visit our state-of-the-art learning centers equipped with modern facilities and experienced faculty
+            
           </p>
         </motion.div>
 

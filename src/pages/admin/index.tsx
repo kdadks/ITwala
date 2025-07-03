@@ -60,11 +60,22 @@ const Admin: NextPage = () => {
           setError('Access denied: User is not an admin');
         }
 
-        // Get debug info
-        const response = await fetch('/api/debug/admin-check');
-        const debugData = await response.json();
-        console.log('Debug info:', debugData);
-        setDebugInfo(debugData);
+        // Get debug info with auth token
+        try {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session?.access_token) {
+            const response = await fetch('/api/debug/admin-check', {
+              headers: {
+                'Authorization': `Bearer ${session.access_token}`
+              }
+            });
+            const debugData = await response.json();
+            console.log('Debug info:', debugData);
+            setDebugInfo(debugData);
+          }
+        } catch (debugError) {
+          console.error('Error fetching debug info:', debugError);
+        }
 
       } catch (error: any) {
         console.error('Admin check error:', error);

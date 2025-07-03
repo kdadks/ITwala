@@ -48,7 +48,7 @@ const CategoriesPage: NextPage = () => {
     });
 
     // Don't do anything while auth is loading
-    if (!user && authLoading) {
+    if (authLoading) {
       console.log('Still loading auth...');
       return;
     }
@@ -70,7 +70,7 @@ const CategoriesPage: NextPage = () => {
 
     console.log('Admin check passed, fetching categories');
     fetchCategories();
-  }, [user, isAdmin, authLoading, router, debugInfo]);
+  }, [user, isAdmin, authLoading, router]);
 
   const handleAddCategory = async (e: React.FormEvent) => {
     e.preventDefault();

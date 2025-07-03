@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 interface Profile {
   id: string;
   full_name?: string;
-  role: 'admin' | 'instructor' | 'user' | 'student';
+  role: 'admin' | 'instructor' | 'student';
   email: string;
   avatar_url?: string;
   bio?: string;
@@ -89,15 +89,45 @@ export const useAuth = (): UseAuthReturn => {
           .upsert({
             id: user.id,
             email: user.email,
-            full_name: user.user_metadata?.full_name || 'User',
-            role: (isAdminEmail || isMetadataAdmin) ? 'admin' : 'user',
-            created_at: new Date().toISOString()
+            full_name: user.user_metadata?.full_name || user.email || 'User',
+            role: (isAdminEmail || isMetadataAdmin) ? 'admin' : 'student',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
           })
           .select()
           .single();
 
-        if (createError) throw createError;
+        if (createError) {
+          console.error('Error creating profile:', createError);
+          throw createError;
+        }
         currentProfile = newProfile;
+        console.log('Profile created successfully:', currentProfile);
+      }
+
+      // Ensure the profile has a valid role
+      if (!currentProfile.role || currentProfile.role === 'user') {
+        console.log('Updating profile role to student...');
+        const isAdminEmail = user.email === 'admin@itwala.com';
+        const isMetadataAdmin = user.user_metadata?.role === 'admin';
+        const newRole = (isAdminEmail || isMetadataAdmin) ? 'admin' : 'student';
+        
+        const { data: updatedProfile, error: updateError } = await supabase
+          .from('profiles')
+          .update({
+            role: newRole,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', user.id)
+          .select()
+          .single();
+
+        if (updateError) {
+          console.error('Error updating profile role:', updateError);
+        } else {
+          currentProfile = updatedProfile;
+          console.log('Profile role updated to:', newRole);
+        }
       }
 
       // Set states based on profile and metadata
@@ -112,10 +142,21 @@ export const useAuth = (): UseAuthReturn => {
         userMetadata: user.user_metadata
       });
 
-      // Fetch debug info
-      const response = await fetch('/api/debug/admin-check');
-      const debugData = await response.json();
-      setDebugInfo(debugData);
+      // Fetch debug info with auth token
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.access_token) {
+          const response = await fetch('/api/debug/admin-check', {
+            headers: {
+              'Authorization': `Bearer ${session.access_token}`
+            }
+          });
+          const debugData = await response.json();
+          setDebugInfo(debugData);
+        }
+      } catch (debugError) {
+        console.error('Error fetching debug info:', debugError);
+      }
         
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -127,7 +168,7 @@ export const useAuth = (): UseAuthReturn => {
 
   useEffect(() => {
     fetchProfile();
-  }, [user, supabase]);
+  }, [user?.id]); // Only depend on user.id to avoid infinite loops
 
   const signOut = async () => {
     try {

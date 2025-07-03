@@ -6,6 +6,7 @@ import Categories from '@/components/home/Categories';
 import Testimonials from '@/components/home/Testimonials';
 import CtaSection from '@/components/home/CtaSection';
 import Stats from '@/components/home/Stats';
+import Locations from '@/components/about/Locations';
 import { motion } from 'framer-motion';
 
 const Academy: NextPage = () => {
@@ -68,6 +69,15 @@ const Academy: NextPage = () => {
           transition={{ delay: 0.6, duration: 0.5 }}
         >
           <CtaSection />
+        </motion.div>
+        
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.7, duration: 0.5 }}
+        >
+          <Locations />
         </motion.div>
       </main>
     </>

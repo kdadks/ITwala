@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import { useUser, useSupabaseClient } from '@supabase/auth-helpers-react';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useAuth } from '@/hooks/useAuth';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import EnrolledCourses from '@/components/dashboard/EnrolledCourses';
 import UpcomingSessions from '@/components/dashboard/UpcomingSessions';
@@ -13,37 +14,7 @@ import RecentActivity from '@/components/dashboard/RecentActivity';
 
 const Dashboard: NextPage = () => {
   const router = useRouter();
-  const user = useUser();
-  const supabaseClient = useSupabaseClient();
-  const [isLoading, setIsLoading] = useState(true);
-  const [userData, setUserData] = useState<any>(null);
-
-  useEffect(() => {
-    const checkUser = async () => {
-      if (!user) {
-        return;
-      }
-
-      try {
-        // In a real app, you would fetch the user's data from your database
-        // This is just mock data for demonstration
-        setUserData({
-          id: user.id,
-          name: user.user_metadata?.full_name || 'Student',
-          email: user.email,
-          enrolledCourses: 3,
-          completedCourses: 1,
-          totalProgress: 35,
-        });
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkUser();
-  }, [user, supabaseClient]);
+  const { user, profile, isLoading } = useAuth();
 
   useEffect(() => {
     if (!user && !isLoading) {
@@ -67,7 +38,10 @@ const Dashboard: NextPage = () => {
       </Head>
 
       <main className="bg-gray-50 min-h-screen pb-12">
-        <DashboardHeader />
+        <DashboardHeader userData={{
+          name: profile?.full_name || user?.user_metadata?.full_name || 'Student',
+          email: user?.email
+        }} />
         
         <div className="container mx-auto px-4 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createPagesServerClient } from '@supabase/auth-helpers-nextjs';
 import { supabaseAdmin } from '@/lib/supabaseClient';
+import { createTransport } from 'nodemailer';
 
 export default async function handler(
   req: NextApiRequest,
@@ -111,34 +112,94 @@ export default async function handler(
     }
 
     // The database trigger will automatically assign the 'student' role
-    // But let's also verify the user's profile was updated
+    // But let's also manually ensure the user gets the student role
+    const { data: currentProfile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', userId)
+      .single();
+
+    // If user doesn't have admin or instructor role, update to student
+    if (currentProfile && !['admin', 'instructor'].includes(currentProfile.role)) {
+      await supabase
+        .from('profiles')
+        .update({ role: 'student' })
+        .eq('id', userId);
+    }
+
+    // Get updated profile
     const { data: updatedProfile } = await supabase
       .from('profiles')
       .select('role')
       .eq('id', userId)
       .single();
 
-    // Send enrollment notification email
+    // Send enrollment notification email directly
     try {
-      const notificationResponse = await fetch(`${req.headers.origin}/api/enrollment/notify`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      console.log('Sending enrollment notification emails...');
+      
+      // Create a transporter using SMTP
+      const transporter = createTransport({
+        host: 'smtp.hostinger.com',
+        port: 465,
+        secure: true,
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
         },
-        body: JSON.stringify({
-          userId,
-          courseId,
-          name: userDetails?.name || session.user.user_metadata?.full_name || session.user.email,
-          email: session.user.email,
-          phone: userDetails?.phone
-        }),
       });
 
-      if (!notificationResponse.ok) {
-        console.error('Failed to send enrollment notification');
-      }
+      const studentName = userDetails?.name || session.user.user_metadata?.full_name || session.user.email;
+      const studentEmail = session.user.email;
+      const studentPhone = userDetails?.phone;
+
+      console.log('Sending email to admin...');
+      // Send email to admin
+      await transporter.sendMail({
+        from: process.env.SMTP_FROM || 'sales@it-wala.com',
+        to: 'sales@it-wala.com',
+        subject: `New Course Enrollment: ${course.title}`,
+        html: `
+          <h2>New Course Enrollment</h2>
+          <p><strong>Course:</strong> ${course.title}</p>
+          <p><strong>Student Name:</strong> ${studentName}</p>
+          <p><strong>Student Email:</strong> ${studentEmail}</p>
+          <p><strong>Student Phone:</strong> ${studentPhone || 'Not provided'}</p>
+          <p><strong>Course Price:</strong> ₹${course.price}</p>
+          <p><strong>Enrollment Date:</strong> ${new Date().toLocaleString()}</p>
+        `,
+      });
+
+      console.log('Sending confirmation email to student...');
+      // Send confirmation email to student
+      await transporter.sendMail({
+        from: process.env.SMTP_FROM || 'sales@it-wala.com',
+        to: studentEmail,
+        subject: `Enrollment Confirmation: ${course.title}`,
+        html: `
+          <h2>Enrollment Confirmation</h2>
+          <p>Dear ${studentName},</p>
+          <p>Thank you for enrolling in <strong>${course.title}</strong>.</p>
+          <p>${course.description}</p>
+          <p>Our team will contact you shortly with further details about the course schedule and payment options.</p>
+          <p>If you have any questions, please contact us at sales@it-wala.com or call +91 7982303199.</p>
+          <p>Best regards,<br>ITwala Academy Team</p>
+        `,
+      });
+
+      console.log('✅ Enrollment notification emails sent successfully');
     } catch (emailError) {
-      console.error('Email notification error:', emailError);
+      console.error('❌ Email notification error:', emailError);
+      
+      // More detailed error logging
+      if (emailError.code === 'EAUTH') {
+        console.error('Authentication error - check SMTP_USER and SMTP_PASS');
+      } else if (emailError.code === 'ESOCKET') {
+        console.error('Socket error - check SMTP host and port');
+      } else if (emailError.code === 'EENVELOPE') {
+        console.error('Envelope error - check from/to email addresses');
+      }
+      
       // Don't fail enrollment if email fails
     }
 

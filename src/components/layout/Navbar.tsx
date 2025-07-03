@@ -109,7 +109,7 @@ const Navbar = () => {
                   />
                   <span className="text-xl font-bold text-primary-500">ITwala </span>
                 </div>
-                <span className="text-xs md:text-sm text-primary-700 font-medium mt-1 ml-1 tracking-wide">IT- Simple Hain | Let us shape your career</span>
+                <span className="text-xs md:text-sm text-primary-700 font-medium mt-1 ml-1 tracking-wide">IT- Simple Hain</span>
               </div>
             </Link>
           </div>

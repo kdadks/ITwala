@@ -11,20 +11,20 @@ interface MissionCard {
 const missionCards: MissionCard[] = [
   {
     title: "Our Mission",
-    description: "Driving innovation through education. At IT-Wala Academy, we believe in transforming aspiring technologists into industry-ready professionals through cutting-edge training and real-world project experience.",
+    description: "Driving innovation through education and consulting. At ITwala, we transform aspiring technologists into industry-ready professionals while delivering cutting-edge business solutions to organizations worldwide.",
     icon: "🎯",
     color: "from-primary-50 to-primary-100"
   },
   {
-    title: "Innovation at Core",
-    description: "We stay at the forefront of technology, incorporating the latest industry trends and innovative teaching methods into our curriculum. Our students learn to think creatively and solve real-world problems using modern technologies.",
-    icon: "💡",
+    title: "Comprehensive Solutions",
+    description: "We offer a unique dual approach: world-class IT education through our Academy and professional consulting services including AI solutions, digital transformation, and product development for businesses of all sizes.",
+    icon: "🏢",
     color: "from-secondary-50 to-secondary-100"
   },
   {
-    title: "Real-World Experience",
-    description: "Our unique advantage lies in our integration with active software development projects. Students work on live projects, gaining invaluable hands-on experience and developing professional skills that set them apart in the tech industry.",
-    icon: "💼",
+    title: "Real-World Integration",
+    description: "Our Academy students benefit from our active consulting projects, gaining hands-on experience with live business applications. Meanwhile, our consulting clients access top-tier talent and proven methodologies developed through years of industry experience.",
+    icon: "🔗",
     color: "from-accent-50 to-accent-100"
   }
 ];
@@ -47,10 +47,10 @@ const CompanyMission: React.FC = () => {
           className="max-w-4xl mx-auto text-center mb-12"
         >
           <h2 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent mb-4">
-            Transforming IT Education in India
+            Transforming IT Education & Business Solutions
           </h2>
           <p className="text-lg text-gray-600">
-            We're on a mission to make quality IT education accessible and practical
+            We're on a mission to make quality IT education accessible while delivering innovative business solutions
           </p>
         </motion.div>
 

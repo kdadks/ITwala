@@ -10,7 +10,7 @@ interface DashboardHeaderProps {
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({ userData }) => {
   const user = useUser();
-  const displayName = userData?.name || user?.email || 'Student';
+  const displayName = userData?.name || user?.user_metadata?.full_name || user?.email || 'Student';
 
   return (
     <motion.div

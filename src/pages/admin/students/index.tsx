@@ -54,7 +54,7 @@ const StudentsPage: NextPage = () => {
             )
           )
         `)
-        .eq('role', 'user')
+        .eq('role', 'student')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
