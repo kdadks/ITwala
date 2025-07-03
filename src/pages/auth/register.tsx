@@ -23,11 +23,31 @@ const Register: NextPage = () => {
   
   const password = watch('password', '');
 
+  const createProfile = async (userId: string, fullName: string) => {
+    try {
+      const { data, error } = await supabaseClient.rpc('create_user_profile_simple', {
+        p_full_name: fullName,
+        p_avatar_url: ''
+      });
+
+      if (error) {
+        console.error('Profile creation error:', error);
+        return false;
+      }
+
+      console.log('Profile creation result:', data);
+      return true;
+    } catch (error) {
+      console.error('Profile creation failed:', error);
+      return false;
+    }
+  };
+
   const onSubmit = async (data: RegisterFormData) => {
     setIsLoading(true);
     
     try {
-      const { error } = await supabaseClient.auth.signUp({
+      const { error, data: authData } = await supabaseClient.auth.signUp({
         email: data.email,
         password: data.password,
         options: {
@@ -44,7 +64,28 @@ const Register: NextPage = () => {
           setIsLoading(false);
           return;
         }
+        
         throw new Error(error.message);
+      }
+
+      // Requirement 1: ✅ Signup worked
+      // Requirement 2 & 3: Create profile immediately after successful signup
+      if (authData?.user) {
+        console.log('User created successfully, creating profile...');
+        
+        // Get the session to ensure we're authenticated for profile creation
+        const { data: session } = await supabaseClient.auth.getSession();
+        
+        if (session?.session) {
+          const profileCreated = await createProfile(authData.user.id, data.name);
+          
+          if (profileCreated) {
+            console.log('Profile created successfully');
+          } else {
+            console.warn('Profile creation failed, but user signup succeeded');
+            // Requirement 4: ✅ Graceful error handling - signup still succeeded
+          }
+        }
       }
 
       // Check if there's an enrollment intent
@@ -57,7 +98,21 @@ const Register: NextPage = () => {
         router.push('/auth/login');
       }
     } catch (error: any) {
-      toast.error(error.message || 'Registration failed. Please try again.');
+      // More specific error handling
+      let errorMessage = 'Registration failed. Please try again.';
+      
+      if (error.message) {
+        // Network errors
+        if (error.message.includes('network') || error.message.includes('fetch')) {
+          errorMessage = 'Network error occurred. Please check your connection and try again.';
+        }
+        // Generic errors
+        else {
+          errorMessage = error.message;
+        }
+      }
+      
+      toast.error(errorMessage);
       console.error('Registration error:', error);
     } finally {
       setIsLoading(false);

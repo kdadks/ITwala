@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-const WhatsAppButton: React.FC = () => {
+const WhatsAppButton: React.FC<{ positionClass?: string }> = ({ positionClass }) => {
   const phoneNumber = '917982303199';
   const message = encodeURIComponent('Hi, I am interested in IT-Wala Academy courses.');
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
@@ -15,7 +15,7 @@ const WhatsAppButton: React.FC = () => {
       animate={{ scale: 1, opacity: 1 }}
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}
-      className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 bg-green-500 text-white p-3 sm:p-4 rounded-full shadow-lg z-50 flex items-center justify-center hover:bg-green-600 transition-all duration-300 touch-manipulation"
+      className={`${positionClass || 'fixed bottom-4 right-4 sm:bottom-6 sm:right-6'} bg-green-500 text-white p-3 sm:p-4 rounded-full shadow-lg z-50 flex items-center justify-center hover:bg-green-600 transition-all duration-300 touch-manipulation`}
       aria-label="Contact us on WhatsApp"
     >
       <svg

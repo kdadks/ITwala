@@ -142,7 +142,7 @@ const DigitalTransformation: NextPage = () => {
                   </div>
 
                   <div className="bg-white rounded-lg p-6 mb-6">
-                    <h4 className="text-lg font-semibold text-gray-900 mb-4">Transformation Timeline</h4>
+                    <h4 className="text-lg font-semibold text-gray-900 mb-4">Transformation Timeline (Directional)</h4>
                     <div className="space-y-3">
                       <div className="flex justify-between">
                         <span className="text-gray-600">Assessment & Planning</span>

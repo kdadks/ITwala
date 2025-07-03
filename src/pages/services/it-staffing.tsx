@@ -135,14 +135,14 @@ const ITStaffing: NextPage = () => {
                       <div className="grid grid-cols-2 gap-2">
                         <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">Tech Leads</span>
                         <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">Engineering Managers</span>
-                        <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">CTOs</span>
+                        <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">Delivery Directors</span>
                         <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">Product Managers</span>
                       </div>
                     </div>
                   </div>
 
                   <div className="bg-white rounded-lg p-6 mb-6">
-                    <h4 className="text-lg font-semibold text-gray-900 mb-4">Hiring Process</h4>
+                    <h4 className="text-lg font-semibold text-gray-900 mb-4">Hiring Process (Directional)</h4>
                     <div className="space-y-3">
                       <div className="flex justify-between">
                         <span className="text-gray-600">Requirements Analysis</span>

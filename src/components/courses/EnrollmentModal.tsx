@@ -22,6 +22,9 @@ const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ isOpen, onClose, cour
   const [isLoading, setIsLoading] = useState(false);
   const [enrollmentsEnabled, setEnrollmentsEnabled] = useState(true);
   const [isCheckingSettings, setIsCheckingSettings] = useState(true);
+  const [hasExistingProfile, setHasExistingProfile] = useState(false);
+  const [isCheckingProfile, setIsCheckingProfile] = useState(true);
+  const [showDirectEnrollment, setShowDirectEnrollment] = useState(false);
   const supabase = useSupabaseClient();
   const user = useUser();
   const router = useRouter();
@@ -65,6 +68,71 @@ const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ isOpen, onClose, cour
       checkEnrollmentSettings();
     }
   }, [isOpen, onClose]);
+
+  // Check if user has previously enrolled in any course and has complete profile
+  useEffect(() => {
+    const checkUserEnrollmentHistory = async () => {
+      if (!isOpen || !user) {
+        setIsCheckingProfile(false);
+        return;
+      }
+
+      try {
+        setIsCheckingProfile(true);
+        
+        // Check if user has any previous enrollments
+        const { data: enrollments, error: enrollmentError } = await supabase
+          .from('enrollments')
+          .select('id')
+          .eq('user_id', user.id)
+          .limit(1);
+
+        if (enrollmentError) {
+          console.error('Error checking enrollments:', enrollmentError);
+          setHasExistingProfile(false);
+          setIsCheckingProfile(false);
+          return;
+        }
+
+        // If user has previous enrollments, check if profile has complete info
+        if (enrollments && enrollments.length > 0) {
+          const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('full_name, phone, address_line1, city, state, country, pincode, highest_qualification')
+            .eq('id', user.id)
+            .single();
+
+          if (profileError) {
+            console.error('Error fetching profile:', profileError);
+            setHasExistingProfile(false);
+          } else {
+            // Check if profile has essential information for direct enrollment
+            const hasCompleteProfile = profile &&
+              profile.full_name &&
+              profile.phone &&
+              profile.address_line1 &&
+              profile.city &&
+              profile.state;
+
+            setHasExistingProfile(!!hasCompleteProfile);
+            
+            if (hasCompleteProfile) {
+              setShowDirectEnrollment(true);
+            }
+          }
+        } else {
+          setHasExistingProfile(false);
+        }
+      } catch (error) {
+        console.error('Error checking user enrollment history:', error);
+        setHasExistingProfile(false);
+      } finally {
+        setIsCheckingProfile(false);
+      }
+    };
+
+    checkUserEnrollmentHistory();
+  }, [isOpen, user?.id, supabase]);
 
   // Indian states list
   const indianStates = [
@@ -227,6 +295,50 @@ const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ isOpen, onClose, cour
     return cityMap[state] || [];
   };
 
+  // Handle direct enrollment for users with existing profile
+  const handleDirectEnrollment = async () => {
+    setIsLoading(true);
+
+    try {
+      // Check if enrollments are enabled
+      const settings = await getSiteSettings();
+      if (!settings.enrollmentsEnabled) {
+        throw new Error('Enrollment is currently disabled. Please try again later.');
+      }
+
+      // Use the new enrollment API endpoint with direct enrollment flag
+      const enrollmentResponse = await fetch('/api/enrollment/enroll', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          courseId: course.id,
+          directEnrollment: true // Flag to indicate this is a direct enrollment
+        }),
+      });
+
+      const enrollmentData = await enrollmentResponse.json();
+
+      if (!enrollmentResponse.ok) {
+        if (enrollmentData.requiresAuth) {
+          toast.error('Please log in to enroll in this course');
+          router.push('/auth/login?redirect=enrollment');
+          return;
+        }
+        throw new Error(enrollmentData.message || 'Failed to enroll in the course');
+      }
+
+      toast.success(`Successfully enrolled in the course! You are now a ${enrollmentData.userRole}.`);
+      router.push('/dashboard/courses');
+      onClose();
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to enroll in the course');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -320,10 +432,63 @@ const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ isOpen, onClose, cour
           </Dialog.Title>
 
           <div className="mt-4">
-            <p className="text-sm text-gray-500 mb-4">
-              Please fill in your details to enroll in {course.title}
-            </p>
-            <form onSubmit={handleSubmit}>
+            {isCheckingProfile ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600"></div>
+                <span className="ml-2 text-sm text-gray-600">Checking your profile...</span>
+              </div>
+            ) : showDirectEnrollment && hasExistingProfile ? (
+              <div>
+                <p className="text-sm text-gray-500 mb-4">
+                  Welcome back! Since you've enrolled in courses before, you can enroll directly.
+                </p>
+                <div className="bg-blue-50 border border-blue-200 rounded-md p-4 mb-4">
+                  <div className="flex">
+                    <div className="flex-shrink-0">
+                      <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm text-blue-800">
+                        <strong>Quick Enrollment:</strong> We'll use your existing profile information to enroll you directly. A confirmation email will be sent to you.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-6 flex space-x-3">
+                  <button
+                    type="button"
+                    onClick={() => !isLoading && onClose()}
+                    className="flex-1 py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+                    disabled={isLoading}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowDirectEnrollment(false)}
+                    className="flex-1 py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+                    disabled={isLoading}
+                  >
+                    Fill Form Instead
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleDirectEnrollment}
+                    className="flex-1 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'Enrolling...' : 'Enroll Now'}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <p className="text-sm text-gray-500 mb-4">
+                  Please fill in your details to enroll in {course.title}
+                </p>
+                <form onSubmit={handleSubmit}>
               <div className="space-y-4">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700">
@@ -542,6 +707,8 @@ const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ isOpen, onClose, cour
                 </button>
               </div>
             </form>
+              </div>
+            )}
           </div>
         </div>
       </div>

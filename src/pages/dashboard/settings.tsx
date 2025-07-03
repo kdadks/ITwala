@@ -12,6 +12,18 @@ interface ProfileFormData {
   email: string;
   phone: string;
   bio: string;
+  addressLine1: string;
+  addressLine2: string;
+  city: string;
+  state: string;
+  country: string;
+  pincode: string;
+  highestQualification: string;
+  degreeName: string;
+  hasLaptop: boolean;
+}
+
+interface PasswordFormData {
   currentPassword: string;
   newPassword: string;
   confirmPassword: string;
@@ -25,9 +37,19 @@ const Settings: NextPage = () => {
   const [activeTab, setActiveTab] = useState('profile');
   const [isUpdating, setIsUpdating] = useState(false);
   
-  const { register, handleSubmit, reset, watch, formState: { errors } } = useForm<ProfileFormData>();
+  const { register: registerProfile, handleSubmit: handleSubmitProfile, reset: resetProfile, formState: { errors: profileErrors } } = useForm<ProfileFormData>();
+  const { register: registerPassword, handleSubmit: handleSubmitPassword, reset: resetPassword, watch, formState: { errors: passwordErrors } } = useForm<PasswordFormData>();
   
   const newPassword = watch('newPassword', '');
+
+  // Indian states list
+  const indianStates = [
+    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", 
+    "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", 
+    "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", 
+    "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", 
+    "West Bengal"
+  ];
 
   useEffect(() => {
     if (!user && !isLoading) {
@@ -36,44 +58,121 @@ const Settings: NextPage = () => {
   }, [user, isLoading, router]);
 
   useEffect(() => {
-    if (user) {
-      // In a real app, you would fetch the user's profile from your database
-      reset({
-        fullName: user.user_metadata?.full_name || '',
-        email: user.email || '',
-        phone: user.user_metadata?.phone || '',
-        bio: user.user_metadata?.bio || '',
-      });
-      setIsLoading(false);
-    }
-  }, [user, reset]);
+    const fetchProfile = async () => {
+      if (user) {
+        try {
+          // Fetch profile data from database
+          const { data: profile, error } = await supabaseClient
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .single();
+
+          if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+            console.error('Error fetching profile:', error);
+          }
+
+          // Set form data with profile info or defaults
+          resetProfile({
+            fullName: profile?.full_name || user.user_metadata?.full_name || '',
+            email: user.email || '',
+            phone: profile?.phone || '',
+            bio: profile?.bio || '',
+            addressLine1: profile?.address_line1 || '',
+            addressLine2: profile?.address_line2 || '',
+            city: profile?.city || '',
+            state: profile?.state || '',
+            country: profile?.country || 'India',
+            pincode: profile?.pincode || '',
+            highestQualification: profile?.highest_qualification || '',
+            degreeName: profile?.degree_name || '',
+            hasLaptop: profile?.has_laptop || false,
+          });
+        } catch (error) {
+          console.error('Error fetching profile:', error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchProfile();
+  }, [user, resetProfile, supabaseClient]);
 
   const updateProfile = async (data: ProfileFormData) => {
     setIsUpdating(true);
     
     try {
-      const { error } = await supabaseClient.auth.updateUser({
-        data: {
-          full_name: data.fullName,
-          phone: data.phone,
-          bio: data.bio,
+      console.log('Sending profile update request...');
+      
+      const profileData = {
+        fullName: data.fullName,
+        phone: data.phone,
+        bio: data.bio,
+        addressLine1: data.addressLine1,
+        addressLine2: data.addressLine2,
+        city: data.city,
+        state: data.state,
+        country: data.country,
+        pincode: data.pincode,
+        highestQualification: data.highestQualification,
+        degreeName: data.degreeName,
+        hasLaptop: data.hasLaptop
+      };
+
+      // Try the main API endpoint first
+      let response = await fetch('/api/profile/update', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
         },
+        body: JSON.stringify({ profileData }),
       });
 
-      if (error) {
-        throw new Error(error.message);
+      console.log('Main API response status:', response.status);
+      
+      let result = await response.json();
+      console.log('Main API response data:', result);
+
+      // If main API fails with permission error, try the simple API
+      if (!response.ok && result.debug?.code === '42501') {
+        console.log('Permission error detected, trying simple API...');
+        
+        response = await fetch('/api/profile/update-simple', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ profileData }),
+        });
+
+        console.log('Simple API response status:', response.status);
+        result = await response.json();
+        console.log('Simple API response data:', result);
+      }
+
+      if (!response.ok) {
+        const errorMessage = result.message || 'Failed to update profile';
+        const debugInfo = result.debug ? ` (Debug: ${JSON.stringify(result.debug)})` : '';
+        throw new Error(errorMessage + debugInfo);
       }
 
       toast.success('Profile updated successfully!');
+      console.log('Profile update successful');
     } catch (error: any) {
-      toast.error(error.message || 'Failed to update profile. Please try again.');
+      const errorMessage = error.message || 'Failed to update profile. Please try again.';
+      toast.error(errorMessage);
       console.error('Update profile error:', error);
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack
+      });
     } finally {
       setIsUpdating(false);
     }
   };
 
-  const updatePassword = async (data: ProfileFormData) => {
+  const updatePassword = async (data: PasswordFormData) => {
     setIsUpdating(true);
     
     try {
@@ -86,7 +185,7 @@ const Settings: NextPage = () => {
       }
 
       toast.success('Password updated successfully!');
-      reset({
+      resetPassword({
         currentPassword: '',
         newPassword: '',
         confirmPassword: '',
@@ -160,52 +259,182 @@ const Settings: NextPage = () => {
                 
                 <div className="p-6">
                   {activeTab === 'profile' && (
-                    <form onSubmit={handleSubmit(updateProfile)} className="space-y-6">
+                    <form onSubmit={handleSubmitProfile(updateProfile)} className="space-y-6">
+                      {/* Basic Information */}
                       <div>
-                        <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                        <input
-                          type="text"
-                          id="fullName"
-                          className={`w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 ${
-                            errors.fullName ? 'border-red-500' : 'border-gray-300'
-                          }`}
-                          {...register('fullName', { required: 'Full name is required' })}
-                        />
-                        {errors.fullName && <p className="mt-1 text-sm text-red-500">{errors.fullName.message}</p>}
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">Basic Information</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                            <input
+                              type="text"
+                              id="fullName"
+                              className={`w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 ${
+                                profileErrors.fullName ? 'border-red-500' : 'border-gray-300'
+                              }`}
+                              {...registerProfile('fullName', { required: 'Full name is required' })}
+                            />
+                            {profileErrors.fullName && <p className="mt-1 text-sm text-red-500">{profileErrors.fullName.message}</p>}
+                          </div>
+                          
+                          <div>
+                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                            <input
+                              type="email"
+                              id="email"
+                              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 bg-gray-100"
+                              disabled
+                              {...registerProfile('email')}
+                            />
+                            <p className="mt-1 text-sm text-gray-500">Your email cannot be changed</p>
+                          </div>
+                          
+                          <div>
+                            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                            <input
+                              type="tel"
+                              id="phone"
+                              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                              placeholder="+91 9999999999"
+                              {...registerProfile('phone')}
+                            />
+                          </div>
+                          
+                          <div className="md:col-span-2">
+                            <label htmlFor="bio" className="block text-sm font-medium text-gray-700 mb-1">Bio</label>
+                            <textarea
+                              id="bio"
+                              rows={3}
+                              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                              placeholder="Tell us a little about yourself"
+                              {...registerProfile('bio')}
+                            ></textarea>
+                          </div>
+                        </div>
                       </div>
-                      
+
+                      {/* Address Information */}
                       <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                        <input
-                          type="email"
-                          id="email"
-                          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 bg-gray-100"
-                          disabled
-                          {...register('email')}
-                        />
-                        <p className="mt-1 text-sm text-gray-500">Your email cannot be changed</p>
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">Address Information</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label htmlFor="addressLine1" className="block text-sm font-medium text-gray-700 mb-1">Address Line 1</label>
+                            <input
+                              type="text"
+                              id="addressLine1"
+                              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                              placeholder="Street address"
+                              {...registerProfile('addressLine1')}
+                            />
+                          </div>
+                          
+                          <div>
+                            <label htmlFor="addressLine2" className="block text-sm font-medium text-gray-700 mb-1">Address Line 2</label>
+                            <input
+                              type="text"
+                              id="addressLine2"
+                              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                              placeholder="Apartment, suite, etc. (optional)"
+                              {...registerProfile('addressLine2')}
+                            />
+                          </div>
+                          
+                          <div>
+                            <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                            <input
+                              type="text"
+                              id="city"
+                              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                              {...registerProfile('city')}
+                            />
+                          </div>
+                          
+                          <div>
+                            <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-1">State</label>
+                            <select
+                              id="state"
+                              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                              {...registerProfile('state')}
+                            >
+                              <option value="">Select State</option>
+                              {indianStates.map(state => (
+                                <option key={state} value={state}>{state}</option>
+                              ))}
+                            </select>
+                          </div>
+                          
+                          <div>
+                            <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                            <input
+                              type="text"
+                              id="country"
+                              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                              {...registerProfile('country')}
+                            />
+                          </div>
+                          
+                          <div>
+                            <label htmlFor="pincode" className="block text-sm font-medium text-gray-700 mb-1">Pincode</label>
+                            <input
+                              type="text"
+                              id="pincode"
+                              pattern="[0-9]{6}"
+                              maxLength={6}
+                              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                              placeholder="123456"
+                              {...registerProfile('pincode')}
+                            />
+                          </div>
+                        </div>
                       </div>
-                      
+
+                      {/* Educational Information */}
                       <div>
-                        <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                        <input
-                          type="tel"
-                          id="phone"
-                          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                          placeholder="+91 9999999999"
-                          {...register('phone')}
-                        />
-                      </div>
-                      
-                      <div>
-                        <label htmlFor="bio" className="block text-sm font-medium text-gray-700 mb-1">Bio</label>
-                        <textarea
-                          id="bio"
-                          rows={4}
-                          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                          placeholder="Tell us a little about yourself"
-                          {...register('bio')}
-                        ></textarea>
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">Educational Information</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label htmlFor="highestQualification" className="block text-sm font-medium text-gray-700 mb-1">Highest Qualification</label>
+                            <select
+                              id="highestQualification"
+                              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                              {...registerProfile('highestQualification')}
+                            >
+                              <option value="">Select qualification</option>
+                              <option value="10th">10th</option>
+                              <option value="12th">12th</option>
+                              <option value="diploma">Diploma</option>
+                              <option value="bachelors">Bachelor's Degree</option>
+                              <option value="masters">Master's Degree</option>
+                              <option value="phd">Ph.D.</option>
+                            </select>
+                          </div>
+                          
+                          <div>
+                            <label htmlFor="degreeName" className="block text-sm font-medium text-gray-700 mb-1">Degree Name</label>
+                            <input
+                              type="text"
+                              id="degreeName"
+                              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                              placeholder="e.g., Computer Science, MBA"
+                              {...registerProfile('degreeName')}
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="mt-4">
+                          <div className="flex items-center">
+                            <input
+                              id="hasLaptop"
+                              type="checkbox"
+                              className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                              {...registerProfile('hasLaptop')}
+                            />
+                            <label htmlFor="hasLaptop" className="ml-3 text-sm font-medium text-gray-700">
+                              I have access to a laptop
+                            </label>
+                          </div>
+                          <p className="mt-1 text-sm text-gray-500">This helps us understand your learning setup for technical courses.</p>
+                        </div>
                       </div>
                       
                       <div>
@@ -221,18 +450,18 @@ const Settings: NextPage = () => {
                   )}
                   
                   {activeTab === 'password' && (
-                    <form onSubmit={handleSubmit(updatePassword)} className="space-y-6">
+                    <form onSubmit={handleSubmitPassword(updatePassword)} className="space-y-6">
                       <div>
                         <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
                         <input
                           type="password"
                           id="currentPassword"
                           className={`w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 ${
-                            errors.currentPassword ? 'border-red-500' : 'border-gray-300'
+                            passwordErrors.currentPassword ? 'border-red-500' : 'border-gray-300'
                           }`}
-                          {...register('currentPassword', { required: 'Current password is required' })}
+                          {...registerPassword('currentPassword', { required: 'Current password is required' })}
                         />
-                        {errors.currentPassword && <p className="mt-1 text-sm text-red-500">{errors.currentPassword.message}</p>}
+                        {passwordErrors.currentPassword && <p className="mt-1 text-sm text-red-500">{passwordErrors.currentPassword.message}</p>}
                       </div>
                       
                       <div>
@@ -241,9 +470,9 @@ const Settings: NextPage = () => {
                           type="password"
                           id="newPassword"
                           className={`w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 ${
-                            errors.newPassword ? 'border-red-500' : 'border-gray-300'
+                            passwordErrors.newPassword ? 'border-red-500' : 'border-gray-300'
                           }`}
-                          {...register('newPassword', {
+                          {...registerPassword('newPassword', {
                             required: 'New password is required',
                             minLength: {
                               value: 8,
@@ -251,7 +480,7 @@ const Settings: NextPage = () => {
                             },
                           })}
                         />
-                        {errors.newPassword && <p className="mt-1 text-sm text-red-500">{errors.newPassword.message}</p>}
+                        {passwordErrors.newPassword && <p className="mt-1 text-sm text-red-500">{passwordErrors.newPassword.message}</p>}
                       </div>
                       
                       <div>
@@ -260,14 +489,14 @@ const Settings: NextPage = () => {
                           type="password"
                           id="confirmPassword"
                           className={`w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 ${
-                            errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
+                            passwordErrors.confirmPassword ? 'border-red-500' : 'border-gray-300'
                           }`}
-                          {...register('confirmPassword', {
+                          {...registerPassword('confirmPassword', {
                             required: 'Please confirm your new password',
                             validate: value => value === newPassword || 'The passwords do not match',
                           })}
                         />
-                        {errors.confirmPassword && <p className="mt-1 text-sm text-red-500">{errors.confirmPassword.message}</p>}
+                        {passwordErrors.confirmPassword && <p className="mt-1 text-sm text-red-500">{passwordErrors.confirmPassword.message}</p>}
                       </div>
                       
                       <div>

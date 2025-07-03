@@ -12,7 +12,7 @@ export default async function handler(
   }
 
   try {
-    const { courseId, userDetails } = req.body;
+    const { courseId, userDetails, directEnrollment } = req.body;
 
     if (!courseId) {
       return res.status(400).json({ message: 'Course ID is required' });
@@ -25,9 +25,9 @@ export default async function handler(
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
     
     if (sessionError || !session?.user) {
-      return res.status(401).json({ 
+      return res.status(401).json({
         message: 'Authentication required',
-        requiresAuth: true 
+        requiresAuth: true
       });
     }
 
@@ -60,33 +60,65 @@ export default async function handler(
       throw new Error(`Course not found: ${courseError.message}`);
     }
 
-    // Update user profile with additional details if provided
-    if (userDetails) {
-      // Build address string from individual components
-      const addressParts = [
-        userDetails.addressLine1,
-        userDetails.addressLine2,
-        userDetails.city,
-        userDetails.state,
-        userDetails.pincode,
-        userDetails.country || 'India'
-      ].filter(Boolean);
-      
-      const fullAddress = addressParts.length > 0 ? addressParts.join(', ') : null;
-
-      const { error: profileError } = await supabase
+    // For direct enrollment, get existing profile info
+    let profileData = null;
+    if (directEnrollment) {
+      const { data: existingProfile, error: profileFetchError } = await supabase
         .from('profiles')
-        .update({
-          full_name: userDetails.name || session.user.user_metadata?.full_name,
-          phone: userDetails.phone,
-          address: fullAddress,
-          highest_qualification: userDetails.highestQualification,
-          has_laptop: userDetails.hasLaptop
-        })
-        .eq('id', userId);
+        .select('full_name, phone, address_line1, address_line2, city, state, country, pincode, highest_qualification, degree_name, has_laptop')
+        .eq('id', userId)
+        .single();
 
-      if (profileError) {
-        console.error('Profile update error:', profileError);
+      if (profileFetchError) {
+        console.error('Error fetching existing profile:', profileFetchError);
+        return res.status(400).json({ message: 'Unable to fetch profile for direct enrollment' });
+      }
+      
+      profileData = existingProfile;
+    }
+
+    // Update user profile with additional details if provided (for form-based enrollment)
+    if (userDetails && !directEnrollment) {
+      try {
+        // Build address string from individual components for backward compatibility
+        const addressParts = [
+          userDetails.addressLine1,
+          userDetails.addressLine2,
+          userDetails.city,
+          userDetails.state,
+          userDetails.pincode,
+          userDetails.country || 'India'
+        ].filter(Boolean);
+        
+        const fullAddress = addressParts.length > 0 ? addressParts.join(', ') : '';
+
+        // Use the new database function for profile updates
+        const { data: updateResult, error: profileError } = await supabase.rpc('update_profile_direct', {
+          profile_updates: {
+            full_name: userDetails.name || session.user.user_metadata?.full_name || '',
+            phone: userDetails.phone || '',
+            address: fullAddress,
+            address_line1: userDetails.addressLine1 || '',
+            address_line2: userDetails.addressLine2 || '',
+            city: userDetails.city || '',
+            state: userDetails.state || '',
+            country: userDetails.country || 'India',
+            pincode: userDetails.pincode || '',
+            highest_qualification: userDetails.highestQualification || '',
+            degree_name: userDetails.degreeName || '',
+            has_laptop: userDetails.hasLaptop || false
+          }
+        });
+
+        if (profileError) {
+          console.error('Profile update error:', profileError);
+          // Don't fail enrollment if profile update fails, but log the issue
+          console.warn('Profile update failed during enrollment, but enrollment will continue');
+        } else {
+          console.log('Profile updated successfully during enrollment:', updateResult);
+        }
+      } catch (profileUpdateError) {
+        console.error('Unexpected error during profile update:', profileUpdateError);
         // Don't fail enrollment if profile update fails
       }
     }
@@ -111,28 +143,39 @@ export default async function handler(
       throw enrollmentError;
     }
 
-    // The database trigger will automatically assign the 'student' role
-    // But let's also manually ensure the user gets the student role
-    const { data: currentProfile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', userId)
-      .single();
-
-    // If user doesn't have admin or instructor role, update to student
-    if (currentProfile && !['admin', 'instructor'].includes(currentProfile.role)) {
-      await supabase
+    // Ensure the user gets the student role (if they don't already have admin or instructor)
+    let updatedProfile = null;
+    try {
+      const { data: currentProfile } = await supabase
         .from('profiles')
-        .update({ role: 'student' })
-        .eq('id', userId);
-    }
+        .select('role')
+        .eq('id', userId)
+        .single();
 
-    // Get updated profile
-    const { data: updatedProfile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', userId)
-      .single();
+      // If user doesn't have admin or instructor role, update to student
+      if (currentProfile && !['admin', 'instructor'].includes(currentProfile.role)) {
+        const { data: roleUpdateResult } = await supabase.rpc('update_profile_direct', {
+          profile_updates: {
+            role: 'student'
+          }
+        });
+        
+        console.log('Role updated to student:', roleUpdateResult);
+      }
+
+      // Get updated profile
+      const { data: finalProfile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', userId)
+        .single();
+        
+      updatedProfile = finalProfile;
+    } catch (roleError) {
+      console.error('Error updating user role:', roleError);
+      // Default to student if role update fails
+      updatedProfile = { role: 'student' };
+    }
 
     // Send enrollment notification email directly
     try {
@@ -149,9 +192,13 @@ export default async function handler(
         },
       });
 
-      const studentName = userDetails?.name || session.user.user_metadata?.full_name || session.user.email;
+      const studentName = directEnrollment
+        ? (profileData?.full_name || session.user.user_metadata?.full_name || session.user.email)
+        : (userDetails?.name || session.user.user_metadata?.full_name || session.user.email);
       const studentEmail = session.user.email;
-      const studentPhone = userDetails?.phone;
+      const studentPhone = directEnrollment
+        ? profileData?.phone
+        : userDetails?.phone;
 
       console.log('Sending email to admin...');
       // Send email to admin
@@ -180,6 +227,7 @@ export default async function handler(
           <h2>Enrollment Confirmation</h2>
           <p>Dear ${studentName},</p>
           <p>Thank you for enrolling in <strong>${course.title}</strong>.</p>
+          ${directEnrollment ? '<p><em>You have been enrolled using your existing profile information for a faster enrollment process.</em></p>' : ''}
           <p>${course.description}</p>
           <p>Our team will contact you shortly with further details about the course schedule and payment options.</p>
           <p>If you have any questions, please contact us at sales@it-wala.com or call +91 7982303199.</p>

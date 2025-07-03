@@ -29,7 +29,7 @@ const TrainingDevelopment: NextPage = () => {
               </div>
               <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Training & Development</h1>
               <p className="text-xl text-gray-600 mb-8">
-                Comprehensive training programs and skill development services to empower your team with cutting-edge technology expertise.
+                Through our ITwala Academy, we provide Comprehensive training programs and skill development services to empower your team with cutting-edge technology expertise.
               </p>
               <Link href="/consulting">
                 <div className="inline-flex items-center text-primary-600 hover:text-primary-700 font-semibold">
@@ -144,7 +144,7 @@ const TrainingDevelopment: NextPage = () => {
                   </div>
 
                   <div className="bg-white rounded-lg p-6 mb-6">
-                    <h4 className="text-lg font-semibold text-gray-900 mb-4">Training Program Structure</h4>
+                    <h4 className="text-lg font-semibold text-gray-900 mb-4">Training Program Structure (Directional)</h4>
                     <div className="space-y-3">
                       <div className="flex justify-between">
                         <span className="text-gray-600">Assessment & Planning</span>

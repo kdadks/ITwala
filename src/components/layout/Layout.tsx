@@ -48,7 +48,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     <div className="flex flex-col min-h-screen bg-gray-100">
       {!isAuthRoute && <Navbar />}
       <div className={`flex-grow ${isAuthRoute ? '' : 'pt-16'}`}>{children}</div>
-      <WhatsAppButton />
+      {/* Move WhatsAppButton slightly higher to avoid scroll error overlap */}
+      <WhatsAppButton positionClass="fixed bottom-20 right-4 sm:bottom-24 sm:right-6" />
       {!isAuthRoute && !isDashboardRoute && <Footer />}
     </div>
   );
