@@ -91,6 +91,16 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Add Escape key handler for closing search modal
+  useEffect(() => {
+    if (!isSearchOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsSearchOpen(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isSearchOpen]);
+
   return (
     <header
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 backdrop-blur-md ${isScrolled ? 'bg-white/80 border-b border-gray-200 shadow-md' : 'bg-white/40 border-b border-transparent'} dark:${isScrolled ? 'bg-gray-900/80 border-b border-gray-700' : 'bg-gray-900/40 border-b border-transparent'}`}
@@ -99,17 +109,17 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <Link href="/">
-              <div className="flex flex-col items-start">
-                <div className="flex items-center">
-                  <img
-                    src="/images/IT - WALA_logo (1).png"
-                    alt="ITwala Academy Logo"
-                    className="h-10 w-auto mr-3"
-                    style={{ maxWidth: 48 }}
-                  />
-                  <span className="text-xl font-bold text-primary-500">ITwala </span>
+              <div className="flex items-center space-x-3">
+                <img
+                  src="/images/IT - WALA_logo (1).png"
+                  alt="ITwala Academy Logo"
+                  className="h-10 w-auto"
+                  style={{ maxWidth: 48 }}
+                />
+                <div className="flex flex-col justify-center leading-tight">
+                  <span className="text-xl font-bold text-primary-500">ITwala</span>
+                  <span className="text-xs md:text-sm text-primary-700 font-medium mt-0.5 ml-0.5 tracking-wide whitespace-nowrap">IT- Simple Hain</span>
                 </div>
-                <span className="text-xs md:text-sm text-primary-700 font-medium mt-1 ml-1 tracking-wide">IT- Simple Hain</span>
               </div>
             </Link>
           </div>
@@ -332,6 +342,65 @@ const Navbar = () => {
                   </>
                 )}
               </nav>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Search Modal */}
+      <AnimatePresence>
+        {isSearchOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 backdrop-blur-sm"
+            onClick={() => setIsSearchOpen(false)}
+          >
+            <div
+              className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg relative flex flex-col mt-24 mb-8 max-h-[90vh] overflow-y-auto pt-12"
+              onClick={e => e.stopPropagation()}
+            >
+              <button
+                className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+                onClick={() => setIsSearchOpen(false)}
+                aria-label="Close search"
+                type="button"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+              <form onSubmit={handleSearch} autoComplete="off">
+                <input
+                  type="text"
+                  className="w-full border border-gray-300 rounded-md px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="Search courses..."
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  autoFocus
+                />
+              </form>
+              {suggestions.length > 0 && (
+                <ul className="mt-3 bg-white border border-gray-200 rounded-md shadow max-h-56 overflow-y-auto divide-y divide-gray-100">
+                  {suggestions.map((suggestion, idx) => (
+                    <li
+                      key={suggestion}
+                      className="px-4 py-3 cursor-pointer hover:bg-primary-50 text-gray-700 text-base"
+                      onClick={() => {
+                        setSearchQuery(suggestion);
+                        router.push(`/courses?search=${encodeURIComponent(suggestion)}`);
+                        setIsSearchOpen(false);
+                        setSearchQuery('');
+                      }}
+                    >
+                      {suggestion}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <p className="text-xs text-gray-400 mt-4 text-center">Press <kbd className="px-1 py-0.5 bg-gray-100 rounded border text-xs">Esc</kbd> to close</p>
             </div>
           </motion.div>
         )}

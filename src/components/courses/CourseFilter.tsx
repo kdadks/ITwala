@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Dispatch, SetStateAction } from 'react';
 
@@ -27,6 +27,36 @@ const CourseFilter: React.FC<CourseFilterProps> = ({
   sortBy,
   setSortBy
 }) => {
+  // Local state for price inputs
+  const [minInput, setMinInput] = useState(priceRange[0].toString());
+  const [maxInput, setMaxInput] = useState(priceRange[1].toString());
+
+  // Sync local state if priceRange changes externally
+  React.useEffect(() => {
+    setMinInput(priceRange[0].toString());
+    setMaxInput(priceRange[1].toString());
+  }, [priceRange]);
+
+  // Handle input commit (onBlur or Enter)
+  const commitMin = () => {
+    const min = Number(minInput);
+    const max = Number(maxInput);
+    if (!isNaN(min) && min <= max) {
+      setPriceRange([min, max]);
+    } else {
+      setMinInput(priceRange[0].toString());
+    }
+  };
+  const commitMax = () => {
+    const min = Number(minInput);
+    const max = Number(maxInput);
+    if (!isNaN(max) && max >= min) {
+      setPriceRange([min, max]);
+    } else {
+      setMaxInput(priceRange[1].toString());
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -76,19 +106,23 @@ const CourseFilter: React.FC<CourseFilterProps> = ({
         <div className="flex items-center gap-2">
           <input
             type="number"
-            value={priceRange[0]}
-            onChange={(e) => setPriceRange([Number(e.target.value), priceRange[1]])}
+            value={minInput}
+            onChange={(e) => setMinInput(e.target.value)}
+            onBlur={commitMin}
+            onKeyDown={(e) => { if (e.key === 'Enter') commitMin(); }}
             className="w-1/2 p-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-primary-500"
             min="0"
-            max={priceRange[1]}
+            max={maxInput}
           />
           <span className="text-gray-500">to</span>
           <input
             type="number"
-            value={priceRange[1]}
-            onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
+            value={maxInput}
+            onChange={(e) => setMaxInput(e.target.value)}
+            onBlur={commitMax}
+            onKeyDown={(e) => { if (e.key === 'Enter') commitMax(); }}
             className="w-1/2 p-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-primary-500"
-            min={priceRange[0]}
+            min={minInput}
           />
         </div>
       </div>

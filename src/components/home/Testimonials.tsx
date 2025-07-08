@@ -8,7 +8,7 @@ const testimonials = [
 		name: 'Luke Smith',
 		role: 'Software Developer at TechCorp',
 		image:
-			'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
+			'https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
 		quote:
 			'The Java Programming Masterclass provided comprehensive knowledge and hands-on experience that helped me advance my career. The practical exercises and real-world projects made complex concepts easy to understand.',
 		rating: 5,
@@ -65,11 +65,11 @@ const Testimonials = () => {
 			<div className="container mx-auto px-4">
 				<div className="text-center mb-12">
 					<h2 className="text-3xl md:text-4xl font-bold mb-4">
-						What Our Students Say
+						What Our Customers/Students Say
 					</h2>
 					<p className="text-xl text-primary-100 max-w-3xl mx-auto">
-						Hear from our students about how ITwala Academy helped them advance
-						their careers
+						Hear from our Customers/Students about how ITwala Academy & Consulting helped them advance
+						their careers and transform their businesses.
 					</p>
 				</div>
 
