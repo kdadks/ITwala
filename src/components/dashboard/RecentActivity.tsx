@@ -24,46 +24,42 @@ const RecentActivity = () => {
       try {
         const activityItems: ActivityItem[] = [];
 
-        // Fetch recent enrollments
-        const { data: enrollments } = await supabase
+        // Fetch recent enrollments with safer query
+        const { data: enrollments, error: enrollmentsError } = await supabase
           .from('enrollments')
           .select(`
             id,
             enrolled_at,
-            courses!inner (
-              title
-            )
+            course_id
           `)
           .eq('user_id', user.id)
           .order('enrolled_at', { ascending: false })
           .limit(5);
+
+        if (enrollmentsError) {
+          console.error('Error fetching enrollments:', enrollmentsError);
+        }
 
         if (enrollments) {
           enrollments.forEach((enrollment: any) => {
             activityItems.push({
               id: enrollment.id,
               type: 'course_enrolled',
-              course: enrollment.courses?.title || 'Unknown Course',
+              course: `Course ${enrollment.course_id || 'Unknown'}`,
               timestamp: formatTimestamp(enrollment.enrolled_at),
               created_at: enrollment.enrolled_at
             });
           });
         }
 
-        // Fetch recent lesson completions
-        const { data: progress } = await supabase
+        // Fetch recent lesson completions using progress table
+        const { data: progress, error: progressError } = await supabase
           .from('progress')
           .select(`
             id,
             completed_at,
-            lessons!inner (
-              title,
-              modules!inner (
-                courses!inner (
-                  title
-                )
-              )
-            )
+            course_id,
+            lesson_id
           `)
           .eq('user_id', user.id)
           .eq('completed', true)
@@ -71,14 +67,18 @@ const RecentActivity = () => {
           .order('completed_at', { ascending: false })
           .limit(5);
 
+        if (progressError) {
+          console.error('Error fetching progress:', progressError);
+        }
+
         if (progress) {
           progress.forEach((prog: any) => {
             if (prog.completed_at) {
               activityItems.push({
                 id: prog.id,
                 type: 'lesson_completed',
-                course: prog.lessons?.modules?.courses?.title || 'Unknown Course',
-                lesson: prog.lessons?.title || 'Unknown Lesson',
+                course: `Course ${prog.course_id || 'Unknown'}`,
+                lesson: `Lesson ${prog.lesson_id || 'Unknown'}`,
                 timestamp: formatTimestamp(prog.completed_at),
                 created_at: prog.completed_at
               });
@@ -86,26 +86,28 @@ const RecentActivity = () => {
           });
         }
 
-        // Fetch recent reviews
-        const { data: reviews } = await supabase
+        // Fetch recent reviews using reviews table
+        const { data: reviews, error: reviewsError } = await supabase
           .from('reviews')
           .select(`
             id,
             created_at,
-            courses!inner (
-              title
-            )
+            course_id
           `)
           .eq('user_id', user.id)
           .order('created_at', { ascending: false })
           .limit(3);
+
+        if (reviewsError) {
+          console.error('Error fetching reviews:', reviewsError);
+        }
 
         if (reviews) {
           reviews.forEach((review: any) => {
             activityItems.push({
               id: review.id,
               type: 'course_reviewed',
-              course: review.courses?.title || 'Unknown Course',
+              course: `Course ${review.course_id || 'Unknown'}`,
               timestamp: formatTimestamp(review.created_at),
               created_at: review.created_at
             });

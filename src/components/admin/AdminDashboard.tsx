@@ -20,51 +20,70 @@ const AdminDashboard: React.FC = () => {
 
   const fetchDashboardData = async () => {
     try {
-      // Fetch total courses
-      const { data: courses } = await supabase
+      // Fetch total courses with proper count query
+      const { count: coursesCount, error: coursesError } = await supabase
         .from('courses')
-        .select('count');
+        .select('*', { count: 'exact', head: true });
 
-      // Fetch active students
-      const { data: students } = await supabase
+      if (coursesError) {
+        console.error('Error fetching courses count:', coursesError);
+      }
+
+      // Fetch active students with proper count query
+      const { count: studentsCount, error: studentsError } = await supabase
         .from('enrollments')
-        .select('count')
+        .select('*', { count: 'exact', head: true })
         .eq('status', 'active');
 
-      // Fetch course completion rate
-      const { data: completions } = await supabase
-        .from('progress')
-        .select('count')
-        .eq('completed', true);
+      if (studentsError) {
+        console.error('Error fetching students count:', studentsError);
+      }
 
-      // Fetch recent activity
-      const { data: activity } = await supabase
+      // Fetch course completion rate using enrollments table
+      const { count: completionsCount, error: completionsError } = await supabase
+        .from('enrollments')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'completed');
+
+      if (completionsError) {
+        console.error('Error fetching completions count:', completionsError);
+      }
+
+      // Fetch recent activity with safer query (avoid complex joins)
+      const { data: activity, error: activityError } = await supabase
         .from('enrollments')
         .select(`
           id,
-          created_at,
-          courses(title),
-          profiles(full_name)
+          enrolled_at,
+          course_id,
+          user_id
         `)
-        .order('created_at', { ascending: false })
+        .order('enrolled_at', { ascending: false })
         .limit(5);
 
-      // Fetch popular courses
-      const { data: popular } = await supabase
+      if (activityError) {
+        console.error('Error fetching recent activity:', activityError);
+      }
+
+      // Fetch popular courses with simpler query
+      const { data: popular, error: popularError } = await supabase
         .from('courses')
         .select(`
           id,
           title,
-          enrollments(count),
-          reviews(rating)
+          slug,
+          description
         `)
-        .order('enrollments', { ascending: false })
         .limit(5);
 
+      if (popularError) {
+        console.error('Error fetching popular courses:', popularError);
+      }
+
       setStats({
-        totalCourses: courses?.[0]?.count || 0,
-        activeStudents: students?.[0]?.count || 0,
-        completionRate: Math.round((completions?.[0]?.count || 0) / (students?.[0]?.count || 1) * 100),
+        totalCourses: coursesCount || 0,
+        activeStudents: studentsCount || 0,
+        completionRate: Math.round((completionsCount || 0) / (studentsCount || 1) * 100),
         revenue: 0 // You'll need to implement revenue calculation based on your business logic
       });
 
@@ -153,16 +172,20 @@ const AdminDashboard: React.FC = () => {
         >
           <h3 className="text-lg font-semibold mb-4">Recent Activity</h3>
           <div className="space-y-4">
-            {recentActivity.map((activity) => (
-              <div key={activity.id} className="border-l-4 border-primary-500 pl-4">
-                <p className="text-sm text-gray-600">
-                  {activity.profiles.full_name} enrolled in {activity.courses.title}
-                </p>
-                <p className="text-xs text-gray-400">
-                  {new Date(activity.created_at).toLocaleDateString()}
-                </p>
-              </div>
-            ))}
+            {recentActivity.length > 0 ? (
+              recentActivity.map((activity) => (
+                <div key={activity.id} className="border-l-4 border-primary-500 pl-4">
+                  <p className="text-sm text-gray-600">
+                    New enrollment (Course ID: {activity.course_id})
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    {new Date(activity.enrolled_at).toLocaleDateString()}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-gray-500">No recent activity</p>
+            )}
           </div>
         </motion.div>
 
@@ -172,23 +195,25 @@ const AdminDashboard: React.FC = () => {
           transition={{ duration: 0.5, delay: 0.5 }}
           className="p-6 bg-white rounded-lg shadow-sm"
         >
-          <h3 className="text-lg font-semibold mb-4">Popular Courses</h3>
+          <h3 className="text-lg font-semibold mb-4">Recent Courses</h3>
           <div className="space-y-4">
-            {popularCourses.map((course) => (
-              <div key={course.id} className="flex items-center space-x-4">
-                <div className="flex-1">
-                  <h4 className="text-sm font-medium text-gray-900">{course.title}</h4>
-                  <p className="text-xs text-gray-500">
-                    {course.enrollments[0]?.count || 0} enrollments
-                  </p>
+            {popularCourses.length > 0 ? (
+              popularCourses.map((course) => (
+                <div key={course.id} className="flex items-center space-x-4">
+                  <div className="flex-1">
+                    <h4 className="text-sm font-medium text-gray-900">{course.title}</h4>
+                    <p className="text-xs text-gray-500">
+                      {course.description ? course.description.substring(0, 50) + '...' : 'No description'}
+                    </p>
+                  </div>
+                  <div className="text-sm font-medium text-primary-600">
+                    Active
+                  </div>
                 </div>
-                <div className="text-sm font-medium text-primary-600">
-                  {course.reviews?.length > 0 
-                    ? `${(course.reviews.reduce((acc: number, r: any) => acc + r.rating, 0) / course.reviews.length).toFixed(1)} ⭐`
-                    : 'Not rated'}
-                </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="text-sm text-gray-500">No courses available</p>
+            )}
           </div>
         </motion.div>
       </div>

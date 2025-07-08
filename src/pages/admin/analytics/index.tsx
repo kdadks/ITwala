@@ -1,12 +1,11 @@
 import { NextPage } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useSupabaseClient } from '@supabase/auth-helpers-react';
+import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
 import { useState, useEffect } from 'react';
 import AdminHeader from '@/components/admin/AdminHeader';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import { toast } from 'react-hot-toast';
-import { useAuth } from '@/hooks/useAuth';
 
 interface AnalyticsData {
   id: string;
@@ -15,15 +14,21 @@ interface AnalyticsData {
   total_time: number;
   bounce_rate: number;
   date: string;
+  top_pages?: any[];
+  referrers?: any[];
+  devices?: any[];
 }
 
 const AnalyticsPage: NextPage = () => {
   const router = useRouter();
-  const { user, isAdmin } = useAuth();
+  const user = useUser();
   const supabase = useSupabaseClient();
   const [analytics, setAnalytics] = useState<AnalyticsData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [timeRange, setTimeRange] = useState('7days');
+  const [authChecked, setAuthChecked] = useState(false);
+  const [realTimePages, setRealTimePages] = useState<any[]>([]);
 
   const fetchAnalytics = async () => {
     try {
@@ -82,19 +87,109 @@ const AnalyticsPage: NextPage = () => {
     }
   };
 
+  const fetchRealTimePageViews = async () => {
+    try {
+      const daysToFetch = timeRange === '30days' ? 30 : 7;
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - daysToFetch);
+
+      // Get real-time page views data
+      const { data: pageViews, error } = await supabase
+        .from('page_views')
+        .select('page_url, page_title, created_at')
+        .gte('created_at', startDate.toISOString())
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching real-time page views:', error);
+        return;
+      }
+
+      // Aggregate page views by URL
+      const pageViewCounts: { [key: string]: { count: number; title: string; url: string } } = {};
+      
+      pageViews?.forEach((view) => {
+        const url = view.page_url || '/';
+        const title = view.page_title || 'Untitled Page';
+        
+        if (!pageViewCounts[url]) {
+          pageViewCounts[url] = { count: 0, title, url };
+        }
+        pageViewCounts[url].count++;
+      });
+
+      // Convert to array and sort by count
+      const sortedPages = Object.values(pageViewCounts)
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 10);
+
+      setRealTimePages(sortedPages);
+    } catch (error) {
+      console.error('Error in fetchRealTimePageViews:', error);
+    }
+  };
+
   useEffect(() => {
-    if (!user) {
-      router.push('/auth/login');
-      return;
-    }
+    const checkAdmin = async () => {
+      console.log('Analytics: Checking admin status...');
+      
+      if (!user) {
+        console.log('Analytics: No user found, redirecting to login');
+        router.push('/auth/login');
+        return;
+      }
 
-    if (!isAdmin) {
-      router.push('/dashboard');
-      return;
-    }
+      try {
+        console.log('Analytics: Checking user:', { id: user.id, email: user.email, metadata: user.user_metadata });
+        
+        // Check profile in Supabase
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
 
-    fetchAnalytics();
-  }, [user, isAdmin, timeRange]);
+        if (profileError && !profileError.message.includes('Results contain 0 rows')) {
+          console.error('Analytics: Profile error:', profileError);
+          throw profileError;
+        }
+
+        console.log('Analytics: Profile found:', profile);
+
+        // Check for admin status in both metadata and profile
+        const isMetadataAdmin = user.user_metadata?.role === 'admin';
+        const isProfileAdmin = profile?.role === 'admin';
+        const isUserAdmin = isMetadataAdmin || isProfileAdmin;
+
+        console.log('Analytics: Admin check:', { isMetadataAdmin, isProfileAdmin, isUserAdmin });
+        setIsAdmin(isUserAdmin);
+        setAuthChecked(true);
+
+        if (!isUserAdmin) {
+          console.log('Analytics: User is not admin, redirecting to dashboard');
+          router.push('/dashboard');
+          return;
+        }
+
+        // User is admin, fetch analytics and real-time data
+        fetchAnalytics();
+        fetchRealTimePageViews();
+        
+      } catch (error) {
+        console.error('Analytics: Error checking admin status:', error);
+        router.push('/dashboard');
+      }
+    };
+
+    checkAdmin();
+  }, [user?.id, timeRange]);
+
+  useEffect(() => {
+    if (authChecked && isAdmin) {
+      fetchAnalytics();
+      fetchRealTimePageViews();
+    }
+  }, [timeRange, authChecked, isAdmin]);
 
   const getTotalMetrics = () => {
     return analytics.reduce((acc, curr) => ({
@@ -118,6 +213,25 @@ const AnalyticsPage: NextPage = () => {
     const mins = minutes % 60;
     return `${hours}h ${mins}m`;
   };
+
+  if (!authChecked) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h2>
+          <p className="text-gray-600">You do not have permission to access this page.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -145,7 +259,7 @@ const AnalyticsPage: NextPage = () => {
                 </select>
               </div>
 
-              {isLoading ? (
+              {isLoading || !authChecked ? (
                 <div className="flex justify-center items-center h-64">
                   <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-500 border-t-transparent"></div>
                 </div>
@@ -155,19 +269,166 @@ const AnalyticsPage: NextPage = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div className="bg-gray-50 rounded-lg p-6">
                       <h3 className="text-sm font-medium text-gray-500">Total Page Views</h3>
-                      <p className="mt-2 text-3xl font-semibold">{getTotalMetrics().page_views.toLocaleString()}</p>
+                      <p className="mt-2 text-3xl font-semibold">{analytics.length > 0 ? getTotalMetrics().page_views.toLocaleString() : '0'}</p>
+                      {analytics.length === 0 && <p className="text-xs text-gray-400 mt-1">Start browsing to see data</p>}
                     </div>
                     <div className="bg-gray-50 rounded-lg p-6">
                       <h3 className="text-sm font-medium text-gray-500">Unique Visitors</h3>
-                      <p className="mt-2 text-3xl font-semibold">{getTotalMetrics().unique_visitors.toLocaleString()}</p>
+                      <p className="mt-2 text-3xl font-semibold">{analytics.length > 0 ? getTotalMetrics().unique_visitors.toLocaleString() : '0'}</p>
+                      {analytics.length === 0 && <p className="text-xs text-gray-400 mt-1">Tracking visitor sessions</p>}
                     </div>
                     <div className="bg-gray-50 rounded-lg p-6">
                       <h3 className="text-sm font-medium text-gray-500">Average Time on Site</h3>
-                      <p className="mt-2 text-3xl font-semibold">{formatTime(getTotalMetrics().total_time / analytics.length || 0)}</p>
+                      <p className="mt-2 text-3xl font-semibold">{analytics.length > 0 ? formatTime(getTotalMetrics().total_time / analytics.length || 0) : '0m'}</p>
+                      {analytics.length === 0 && <p className="text-xs text-gray-400 mt-1">Time measurement active</p>}
                     </div>
                     <div className="bg-gray-50 rounded-lg p-6">
                       <h3 className="text-sm font-medium text-gray-500">Bounce Rate</h3>
-                      <p className="mt-2 text-3xl font-semibold">{averageBounceRate}%</p>
+                      <p className="mt-2 text-3xl font-semibold">{analytics.length > 0 ? averageBounceRate : '0'}%</p>
+                      {analytics.length === 0 && <p className="text-xs text-gray-400 mt-1">Calculating bounce rates</p>}
+                    </div>
+                  </div>
+
+                  {/* Charts Section */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Page Views Chart */}
+                    <div className="bg-white rounded-lg shadow p-6">
+                      <h3 className="text-lg font-semibold mb-4">Page Views Trend</h3>
+                      <div className="h-64">
+                        {analytics.length > 0 ? (
+                          <div className="flex items-end space-x-1 h-full">
+                            {analytics.slice().reverse().map((day, index) => {
+                              const maxViews = Math.max(...analytics.map(d => d.page_views));
+                              const height = maxViews > 0 ? (day.page_views / maxViews) * 100 : 0;
+                              return (
+                                <div key={day.id} className="flex-1 flex flex-col items-center">
+                                  <div
+                                    className="bg-blue-500 hover:bg-blue-600 transition-colors w-full rounded-t cursor-pointer"
+                                    style={{ height: `${height}%`, minHeight: '4px' }}
+                                    title={`${new Date(day.date).toLocaleDateString()}: ${day.page_views} views`}
+                                  />
+                                  <span className="text-xs text-gray-500 mt-1 transform -rotate-45 origin-top-left">
+                                    {new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-center h-full text-gray-500">
+                            <div className="text-center">
+                              <div className="text-4xl mb-2">📊</div>
+                              <p className="font-medium">No chart data yet</p>
+                              <p className="text-sm">Charts will appear after running daily aggregation</p>
+                              <div className="mt-3 p-2 bg-blue-50 rounded text-blue-700 text-xs">
+                                Run: <code>node scripts/run-analytics-aggregation.js</code>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Top Pages */}
+                    <div className="bg-white rounded-lg shadow p-6">
+                      <h3 className="text-lg font-semibold mb-4">Top Pages (Real-time)</h3>
+                      <div className="space-y-3">
+                        {realTimePages.length > 0 ? (
+                          realTimePages.slice(0, 5).map((page: any, index: number) => (
+                            <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded">
+                              <div className="flex-1">
+                                <p className="font-medium text-gray-900">{page.title}</p>
+                                <p className="text-xs text-gray-400 truncate">{page.url}</p>
+                                <p className="text-sm text-gray-500">{page.count} views</p>
+                              </div>
+                              <div className="w-16 bg-gray-200 rounded-full h-2">
+                                <div
+                                  className="bg-green-500 h-2 rounded-full"
+                                  style={{
+                                    width: `${Math.min((page.count / Math.max(...realTimePages.map(p => p.count))) * 100, 100)}%`
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="text-center py-8 text-gray-500">
+                            <p>No page views recorded yet.</p>
+                            <p className="text-sm">Start browsing your website to see top pages!</p>
+                            <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                              <p className="text-sm text-blue-700">
+                                💡 <strong>Tip:</strong> Navigate to different pages on your website to see real-time analytics data appear here.
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Traffic Sources and Device Breakdown */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Traffic Sources */}
+                    <div className="bg-white rounded-lg shadow p-6">
+                      <h3 className="text-lg font-semibold mb-4">Traffic Sources</h3>
+                      <div className="space-y-3">
+                        {analytics.length > 0 && analytics[0].referrers && Array.isArray(analytics[0].referrers) && analytics[0].referrers.length > 0 ? (
+                          analytics[0].referrers.slice(0, 5).map((referrer: any, index: number) => (
+                            <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded">
+                              <div>
+                                <p className="font-medium text-gray-900">{referrer.referrer || 'Unknown'}</p>
+                                <p className="text-sm text-gray-500">{referrer.visits || 0} visits</p>
+                              </div>
+                              <div className="w-16 bg-gray-200 rounded-full h-2">
+                                <div
+                                  className="bg-purple-500 h-2 rounded-full"
+                                  style={{ width: `${Math.min((referrer.visits || 0) / Math.max(...(analytics[0].referrers?.map((r: any) => r.visits || 0) || [1])) * 100, 100)}%` }}
+                                />
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="text-center py-8 text-gray-500">
+                            <p>No referrer data available yet.</p>
+                            <p className="text-sm">Traffic sources will appear as visitors arrive!</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Device Breakdown */}
+                    <div className="bg-white rounded-lg shadow p-6">
+                      <h3 className="text-lg font-semibold mb-4">Device Types</h3>
+                      <div className="space-y-3">
+                        {analytics.length > 0 && analytics[0].devices && Array.isArray(analytics[0].devices) && analytics[0].devices.length > 0 ? (
+                          analytics[0].devices.map((device: any, index: number) => {
+                            const colors = ['bg-blue-500', 'bg-green-500', 'bg-yellow-500', 'bg-red-500'];
+                            const color = colors[index % colors.length];
+                            return (
+                              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded">
+                                <div className="flex items-center">
+                                  <div className={`w-3 h-3 rounded-full ${color} mr-3`}></div>
+                                  <div>
+                                    <p className="font-medium text-gray-900 capitalize">{device.device || 'Unknown'}</p>
+                                    <p className="text-sm text-gray-500">{device.count || 0} visits</p>
+                                  </div>
+                                </div>
+                                <div className="w-16 bg-gray-200 rounded-full h-2">
+                                  <div
+                                    className={`${color} h-2 rounded-full`}
+                                    style={{ width: `${Math.min((device.count || 0) / Math.max(...(analytics[0].devices?.map((d: any) => d.count || 0) || [1])) * 100, 100)}%` }}
+                                  />
+                                </div>
+                              </div>
+                            );
+                          })
+                        ) : (
+                          <div className="text-center py-8 text-gray-500">
+                            <p>No device data available yet.</p>
+                            <p className="text-sm">Device breakdown will show as users visit!</p>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
 
