@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
 
@@ -41,10 +41,52 @@ const getBrowser = (): string => {
   return 'Other';
 };
 
+// Get user's country using IP geolocation
+const getCountryFromIP = async (): Promise<string> => {
+  // Only run on client side
+  if (typeof window === 'undefined') {
+    return 'Unknown';
+  }
+  
+  try {
+    // Using ipapi.co free tier (no API key needed for basic info)
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+    
+    const response = await fetch('https://ipapi.co/json/', {
+      signal: controller.signal,
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+      }
+    });
+    
+    clearTimeout(timeoutId);
+    
+    if (response.ok) {
+      const data = await response.json();
+      return data.country_name || 'Unknown';
+    }
+  } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') {
+      console.warn('Geolocation request timed out');
+    } else {
+      console.warn('Error fetching geolocation:', error);
+    }
+  }
+  return 'Unknown';
+};
+
 const AnalyticsTracker: React.FC = () => {
   const router = useRouter();
   const supabase = useSupabaseClient();
   const user = useUser();
+  const [userCountry, setUserCountry] = useState<string>('Unknown');
+
+  // Fetch country on component mount
+  useEffect(() => {
+    getCountryFromIP().then(country => setUserCountry(country));
+  }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -59,7 +101,7 @@ const AnalyticsTracker: React.FC = () => {
         const deviceType = getDeviceType();
         const browser = getBrowser();
 
-        // Track page view
+        // Track page view with country
         const { error: pageViewError } = await supabase
           .from('page_views')
           .insert({
@@ -69,6 +111,7 @@ const AnalyticsTracker: React.FC = () => {
             page_title: pageTitle,
             referrer: referrer,
             user_agent: userAgent,
+            country: userCountry,
             device_type: deviceType,
             browser: browser,
             created_at: new Date().toISOString()
@@ -153,7 +196,7 @@ const AnalyticsTracker: React.FC = () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
       handleBeforeUnload(); // Call it when component unmounts too
     };
-  }, [router.asPath, supabase, user?.id]);
+  }, [router.asPath, supabase, user?.id, userCountry]);
 
   return null; // This component doesn't render anything
 };
