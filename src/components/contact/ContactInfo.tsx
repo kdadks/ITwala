@@ -23,7 +23,7 @@ const ContactInfo = () => {
               <h3 className="text-lg font-medium text-gray-900">Email</h3>
               <p className="mt-1 text-gray-600">
                 <a href="mailto:sales@it-wala.com" className="hover:text-primary-600">
-                  sales@it-wala.com
+                  sales@it-wala.com, support@it-wala.com
                 </a>
               </p>
               <p className="mt-1 text-sm text-gray-500">For general inquiries and sales</p>

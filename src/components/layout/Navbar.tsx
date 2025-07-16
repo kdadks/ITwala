@@ -118,7 +118,7 @@ const Navbar = () => {
                 />
                 <div className="flex flex-col justify-center leading-tight">
                   <span className="text-xl font-bold text-primary-500">ITwala</span>
-                  <span className="text-xs md:text-sm text-primary-700 font-medium mt-0.5 ml-0.5 tracking-wide whitespace-nowrap">IT- Simple Hain</span>
+                  <span className="text-xs md:text-sm text-primary-700 font-medium mt-0.5 ml-0.5 tracking-wide whitespace-nowrap">IT- It's Simple</span>
                 </div>
               </div>
             </Link>
