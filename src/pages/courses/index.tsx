@@ -34,6 +34,14 @@ const CoursesPage: NextPage = () => {
       if (searchQuery) params.append('search', searchQuery);
       params.append('sortBy', sortBy);
 
+      console.log('🔍 fetchCourses called with:', {
+        selectedCategory,
+        selectedLevel,
+        searchQuery,
+        sortBy,
+        url: `/api/courses?${params.toString()}`
+      });
+
       const response = await fetch(`/api/courses?${params.toString()}`);
       
       if (!response.ok) {
@@ -41,6 +49,10 @@ const CoursesPage: NextPage = () => {
       }
       
       const data = await response.json();
+      console.log('📦 API response:', {
+        coursesCount: data.courses?.length || 0,
+        courses: data.courses?.map(c => ({ id: c.id, title: c.title, category: c.category })) || []
+      });
       setCourses(data.courses || []);
       
       // Extract unique categories and levels for filters
@@ -61,21 +73,37 @@ const CoursesPage: NextPage = () => {
     }
   };
 
-  // Sync searchQuery with URL param
+  // Sync URL params with filters
   useEffect(() => {
-    if (typeof router.query.search === 'string') {
-      setSearchQuery(router.query.search);
+    if (router.isReady) {
+      console.log('🔄 URL params sync:', {
+        routerQuery: router.query,
+        currentStates: { selectedCategory, selectedLevel, searchQuery }
+      });
+      
+      if (typeof router.query.search === 'string') {
+        setSearchQuery(router.query.search);
+      }
+      if (typeof router.query.category === 'string') {
+        console.log('📝 Setting category from URL:', router.query.category);
+        setSelectedCategory(router.query.category);
+      }
+      if (typeof router.query.level === 'string') {
+        setSelectedLevel(router.query.level);
+      }
     }
-  }, [router.query.search]);
+  }, [router.isReady, router.query.search, router.query.category, router.query.level]);
 
   // Fetch courses when filters change
   useEffect(() => {
-    fetchCourses();
-  }, [selectedCategory, selectedLevel, priceRange, sortBy, searchQuery]);
+    if (router.isReady) {
+      fetchCourses();
+    }
+  }, [selectedCategory, selectedLevel, priceRange, sortBy, searchQuery, router.isReady]);
 
-  // Initial load to get all courses for filter options
+  // Initial load to get all courses for filter options only
   useEffect(() => {
-    const fetchAllCourses = async () => {
+    const fetchAllCoursesForFilters = async () => {
       try {
         const response = await fetch('/api/courses');
         if (response.ok) {
@@ -88,6 +116,11 @@ const CoursesPage: NextPage = () => {
             
             setCategories(uniqueCategories);
             setLevels(uniqueLevels);
+            
+            // Only set courses if no specific filtering is applied (i.e., showing all courses)
+            if (selectedCategory === 'all' && selectedLevel === 'all' && !searchQuery) {
+              setCourses(data.courses || []);
+            }
           }
         }
       } catch (err) {
@@ -95,8 +128,11 @@ const CoursesPage: NextPage = () => {
       }
     };
     
-    fetchAllCourses();
-  }, []);
+    // Only run this on initial load when router is ready and we don't have categories yet
+    if (router.isReady && categories.length === 0) {
+      fetchAllCoursesForFilters();
+    }
+  }, [router.isReady, categories.length, selectedCategory, selectedLevel, searchQuery]);
 
   if (loading) {
     return (
@@ -175,6 +211,11 @@ const CoursesPage: NextPage = () => {
                     <div className="flex flex-col sm:flex-row justify-between items-center">
                       <p className="text-gray-600 mb-2 sm:mb-0">
                         Showing <span className="font-semibold">{courses.length}</span> results
+                        {selectedCategory && selectedCategory !== 'all' && (
+                          <span className="text-primary-600 ml-2">
+                            for category: "{selectedCategory}"
+                          </span>
+                        )}
                       </p>
                       <div className="flex items-center space-x-2">
                         <label htmlFor="sortOptions" className="text-gray-600">Sort by:</label>

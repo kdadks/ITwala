@@ -125,12 +125,7 @@ const Footer = () => {
               Quick Links
             </h3>
             <nav className="space-y-2">
-              {[
-                { href: '/about', label: 'About' },
-                { href: '/courses', label: 'Courses' },
-                { href: '/consulting', label: 'Consulting' },
-                { href: '/contact', label: 'Contact' }
-              ].map((link) => (
+              {[{ href: '/about', label: 'About' }, { href: '/courses', label: 'Courses' }, { href: '/consulting', label: 'Consulting' }, { href: '/contact', label: 'Contact' }].map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
@@ -166,12 +161,7 @@ const Footer = () => {
               Services
             </h3>
             <nav className="space-y-2">
-              {[
-                { href: '/services/ai-solutions', label: 'AI Solutions' },
-                { href: '/services/digital-transformation', label: 'Digital Transform' },
-                { href: '/services/it-staffing', label: 'IT Staffing' },
-                { href: '/services/technical-consulting', label: 'Consulting' }
-              ].map((link) => (
+              {[{ href: '/services/ai-solutions', label: 'AI Solutions' }, { href: '/services/digital-transformation', label: 'Digital Transform' }, { href: '/services/it-staffing', label: 'IT Staffing' }, { href: '/services/technical-consulting', label: 'Consulting' }].map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}

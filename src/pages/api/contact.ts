@@ -20,12 +20,14 @@ export default async function handler(
     console.log('- To Email:', toEmail);
     console.log('- SMTP User:', process.env.SMTP_USER);
     console.log('- SMTP From:', process.env.SMTP_FROM);
+    console.log('- SMTP Host:', process.env.SMTP_HOST);
+    console.log('- SMTP Port:', process.env.SMTP_PORT);
     
     // Create a transporter using SMTP
     const transporter = createTransport({
-      host: 'smtp.hostinger.com',
-      port: 465,
-      secure: true,
+      host: process.env.SMTP_HOST,
+      port: parseInt(process.env.SMTP_PORT || '465'),
+      secure: process.env.SMTP_SECURE === 'true',
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,

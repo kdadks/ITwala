@@ -10,77 +10,94 @@ async function testEnrollmentFlow() {
   try {
     // Create transporter
     const transporter = createTransport({
-      host: 'smtp.hostinger.com',
-      port: 465,
-      secure: true,
+      host: process.env.SMTP_HOST,
+      port: parseInt(process.env.SMTP_PORT || '465'),
+      secure: process.env.SMTP_SECURE === 'true',
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
       },
     });
-    
-    // Mock course data
-    const course = {
-      title: 'Test Course - Full Stack Development',
-      description: 'A comprehensive course covering modern web development technologies.',
-      price: 25000
+
+    // Test email data
+    const testEmailData = {
+      studentName: 'Test Student',
+      studentEmail: 'test@example.com',
+      studentPhone: '+1234567890',
+      courseTitle: 'Test Course',
+      courseDuration: '4 weeks',
+      courseFees: '₹5,000'
     };
+
+    console.log('Sending student confirmation email...');
     
-    // Mock student data
-    const studentName = 'John Doe';
-    const studentEmail = 'john.doe@example.com';
-    const studentPhone = '+91 9876543210';
-
-    console.log('Sending test admin notification email...');
-    // Send email to admin
+    // Send student confirmation email
     await transporter.sendMail({
       from: process.env.SMTP_FROM || 'sales@it-wala.com',
-      to: 'sales@it-wala.com',
-      subject: `New Course Enrollment: ${course.title}`,
+      to: testEmailData.studentEmail,
+      subject: `Enrollment Confirmation - ${testEmailData.courseTitle}`,
       html: `
-        <h2>New Course Enrollment</h2>
-        <p><strong>Course:</strong> ${course.title}</p>
-        <p><strong>Student Name:</strong> ${studentName}</p>
-        <p><strong>Student Email:</strong> ${studentEmail}</p>
-        <p><strong>Student Phone:</strong> ${studentPhone || 'Not provided'}</p>
-        <p><strong>Course Price:</strong> ₹${course.price}</p>
-        <p><strong>Enrollment Date:</strong> ${new Date().toLocaleString()}</p>
-      `,
-    });
-
-    console.log('✅ Admin notification email sent successfully');
-
-    console.log('Sending test student confirmation email...');
-    // Send confirmation email to student
-    await transporter.sendMail({
-      from: process.env.SMTP_FROM || 'sales@it-wala.com',
-      to: studentEmail,
-      subject: `Enrollment Confirmation: ${course.title}`,
-      html: `
-        <h2>Enrollment Confirmation</h2>
-        <p>Dear ${studentName},</p>
-        <p>Thank you for enrolling in <strong>${course.title}</strong>.</p>
-        <p>${course.description}</p>
-        <p>Our team will contact you shortly with further details about the course schedule and payment options.</p>
-        <p>If you have any questions, please contact us at sales@it-wala.com or call +91 7982303199.</p>
-        <p>Best regards,<br>ITwala Academy Team</p>
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #2563eb;">Welcome to ITwala Academy!</h2>
+          <p>Dear ${testEmailData.studentName},</p>
+          <p>Thank you for enrolling in <strong>${testEmailData.courseTitle}</strong>.</p>
+          
+          <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3>Course Details:</h3>
+            <ul>
+              <li><strong>Course:</strong> ${testEmailData.courseTitle}</li>
+              <li><strong>Duration:</strong> ${testEmailData.courseDuration}</li>
+              <li><strong>Fees:</strong> ${testEmailData.courseFees}</li>
+            </ul>
+          </div>
+          
+          <p>We will contact you soon with further details.</p>
+          <p>Best regards,<br>ITwala Academy Team</p>
+        </div>
       `,
     });
 
     console.log('✅ Student confirmation email sent successfully');
-    console.log('🎉 Enrollment email flow test completed successfully!');
-    
+
+    console.log('Sending admin notification email...');
+
+    // Send admin notification email
+    await transporter.sendMail({
+      from: process.env.SMTP_FROM || 'sales@it-wala.com',
+      to: 'sales@it-wala.com',
+      subject: `New Enrollment - ${testEmailData.courseTitle}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #dc2626;">New Course Enrollment</h2>
+          
+          <div style="background: #f8fafc; padding: 20px; border-radius: 8px;">
+            <h3>Student Information:</h3>
+            <ul>
+              <li><strong>Name:</strong> ${testEmailData.studentName}</li>
+              <li><strong>Email:</strong> ${testEmailData.studentEmail}</li>
+              <li><strong>Phone:</strong> ${testEmailData.studentPhone}</li>
+            </ul>
+            
+            <h3>Course Information:</h3>
+            <ul>
+              <li><strong>Course:</strong> ${testEmailData.courseTitle}</li>
+              <li><strong>Duration:</strong> ${testEmailData.courseDuration}</li>
+              <li><strong>Fees:</strong> ${testEmailData.courseFees}</li>
+            </ul>
+          </div>
+          
+          <p>Please follow up with the student for payment and course access.</p>
+        </div>
+      `,
+    });
+
+    console.log('✅ Admin notification email sent successfully');
+    console.log('✅ All enrollment emails sent successfully!');
+
   } catch (error) {
-    console.error('❌ Enrollment flow test failed:', error);
-    
-    if (error.code === 'EAUTH') {
-      console.error('Authentication error - check SMTP_USER and SMTP_PASS');
-    } else if (error.code === 'ESOCKET') {
-      console.error('Socket error - check SMTP host and port');
-    } else if (error.code === 'EENVELOPE') {
-      console.error('Envelope error - check from/to email addresses');
-    }
+    console.error('❌ Error sending enrollment emails:', error);
   }
 }
 
-testEnrollmentFlow();
+// Run the test
+testEnrollmentFlow().catch(console.error);
