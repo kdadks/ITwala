@@ -5,11 +5,6 @@ const nextConfig = {
   // Export configuration for static hosting
   output: 'standalone',
   
-  // Disable static optimization for pages that use router hooks during SSR
-  experimental: {
-    esmExternals: 'loose'
-  },
-  
   // Image optimization configuration
   images: {
     remotePatterns: [
