@@ -69,6 +69,7 @@ module.exports = {
       },
       fontFamily: {
         sans: [
+          'var(--font-inter)',
           '"Inter"',
           'system-ui',
           '-apple-system',

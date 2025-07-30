@@ -4,12 +4,9 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head>
+        {/* Preconnect to Google Fonts for better performance */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
         <meta name="description" content="ITwala Academy - Premier AI education platform offering comprehensive artificial intelligence, machine learning, and data science courses. Master AI skills with expert-led training and hands-on projects." />
         <meta name="keywords" content="AI education, artificial intelligence courses, machine learning training, data science certification, AI bootcamp, deep learning courses, neural networks training, AI career development, online AI education, professional AI training" />
         <meta name="author" content="ITwala Academy" />
