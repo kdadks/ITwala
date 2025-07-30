@@ -11,6 +11,7 @@ const About: NextPage = () => {
       <Head>
         <title>About ITwala Academy - AI Education & Consulting Experts</title>
         <meta name="description" content="Learn about ITwala Academy's mission to provide world-class AI education and consulting services. Expert instructors, industry partnerships, proven success." />
+        <link rel="canonical" href="https://academy.it-wala.com/about" />
       </Head>
 
       <main>

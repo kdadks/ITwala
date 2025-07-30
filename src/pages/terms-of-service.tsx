@@ -9,6 +9,7 @@ const TermsOfService: NextPage = () => {
       <Head>
         <title>Terms of Service - ITwala Academy</title>
         <meta name="description" content="Terms of Service for ITwala Academy - Understanding our service agreement and user responsibilities." />
+        <link rel="canonical" href="https://academy.it-wala.com/terms-of-service" />
       </Head>
 
       <main>

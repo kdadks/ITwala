@@ -9,6 +9,7 @@ const PrivacyPolicy: NextPage = () => {
       <Head>
         <title>Privacy Policy - ITwala Academy</title>
         <meta name="description" content="Privacy Policy for ITwala Academy - Learn how we protect and handle your personal information." />
+        <link rel="canonical" href="https://academy.it-wala.com/privacy-policy" />
       </Head>
 
       <main>

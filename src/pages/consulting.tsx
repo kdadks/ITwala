@@ -20,6 +20,7 @@ const Consulting: NextPage = () => {
         <meta property="og:title" content="ITWala Product & Consulting - Expert IT Solutions" />
         <meta property="og:description" content="Transform your business with our comprehensive IT consulting services. From strategy to implementation, we deliver results." />
         <meta property="og:type" content="website" />
+        <link rel="canonical" href="https://academy.it-wala.com/consulting" />
       </Head>
 
       <main>

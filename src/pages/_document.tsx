@@ -33,7 +33,6 @@ export default function Document() {
         {/* Additional SEO Meta Tags */}
         <meta name="theme-color" content="#3B82F6" />
         <meta name="msapplication-TileColor" content="#3B82F6" />
-        <link rel="canonical" href="https://academy.it-wala.com" />
         
         {/* Favicon and Icons */}
         <link rel="icon" type="image/png" href="/images/IT - WALA_logo (1).png" />
