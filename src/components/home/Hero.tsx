@@ -31,7 +31,7 @@ const Hero = () => {
             transition={{ duration: 0.6 }}
           >
             <div className="flex justify-center mb-4">
-              <Image src="/images/IT - WALA_logo (1).png" alt="IT Wala Logo" width={90} height={90} className="object-contain drop-shadow-lg" priority />
+              <Image src="/images/IT-WALA-logo-96x96.png" alt="IT Wala Logo" width={90} height={90} className="object-contain drop-shadow-lg" priority />
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-3 md:mb-4 leading-tight text-white drop-shadow-lg">
               Transform Your Future with IT Excellence

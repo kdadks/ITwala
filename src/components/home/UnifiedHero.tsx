@@ -31,7 +31,7 @@ const UnifiedHero = () => {
             transition={{ duration: 0.6 }}
           >
             <div className="flex justify-center mb-3">
-              <Image src="/images/IT - WALA_logo (1).png" alt="IT Wala Logo" width={64} height={64} className="object-contain drop-shadow-lg" priority />
+              <Image src="/images/IT-WALA-logo-64x64.png" alt="IT Wala Logo" width={64} height={64} className="object-contain drop-shadow-lg" priority />
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 md:mb-3 leading-tight text-white drop-shadow-lg">
               ITWala - Your Complete IT Partner

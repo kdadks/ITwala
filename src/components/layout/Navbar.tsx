@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useUser, useSupabaseClient } from '@supabase/auth-helpers-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -110,11 +111,13 @@ const Navbar = () => {
           <div className="flex items-center">
             <Link href="/">
               <div className="flex items-center space-x-3">
-                <img
-                  src="/images/IT - WALA_logo (1).png"
+                <Image
+                  src="/images/IT-WALA-logo-48x48.png"
                   alt="ITwala Academy Logo"
-                  className="h-10 w-auto"
-                  style={{ maxWidth: 48 }}
+                  width={48}
+                  height={48}
+                  className="h-10 w-auto object-contain"
+                  priority
                 />
                 <div className="flex flex-col justify-center leading-tight">
                   <span className="text-xl font-bold text-primary-500">ITwala</span>
@@ -153,10 +156,12 @@ const Navbar = () => {
                   >
                     <div className="w-8 h-8 rounded-full bg-primary-500 text-white flex items-center justify-center">
                       {profile?.avatar_url ? (
-                        <img
-                          className="h-8 w-8 rounded-full"
+                        <Image
+                          className="h-8 w-8 rounded-full object-cover"
                           src={profile.avatar_url}
                           alt={profile.full_name}
+                          width={32}
+                          height={32}
                         />
                       ) : (
                         <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { FaLinkedin, FaEnvelope, FaPhone, FaArrowUp } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
 
@@ -69,10 +70,12 @@ const Footer = () => {
           {/* Company Info */}
           <div className="flex flex-col lg:flex-row items-start lg:items-center gap-6">
             <Link href="/" className="flex items-center space-x-3 group">
-              <img
-                src="/images/IT - WALA_logo (1).png"
+              <Image
+                src="/images/IT-WALA-logo-48x48.png"
                 alt="ITwala Academy Logo"
-                className="h-10 w-auto transition-transform group-hover:scale-105"
+                width={48}
+                height={48}
+                className="h-10 w-auto object-contain transition-transform group-hover:scale-105"
               />
               <div>
                 <span className="text-xl font-bold text-white">ITwala</span>

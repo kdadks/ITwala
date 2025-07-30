@@ -1,5 +1,6 @@
 import { NextPage } from 'next';
 import Head from 'next/head';
+import Image from 'next/image';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
 import { useState, useEffect } from 'react';
 import AdminHeader from '@/components/admin/AdminHeader';
@@ -159,9 +160,11 @@ const InstructorsPage: NextPage = () => {
                             <div className="flex items-center">
                               <div className="h-10 w-10 flex-shrink-0">
                                 <img
-                                  className="h-10 w-10 rounded-full"
+                                  className="h-10 w-10 rounded-full object-cover"
                                   src={instructor.avatar_url || '/images/default-avatar.png'}
                                   alt={instructor.full_name}
+                                  width={40}
+                                  height={40}
                                 />
                               </div>
                               <div className="ml-4">

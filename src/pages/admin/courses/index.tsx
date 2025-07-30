@@ -1,6 +1,7 @@
 import { NextPage } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useUser, useSupabaseClient } from '@supabase/auth-helpers-react';
 import { useState, useEffect } from 'react';
@@ -314,7 +315,7 @@ const AdminCourses: NextPage = () => {
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
                               <div className="h-10 w-10 flex-shrink-0 rounded overflow-hidden">
-                                <img src={course.thumbnail || 'https://via.placeholder.com/40'} alt={course.title} className="h-10 w-10 object-cover" />
+                                <Image src={course.thumbnail || 'https://via.placeholder.com/40'} alt={course.title} width={40} height={40} className="h-10 w-10 object-cover" />
                               </div>
                               <div className="ml-4">
                                 <div className="text-sm font-medium text-gray-900">{course.title}</div>

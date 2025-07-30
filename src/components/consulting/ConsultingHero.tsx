@@ -32,13 +32,13 @@ const ConsultingHero = () => {
             transition={{ duration: 0.6 }}
           >
             <div className="flex justify-center mb-6">
-              <Image 
-                src="/images/IT - WALA_logo (1).png" 
-                alt="ITWala Logo" 
-                width={100} 
-                height={100} 
-                className="object-contain drop-shadow-lg" 
-                priority 
+              <Image
+                src="/images/IT-WALA-logo-96x96.png"
+                alt="ITWala Logo"
+                width={100}
+                height={100}
+                className="object-contain drop-shadow-lg"
+                priority
               />
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4 md:mb-6 leading-tight text-white drop-shadow-lg">
