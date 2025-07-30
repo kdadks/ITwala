@@ -7,20 +7,70 @@ import Testimonials from '@/components/home/Testimonials';
 import CtaSection from '@/components/home/CtaSection';
 import Stats from '@/components/home/Stats';
 import Locations from '@/components/about/Locations';
+import AIEducationFAQ from '@/components/seo/AIEducationFAQ';
 import { motion } from 'framer-motion';
 
 const Academy: NextPage = () => {
   return (
     <>
       <Head>
-        <title>ITWala Academy - Innovate today for better tomorrow</title>
-        <meta name="description" content="Master cutting-edge technologies with ITWala Academy. Expert-led courses, hands-on projects, and comprehensive learning paths to advance your IT career." />
-        <meta name="keywords" content="IT courses, programming training, technology education, coding bootcamp, software development, web development, mobile app development" />
-        <meta property="og:title" content="ITWala Academy - Transform Your IT Career" />
-        <meta property="og:description" content="Join 500+ students learning cutting-edge technologies with industry experts. Build your career with hands-on projects and comprehensive courses." />
+        <title>ITWala Academy - Premier AI Education & Machine Learning Training Platform</title>
+        <meta name="description" content="ITWala Academy - India's leading AI education platform. Master artificial intelligence, machine learning, data science with expert instructors. Industry-recognized AI certifications, hands-on ML projects, career support. Join 500+ AI professionals." />
+        <meta name="keywords" content="AI education India, artificial intelligence academy, machine learning courses, data science training, AI certification program, deep learning bootcamp, neural networks course, AI career training, professional AI education, online AI academy, ML engineering courses, AI skills development" />
+        <meta property="og:title" content="ITWala Academy - Premier AI Education & Machine Learning Training Platform" />
+        <meta property="og:description" content="Transform your career with ITWala Academy's comprehensive AI education. Master artificial intelligence, machine learning, and data science with industry experts and hands-on projects." />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://itwala.com/academy" />
-        <link rel="canonical" href="https://itwala.com/academy" />
+        <meta property="og:url" content="https://academy.it-wala.com/academy" />
+        <meta property="og:image" content="https://academy.it-wala.com/images/IT - WALA_logo (1).png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="ITWala Academy - AI Education & ML Training Platform" />
+        <meta name="twitter:description" content="Master AI & ML with comprehensive courses, expert instructors, and hands-on projects. Industry-recognized certifications and career support." />
+        <meta name="twitter:image" content="https://academy.it-wala.com/images/IT - WALA_logo (1).png" />
+        <link rel="canonical" href="https://academy.it-wala.com/academy" />
+        
+        {/* Schema for Academy Page */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "EducationalOrganization",
+            "name": "ITWala Academy",
+            "alternateName": "ITWala AI Academy",
+            "description": "Premier AI education platform offering comprehensive artificial intelligence, machine learning, and data science courses",
+            "url": "https://academy.it-wala.com/academy",
+            "logo": "https://academy.it-wala.com/images/IT - WALA_logo (1).png",
+            "foundingDate": "2020",
+            "numberOfEmployees": "50-100",
+            "areaServed": "Worldwide",
+            "educationalCredentialAwarded": "AI and Machine Learning Certification",
+            "hasCredential": {
+              "@type": "EducationalOccupationalCredential",
+              "name": "AI and Machine Learning Professional Certificate",
+              "description": "Industry-recognized certification in artificial intelligence and machine learning"
+            },
+            "offers": [
+              {
+                "@type": "Course",
+                "name": "AI & Machine Learning Fundamentals",
+                "description": "Comprehensive AI and ML training with hands-on projects",
+                "provider": "ITWala Academy",
+                "courseMode": "online"
+              },
+              {
+                "@type": "Course",
+                "name": "Data Science Professional Program",
+                "description": "Complete data science training with real-world applications",
+                "provider": "ITWala Academy",
+                "courseMode": "online"
+              }
+            ],
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": "4.8",
+              "ratingCount": "500",
+              "bestRating": "5"
+            }
+          })}
+        </script>
       </Head>
 
       <main>

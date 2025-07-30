@@ -145,8 +145,59 @@ const CoursesPage: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Courses - ITwala Academy</title>
-        <meta name="description" content="Browse our comprehensive collection of IT training courses in Product Management, Software Development, Testing, and AI." />
+        <title>AI Courses & Machine Learning Training - ITwala Academy | Best AI Education Platform</title>
+        <meta name="description" content="Explore ITwala Academy's comprehensive AI courses and machine learning training programs. Master artificial intelligence, data science, deep learning with expert instructors. Industry-recognized AI certifications, hands-on projects, career support." />
+        <meta name="keywords" content="AI courses, machine learning training, artificial intelligence courses, data science courses, deep learning certification, neural networks training, AI bootcamp, ML engineering courses, AI career training, online AI education, professional AI courses" />
+        <meta property="og:title" content="AI Courses & Machine Learning Training - ITwala Academy" />
+        <meta property="og:description" content="Master AI with comprehensive courses in artificial intelligence, machine learning, and data science. Expert-led training with hands-on projects and industry certifications." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://academy.it-wala.com/courses" />
+        <meta property="og:image" content="https://academy.it-wala.com/images/IT - WALA_logo (1).png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="AI Courses & ML Training - ITwala Academy" />
+        <meta name="twitter:description" content="Comprehensive AI and machine learning courses with expert instructors, hands-on projects, and industry certifications." />
+        <meta name="twitter:image" content="https://academy.it-wala.com/images/IT - WALA_logo (1).png" />
+        <link rel="canonical" href="https://academy.it-wala.com/courses" />
+        
+        {/* Schema for Courses Page */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": "AI Courses & Machine Learning Training Programs",
+            "description": "Comprehensive collection of AI and machine learning courses offered by ITwala Academy",
+            "url": "https://academy.it-wala.com/courses",
+            "mainEntity": {
+              "@type": "ItemList",
+              "name": "AI and Machine Learning Courses",
+              "description": "Professional AI education and machine learning training programs",
+              "numberOfItems": "20+",
+              "itemListElement": [
+                {
+                  "@type": "Course",
+                  "name": "AI & Machine Learning Fundamentals",
+                  "description": "Master the fundamentals of artificial intelligence and machine learning",
+                  "provider": "ITWala Academy",
+                  "courseMode": "online",
+                  "educationalLevel": "Beginner to Advanced"
+                },
+                {
+                  "@type": "Course",
+                  "name": "Data Science Professional Program",
+                  "description": "Comprehensive data science training with real-world applications",
+                  "provider": "ITWala Academy",
+                  "courseMode": "online",
+                  "educationalLevel": "Intermediate to Advanced"
+                }
+              ]
+            },
+            "provider": {
+              "@type": "EducationalOrganization",
+              "name": "ITWala Academy",
+              "url": "https://academy.it-wala.com"
+            }
+          })}
+        </script>
       </Head>
 
       <main>
@@ -158,16 +209,16 @@ const CoursesPage: NextPage = () => {
               transition={{ duration: 0.5 }}
               className="max-w-4xl mx-auto text-center"
             >
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 md:mb-6 px-2">Explore Our Courses</h1>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 md:mb-6 px-2">AI Courses & Machine Learning Training</h1>
               <p className="text-lg sm:text-xl text-primary-100 mb-6 md:mb-8 px-2">
-                Discover specialized IT training designed to advance your career and skills.
+                Master artificial intelligence and machine learning with expert-led courses, hands-on projects, and industry-recognized certifications.
               </p>
             </motion.div>
             
             <div className="max-w-2xl mx-auto">
               <input
                 type="text"
-                placeholder="Search for courses..."
+                placeholder="Search AI courses, machine learning, data science..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full py-3 px-4 sm:px-6 rounded-full bg-white shadow-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-400 text-sm sm:text-base"

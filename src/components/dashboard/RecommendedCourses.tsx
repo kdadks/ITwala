@@ -102,12 +102,14 @@ const RecommendedCourses = () => {
                     />
                   </div>
                   <div className="ml-4 flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">{course.title}</h3>
-                    <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3">{course.title}</h3>
+                    <div className="space-y-2">
                       <RatingComponent rating={course.rating || 0} />
-                      <span className="text-primary-600 font-semibold">
-                        ₹{course.price.toLocaleString()}
-                      </span>
+                      <div className="flex justify-end">
+                        <span className="text-primary-600 font-semibold">
+                          ₹{course.price.toLocaleString()}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>

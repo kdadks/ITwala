@@ -21,7 +21,7 @@ const CourseGrid: React.FC<CourseGridProps> = ({ courses }) => {
           className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
         >
           <Link href={`/courses/${course.slug}`}>
-            <div className="block h-full">
+            <div className="block h-full flex flex-col">
               <div className="relative h-40 sm:h-48">
                 <Image
                   src={course.image}
@@ -33,7 +33,7 @@ const CourseGrid: React.FC<CourseGridProps> = ({ courses }) => {
                   {course.level}
                 </div>
               </div>
-              <div className="p-4 sm:p-6">
+              <div className="p-4 sm:p-6 flex flex-col flex-grow">
                 <div className="flex items-center mb-2">
                   <span className="text-xs font-medium px-2 py-1 bg-primary-100 text-primary-700 rounded-full">
                     {course.category}
@@ -45,16 +45,18 @@ const CourseGrid: React.FC<CourseGridProps> = ({ courses }) => {
                 <p className="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed">
                   {course.description}
                 </p>
-                <div className="flex items-center justify-between">
+                <div className="mt-auto space-y-3">
                   <div className="flex items-center">
                     <RatingComponent rating={course.rating || 0} />
                     <span className="text-xs sm:text-sm text-gray-500 ml-2">
                       ({course.reviews?.length || 0})
                     </span>
                   </div>
-                  <span className="text-base sm:text-lg font-bold text-primary-600">
-                    ₹{course.price.toLocaleString()}
-                  </span>
+                  <div className="flex justify-end">
+                    <span className="text-base sm:text-lg font-bold text-primary-600">
+                      ₹{course.price.toLocaleString()}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>

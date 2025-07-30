@@ -164,17 +164,78 @@ const CoursePage: NextPage = () => {
     <ErrorBoundary>
       <>
         <Head>
-          <title>{course.title} - ITwala Academy</title>
-          <meta name="description" content={course.description} />
-          <meta property="og:title" content={`${course.title} - ITwala Academy`} />
-          <meta property="og:description" content={course.description} />
-          <meta property="og:type" content="website" />
+          <title>{course.title} - AI & Machine Learning Course | ITwala Academy</title>
+          <meta name="description" content={`${course.description} Join ITwala Academy's comprehensive ${course.title} course. Expert-led AI training with hands-on projects, industry certification, and career support.`} />
+          <meta name="keywords" content={`${course.title}, AI course, machine learning training, ${course.category.toLowerCase()}, artificial intelligence education, data science course, deep learning, neural networks, AI certification, online AI training`} />
+          <meta property="og:title" content={`${course.title} - AI & ML Course | ITwala Academy`} />
+          <meta property="og:description" content={`Master ${course.title} with expert instructors. Comprehensive AI and machine learning training with hands-on projects and industry certification.`} />
+          <meta property="og:type" content="article" />
           <meta property="og:image" content={course.image} />
           <meta property="og:url" content={shareUrl} />
+          <meta property="article:section" content="AI Education" />
+          <meta property="article:tag" content="Artificial Intelligence" />
+          <meta property="article:tag" content="Machine Learning" />
+          <meta property="article:tag" content="Data Science" />
           <meta name="twitter:card" content="summary_large_image" />
-          <meta name="twitter:title" content={`${course.title} - ITwala Academy`} />
-          <meta name="twitter:description" content={course.description} />
+          <meta name="twitter:title" content={`${course.title} - AI Course | ITwala Academy`} />
+          <meta name="twitter:description" content={`Master ${course.title} with comprehensive AI training, hands-on projects, and expert guidance.`} />
           <meta name="twitter:image" content={course.image} />
+          <link rel="canonical" href={shareUrl} />
+          
+          {/* Enhanced Course Schema */}
+          <script type="application/ld+json">
+            {JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Course",
+              "name": course.title,
+              "description": course.description,
+              "provider": {
+                "@type": "EducationalOrganization",
+                "name": "ITwala Academy",
+                "url": "https://academy.it-wala.com",
+                "logo": "https://academy.it-wala.com/images/IT - WALA_logo (1).png"
+              },
+              "image": course.image,
+              "url": shareUrl,
+              "courseCode": course.slug,
+              "educationalLevel": course.level,
+              "timeRequired": course.duration,
+              "courseMode": "online",
+              "inLanguage": "en",
+              "about": [
+                "Artificial Intelligence",
+                "Machine Learning",
+                "Data Science",
+                course.category
+              ],
+              "teaches": course.learningOutcomes,
+              "coursePrerequisites": course.requirements,
+              "offers": {
+                "@type": "Offer",
+                "category": "AI Education",
+                "price": course.price,
+                "priceCurrency": "INR",
+                "availability": "InStock",
+                "validFrom": course.publishedDate || new Date().toISOString(),
+                "description": `Registration fee for ${course.title} course`
+              },
+              "aggregateRating": course.rating && course.ratingCount ? {
+                "@type": "AggregateRating",
+                "ratingValue": course.rating,
+                "ratingCount": course.ratingCount,
+                "bestRating": 5
+              } : undefined,
+              "hasCourseInstance": {
+                "@type": "CourseInstance",
+                "courseMode": "online",
+                "instructor": {
+                  "@type": "Person",
+                  "name": "ITwala Academy Expert Instructors",
+                  "description": "Industry professionals with extensive AI and ML experience"
+                }
+              }
+            })}
+          </script>
         </Head>
 
         <main>

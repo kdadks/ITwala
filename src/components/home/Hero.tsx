@@ -37,7 +37,7 @@ const Hero = () => {
               Transform Your Future with IT Excellence
             </h1>
             <p className="text-sm sm:text-base md:text-lg font-semibold text-white mb-1 drop-shadow">
-              IT- Simple Hain | Let us shape your career & business
+              IT- It's Simple| Let us shape your career & business
             </p>
             <p className="text-base sm:text-lg md:text-xl text-gray-100 mb-4 md:mb-6 max-w-2xl mx-auto px-2 drop-shadow">
               Master cutting-edge technologies with industry experts and hands-on projects. Accelerate your business with our proven consulting solutions.

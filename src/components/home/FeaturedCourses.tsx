@@ -100,7 +100,7 @@ const FeaturedCourses = () => {
                       </div>
                       <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2">{course.title}</h3>
                       <p className="text-gray-600 mb-4 text-sm line-clamp-2">{course.description}</p>
-                      <div className="flex items-center justify-between">
+                      <div className="space-y-3">
                         <div className="flex items-center">
                           <div className="flex text-yellow-400">
                             <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
@@ -121,7 +121,9 @@ const FeaturedCourses = () => {
                           </div>
                           <span className="text-xs text-gray-500 ml-1">({course.reviews?.length || 0})</span>
                         </div>
-                        <span className="text-lg font-bold text-primary-600">₹{course.price.toLocaleString()}</span>
+                        <div className="flex justify-end">
+                          <span className="text-lg font-bold text-primary-600">₹{course.price.toLocaleString()}</span>
+                        </div>
                       </div>
                     </div>
                   </div>

@@ -42,16 +42,18 @@ const RelatedCourses: React.FC<RelatedCoursesProps> = ({ courses }) => {
                       <p className="text-gray-600 text-sm mb-2">{course.level}</p>
                     </div>
                     <p className="text-gray-600 mb-4 text-sm line-clamp-2">{course.description}</p>
-                    <div className="flex items-center justify-between">
+                    <div className="space-y-3">
                       <div className="flex items-center space-x-1">
                         <RatingComponent rating={course.rating || 0} />
                         <span className="text-sm text-gray-500">
                           ({course.reviews?.length || 0})
                         </span>
                       </div>
-                      <span className="text-sm font-medium text-gray-900">
-                        ₹{course.price.toLocaleString()}
-                      </span>
+                      <div className="flex justify-end">
+                        <span className="text-sm font-medium text-gray-900">
+                          ₹{course.price.toLocaleString()}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>

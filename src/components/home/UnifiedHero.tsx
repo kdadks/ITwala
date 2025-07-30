@@ -37,7 +37,7 @@ const UnifiedHero = () => {
               ITWala - Your Complete IT Partner
             </h1>
             <p className="text-base sm:text-lg md:text-xl font-semibold text-white mb-1 drop-shadow">
-              IT- Simple Hain | Let us shape your career & business
+              IT- It's Simple | Let us shape your career & business
             </p>
             <p className="text-sm sm:text-base md:text-lg text-gray-100 mb-3 md:mb-4 max-w-2xl mx-auto px-2 drop-shadow">
               Empowering individuals through world-class education and transforming businesses with expert consulting solutions. Your journey to IT excellence starts here.

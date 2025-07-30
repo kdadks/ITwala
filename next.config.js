@@ -53,6 +53,32 @@ const nextConfig = {
     ]
   },
   
+  // SEO-friendly redirects
+  async redirects() {
+    return [
+      {
+        source: '/course/:slug',
+        destination: '/courses/:slug',
+        permanent: true,
+      },
+      {
+        source: '/ai-courses',
+        destination: '/courses?category=Artificial Intelligence',
+        permanent: true,
+      },
+      {
+        source: '/machine-learning-courses',
+        destination: '/courses?category=Machine Learning',
+        permanent: true,
+      },
+      {
+        source: '/data-science-courses',
+        destination: '/courses?category=Data Science',
+        permanent: true,
+      }
+    ]
+  },
+  
   // Environment variables validation
   env: {
     CUSTOM_BUILD_ENV: process.env.NODE_ENV,

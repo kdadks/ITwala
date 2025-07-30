@@ -10,14 +10,40 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>ITWala - Your Complete IT Partner | Academy & Consulting</title>
-        <meta name="description" content="ITWala offers world-class IT education through our Academy and expert business transformation through our Consulting services. Shape your career and transform your business with IT excellence." />
-        <meta name="keywords" content="IT education, IT consulting, programming courses, digital transformation, AI solutions, technical training, business consulting" />
-        <meta property="og:title" content="ITWala - Your Complete IT Partner" />
-        <meta property="og:description" content="Empowering individuals through education and transforming businesses through expert consulting. Your journey to IT excellence starts here." />
+        <title>ITWala Academy - #1 AI Education Platform | Master Artificial Intelligence & Machine Learning</title>
+        <meta name="description" content="Join ITWala Academy, the premier AI education platform. Master artificial intelligence, machine learning, data science with expert-led courses. 500+ students, industry-recognized certifications, hands-on AI projects. Start your AI career today!" />
+        <meta name="keywords" content="AI education platform, artificial intelligence courses, machine learning training, AI bootcamp, data science certification, deep learning courses, neural networks training, AI career development, online AI education, professional AI training, AI academy, machine learning bootcamp, AI skills development" />
+        <meta property="og:title" content="ITWala Academy - #1 AI Education Platform | Master AI & Machine Learning" />
+        <meta property="og:description" content="Transform your career with ITWala Academy's comprehensive AI education. Master artificial intelligence, machine learning, and data science with expert instructors and hands-on projects." />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://itwala.com" />
-        <link rel="canonical" href="https://itwala.com" />
+        <meta property="og:url" content="https://academy.it-wala.com" />
+        <meta property="og:image" content="https://academy.it-wala.com/images/IT - WALA_logo (1).png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="ITWala Academy - Premier AI Education Platform" />
+        <meta name="twitter:description" content="Master AI & ML with comprehensive courses, expert instructors, and hands-on projects. Join 500+ students advancing their AI careers." />
+        <meta name="twitter:image" content="https://academy.it-wala.com/images/IT - WALA_logo (1).png" />
+        <link rel="canonical" href="https://academy.it-wala.com" />
+        
+        {/* Additional Schema for Homepage */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "ITWala Academy",
+            "url": "https://academy.it-wala.com",
+            "description": "Premier AI education platform offering comprehensive artificial intelligence and machine learning courses",
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": "https://academy.it-wala.com/courses?search={search_term_string}",
+              "query-input": "required name=search_term_string"
+            },
+            "publisher": {
+              "@type": "EducationalOrganization",
+              "name": "ITWala Academy",
+              "logo": "https://academy.it-wala.com/images/IT - WALA_logo (1).png"
+            }
+          })}
+        </script>
       </Head>
 
       <main>
