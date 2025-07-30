@@ -9,8 +9,8 @@ const About: NextPage = () => {
   return (
     <>
       <Head>
-        <title>About Us - ITwala Academy & Consulting</title>
-        <meta name="description" content="Learn about ITwala Academy and our comprehensive IT education and consulting services. We provide quality training and expert consulting solutions for businesses." />
+        <title>About ITwala Academy - AI Education & Consulting Experts</title>
+        <meta name="description" content="Learn about ITwala Academy's mission to provide world-class AI education and consulting services. Expert instructors, industry partnerships, proven success." />
       </Head>
 
       <main>

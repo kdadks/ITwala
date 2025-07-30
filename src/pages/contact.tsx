@@ -70,8 +70,8 @@ const Contact: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Contact Us - ITwala Academy</title>
-        <meta name="description" content="Get in touch with ITwala Academy for more information about our courses, corporate training, or any other inquiries." />
+        <title>Contact ITwala Academy - AI Education Support & Consulting</title>
+        <meta name="description" content="Get in touch with ITwala Academy for AI education support, course guidance, and consulting services. Expert team ready to help your AI journey." />
       </Head>
 
       <main>

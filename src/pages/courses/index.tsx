@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import CourseFilter from '@/components/courses/CourseFilter';
 import CourseGrid from '../../components/courses/CourseGrid';
+import BacklinkingHub from '@/components/seo/BacklinkingHub';
 import { motion } from 'framer-motion';
 import { Course } from '@/types/course';
 
@@ -145,8 +146,8 @@ const CoursesPage: NextPage = () => {
   return (
     <>
       <Head>
-        <title>AI Courses & Machine Learning Training - ITwala Academy | Best AI Education Platform</title>
-        <meta name="description" content="Explore ITwala Academy's comprehensive AI courses and machine learning training programs. Master artificial intelligence, data science, deep learning with expert instructors. Industry-recognized AI certifications, hands-on projects, career support." />
+        <title>AI Courses & ML Training - ITwala Academy</title>
+        <meta name="description" content="Master AI with comprehensive courses in artificial intelligence, machine learning, and data science. Expert-led training with hands-on projects." />
         <meta name="keywords" content="AI courses, machine learning training, artificial intelligence courses, data science courses, deep learning certification, neural networks training, AI bootcamp, ML engineering courses, AI career training, online AI education, professional AI courses" />
         <meta property="og:title" content="AI Courses & Machine Learning Training - ITwala Academy" />
         <meta property="og:description" content="Master AI with comprehensive courses in artificial intelligence, machine learning, and data science. Expert-led training with hands-on projects and industry certifications." />
@@ -298,6 +299,9 @@ const CoursesPage: NextPage = () => {
             )}
           </div>
         </section>
+
+        {/* Internal Linking Hub */}
+        <BacklinkingHub currentPage="course" currentCategory={selectedCategory} />
       </main>
     </>
   );

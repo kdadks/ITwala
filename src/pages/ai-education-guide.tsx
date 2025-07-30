@@ -8,8 +8,8 @@ const AIEducationGuide: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Complete AI Education Guide 2025 | Master Artificial Intelligence & Machine Learning</title>
-        <meta name="description" content="Complete AI education guide for 2025. Learn artificial intelligence, machine learning, and data science with ITWala Academy. Best AI courses, career paths, salary expectations, and skill requirements." />
+        <title>Complete AI Education Guide 2025 | Master AI & ML - ITwala</title>
+        <meta name="description" content="Complete AI education guide for 2025. Learn artificial intelligence, machine learning, data science with ITWala Academy. Best AI courses, career paths." />
         <meta name="keywords" content="AI education guide, artificial intelligence learning path, machine learning courses 2025, AI career guide, best AI education platform, artificial intelligence training, AI skills development, machine learning bootcamp, data science education, AI certification guide" />
         <meta property="og:title" content="Complete AI Education Guide 2025 | ITWala Academy" />
         <meta property="og:description" content="Master AI with our comprehensive education guide. Learn about AI courses, career paths, salary expectations, and skill requirements for 2025." />

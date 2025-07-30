@@ -36,9 +36,10 @@ const Footer = () => {
         // Fallback to static categories if API fails
         setCategories([
           { name: 'Artificial Intelligence', slug: 'Artificial Intelligence' },
+          { name: 'Machine Learning', slug: 'Machine Learning' },
+          { name: 'Data Science', slug: 'Data Science' },
           { name: 'Product Management', slug: 'Product Management' },
-          { name: 'Software Development', slug: 'Software Development' },
-          { name: 'Software Testing', slug: 'Software Testing' }
+          { name: 'Software Development', slug: 'Software Development' }
         ]);
       }
     };
@@ -98,13 +99,13 @@ const Footer = () => {
                 <FaEnvelope className="w-4 h-4" />
                 <span>sales@it-wala.com</span>
               </a>
-              <span className="hidden sm:inline text-white">|</span>
+
               <a
                 href="tel:+917982303199"
                 className="flex items-center space-x-2 text-white hover:text-white transition-colors duration-200"
               >
                 <FaPhone className="w-4 h-4" />
-                <span>+91 7982303199</span>
+                <span>+91 79823 03199</span>
               </a>
             </div>
 
@@ -121,45 +122,52 @@ const Footer = () => {
         </div>
 
         {/* Links Section */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-6 mb-8">
           {/* Quick Links */}
           <div>
             <h3 className="font-semibold mb-3 text-white text-sm uppercase tracking-wide">
               Quick Links
             </h3>
             <nav className="space-y-2">
-              {[
-                { href: '/about', label: 'About' },
-                { href: '/courses', label: 'Courses' },
-                { href: '/consulting', label: 'Consulting' },
-                { href: '/contact', label: 'Contact' }
-              ].map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="block text-white hover:text-primary-200 transition-colors duration-200 text-sm"
-                >
-                  {link.label}
-                </Link>
-              ))}
+              <Link href="/academy" className="block text-white hover:text-white transition-colors text-sm">
+                Academy
+              </Link>
+              <Link href="/courses" className="block text-white hover:text-white transition-colors text-sm">
+                All Courses
+              </Link>
+              <Link href="/ai-education-guide" className="block text-white hover:text-white transition-colors text-sm">
+                AI Education Guide
+              </Link>
+              <Link href="/resources" className="block text-white hover:text-white transition-colors text-sm">
+                Learning Resources
+              </Link>
+              <Link href="/about" className="block text-white hover:text-white transition-colors text-sm">
+                About Us
+              </Link>
             </nav>
           </div>
 
-          {/* Course Categories */}
+          {/* AI Courses */}
           <div>
             <h3 className="font-semibold mb-3 text-white text-sm uppercase tracking-wide">
-              Categories
+              AI Courses
             </h3>
             <nav className="space-y-2">
-              {categories.map((category) => (
-                <Link
-                  key={category.slug}
-                  href={`/courses?category=${encodeURIComponent(category.slug)}`}
-                  className="block text-white hover:text-primary-200 transition-colors duration-200 text-sm"
-                >
-                  {category.name}
-                </Link>
-              ))}
+              <Link href="/courses/ai-machine-learning-fundamentals" className="block text-white hover:text-white transition-colors text-sm">
+                AI & ML Fundamentals
+              </Link>
+              <Link href="/courses?category=Artificial Intelligence" className="block text-white hover:text-white transition-colors text-sm">
+                AI Courses
+              </Link>
+              <Link href="/courses?category=Machine Learning" className="block text-white hover:text-white transition-colors text-sm">
+                ML Training
+              </Link>
+              <Link href="/courses?category=Data Science" className="block text-white hover:text-white transition-colors text-sm">
+                Data Science
+              </Link>
+              <Link href="/courses?level=Beginner" className="block text-white hover:text-white transition-colors text-sm">
+                Beginner Courses
+              </Link>
             </nav>
           </div>
 
@@ -169,57 +177,80 @@ const Footer = () => {
               Services
             </h3>
             <nav className="space-y-2">
-              {[
-                { href: '/services/ai-solutions', label: 'AI Solutions' },
-                { href: '/services/digital-transformation', label: 'Digital Transform' },
-                { href: '/services/it-staffing', label: 'IT Staffing' },
-                { href: '/services/technical-consulting', label: 'Consulting' }
-              ].map((link) => (
+              <Link href="/consulting" className="block text-white hover:text-white transition-colors text-sm">
+                Consulting
+              </Link>
+              <Link href="/services/ai-solutions" className="block text-white hover:text-white transition-colors text-sm">
+                AI Solutions
+              </Link>
+              <Link href="/services/digital-transformation" className="block text-white hover:text-white transition-colors text-sm">
+                Digital Transform
+              </Link>
+              <Link href="/services/technical-consulting" className="block text-white hover:text-white transition-colors text-sm">
+                Tech Consulting
+              </Link>
+              <Link href="/services/training-development" className="block text-white hover:text-white transition-colors text-sm">
+                Corporate Training
+              </Link>
+            </nav>
+          </div>
+
+          {/* Course Categories */}
+          <div>
+            <h3 className="font-semibold mb-3 text-white text-sm uppercase tracking-wide">
+              Categories
+            </h3>
+            <nav className="space-y-2">
+              {categories.slice(0, 5).map((category) => (
                 <Link
-                  key={link.href}
-                  href={link.href}
-                  className="block text-white hover:text-primary-200 transition-colors duration-200 text-sm"
+                  key={category.slug}
+                  href={`/courses?category=${encodeURIComponent(category.name)}`}
+                  className="block text-white hover:text-white transition-colors text-sm"
                 >
-                  {link.label}
+                  {category.name}
                 </Link>
               ))}
             </nav>
           </div>
 
-          {/* Newsletter */}
+          {/* Support */}
           <div>
             <h3 className="font-semibold mb-3 text-white text-sm uppercase tracking-wide">
-              Stay Updated
+              Support
             </h3>
-            <div className="space-y-3">
-              <p className="text-white text-xs">Get course updates & insights</p>
-              <div className="flex flex-col gap-2">
-                <input
-                  type="email"
-                  placeholder="Your email"
-                  className="px-3 py-2 bg-primary-800 border border-primary-600 rounded text-white placeholder-primary-300 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent"
-                />
-                <button className="px-3 py-2 bg-secondary-600 hover:bg-secondary-700 text-white font-medium rounded text-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-secondary-400">
-                  Subscribe
-                </button>
-              </div>
-            </div>
+            <nav className="space-y-2">
+              <Link href="/contact" className="block text-white hover:text-white transition-colors text-sm">
+                Contact Us
+              </Link>
+              <Link href="/academy#faq" className="block text-white hover:text-white transition-colors text-sm">
+                FAQ
+              </Link>
+              <Link href="/academy#career-support" className="block text-white hover:text-white transition-colors text-sm">
+                Career Support
+              </Link>
+              <Link href="/privacy-policy" className="block text-white hover:text-white transition-colors text-sm">
+                Privacy Policy
+              </Link>
+              <Link href="/terms-of-service" className="block text-white hover:text-white transition-colors text-sm">
+                Terms of Service
+              </Link>
+            </nav>
           </div>
         </div>
 
-        {/* Bottom Bar */}
+        {/* Bottom Section */}
         <div className="pt-6 border-t border-primary-800 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-white text-xs text-center md:text-left">
             &copy; {currentYear} kdadks service private ltd. All rights reserved.
           </p>
           <nav className="flex flex-wrap justify-center md:justify-end gap-4 text-xs">
-            <Link href="/privacy-policy" className="text-white hover:text-primary-200 transition-colors duration-200">
+            <Link href="/privacy-policy" className="text-white hover:text-white transition-colors">
               Privacy Policy
             </Link>
-            <Link href="/terms-of-service" className="text-white hover:text-primary-200 transition-colors duration-200">
+            <Link href="/terms-of-service" className="text-white hover:text-white transition-colors">
               Terms of Service
             </Link>
-            <Link href="/sitemap" className="text-white hover:text-primary-200 transition-colors duration-200">
+            <Link href="/sitemap.xml" className="text-white hover:text-white transition-colors">
               Sitemap
             </Link>
           </nav>

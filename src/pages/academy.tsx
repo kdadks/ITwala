@@ -14,8 +14,8 @@ const Academy: NextPage = () => {
   return (
     <>
       <Head>
-        <title>ITWala Academy - Premier AI Education & Machine Learning Training Platform</title>
-        <meta name="description" content="ITWala Academy - India's leading AI education platform. Master artificial intelligence, machine learning, data science with expert instructors. Industry-recognized AI certifications, hands-on ML projects, career support. Join 500+ AI professionals." />
+        <title>ITWala Academy - Premier AI Education & ML Training Platform</title>
+        <meta name="description" content="ITWala Academy - India's leading AI education platform. Master artificial intelligence, machine learning, data science with expert instructors." />
         <meta name="keywords" content="AI education India, artificial intelligence academy, machine learning courses, data science training, AI certification program, deep learning bootcamp, neural networks course, AI career training, professional AI education, online AI academy, ML engineering courses, AI skills development" />
         <meta property="og:title" content="ITWala Academy - Premier AI Education & Machine Learning Training Platform" />
         <meta property="og:description" content="Transform your career with ITWala Academy's comprehensive AI education. Master artificial intelligence, machine learning, and data science with industry experts and hands-on projects." />
