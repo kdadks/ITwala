@@ -401,7 +401,48 @@ const AnalyticsTracker: React.FC = () => {
         setLastTrackedPage(pageUrl);
 
         const sessionId = generateSessionId();
-        const pageTitle = document.title;
+        
+        // Wait for title to be available and get page title with fallback
+        const getPageTitle = () => {
+          // Wait a moment for Next.js to update the document title
+          return new Promise<string>((resolve) => {
+            const checkTitle = () => {
+              let title = document.title;
+              
+              // If title is empty or just "ITwala Academy", wait a bit more
+              if (!title || title.trim() === '' || title === 'ITwala Academy') {
+                setTimeout(checkTitle, 100);
+                return;
+              }
+              
+              // Fallback based on URL if title is still generic
+              if (title === 'ITwala Academy' || title.trim() === '') {
+                if (pageUrl.includes('/admin/analytics')) {
+                  title = 'Analytics Dashboard - Admin';
+                } else if (pageUrl.includes('/admin')) {
+                  title = 'Admin Dashboard - ITwala Academy';
+                } else if (pageUrl.includes('/dashboard')) {
+                  title = 'Dashboard - ITwala Academy';
+                } else if (pageUrl.includes('/auth/login')) {
+                  title = 'Login - ITwala Academy';
+                } else if (pageUrl.includes('/courses')) {
+                  title = 'Courses - ITwala Academy';
+                } else if (pageUrl === '/') {
+                  title = 'ITWala Academy - #1 AI Education Platform';
+                } else {
+                  title = `${pageUrl.replace('/', '').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())} - ITwala Academy`;
+                }
+              }
+              
+              resolve(title);
+            };
+            
+            // Start checking after a small delay to let Next.js update the title
+            setTimeout(checkTitle, 50);
+          });
+        };
+        
+        const pageTitle = await getPageTitle();
         const referrer = document.referrer || null;
         const userAgent = navigator.userAgent;
         const deviceType = getDeviceType();
@@ -409,6 +450,8 @@ const AnalyticsTracker: React.FC = () => {
 
         // Track page view with country
         try {
+          console.log(`📊 Tracking page view: ${pageUrl} - "${pageTitle}"`);
+          
           const { error: pageViewError } = await supabase
             .from('page_views')
             .insert({
