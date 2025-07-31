@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
+import { useSupabaseClient, useUser, useSession } from '@supabase/auth-helpers-react';
 import router, { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 
@@ -30,6 +30,7 @@ interface UseAuthReturn {
 export const useAuth = (): UseAuthReturn => {
   const supabase = useSupabaseClient();
   const user = useUser();
+  const session = useSession(); // Use session from auth helpers
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -142,9 +143,8 @@ export const useAuth = (): UseAuthReturn => {
         userMetadata: user.user_metadata
       });
 
-      // Fetch debug info with auth token
+      // Fetch debug info with auth token from session context
       try {
-        const { data: { session } } = await supabase.auth.getSession();
         if (session?.access_token) {
           const response = await fetch('/api/debug/admin-check', {
             headers: {
