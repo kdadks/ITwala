@@ -2,9 +2,6 @@
 const nextConfig = {
   reactStrictMode: true,
   
-  // Export configuration for static hosting
-  output: 'standalone',
-  
   // Image optimization configuration
   images: {
     remotePatterns: [

@@ -4,10 +4,60 @@
 
 [build.environment]
   NODE_ENV = "production"
-  NETLIFY_NEXT_PLUGIN_SKIP = "true"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+# Handle Next.js API routes
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+# Handle dynamic course pages
+[[redirects]]
+  from = "/courses/:slug"
+  to = "/courses/[slug]"
+  status = 200
+
+# Handle dynamic dashboard pages
+[[redirects]]
+  from = "/dashboard/course/:slug"
+  to = "/dashboard/course/[slug]"
+  status = 200
+
+# Handle admin routes
+[[redirects]]
+  from = "/admin/*"
+  to = "/admin/:splat"
+  status = 200
+
+# SEO redirects (permanent)
+[[redirects]]
+  from = "/course/:slug"
+  to = "/courses/:slug"
+  status = 301
+
+[[redirects]]
+  from = "/ai-courses"
+  to = "/courses?category=Artificial Intelligence"
+  status = 301
+
+[[redirects]]
+  from = "/machine-learning-courses"
+  to = "/courses?category=Machine Learning"
+  status = 301
+
+[[redirects]]
+  from = "/data-science-courses"
+  to = "/courses?category=Data Science"
+  status = 301
+
+# Catch-all for client-side routing (must be last)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
 
 # Environment-specific settings
 [context.production.environment]
