@@ -8,22 +8,38 @@
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
+# Static file handling for images and assets
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
 # Handle dynamic course pages
 [[redirects]]
   from = "/courses/:slug"
   to = "/courses/[slug]"
   status = 200
 
-# Handle dynamic dashboard pages
+# Handle dynamic dashboard pages  
 [[redirects]]
   from = "/dashboard/course/:slug"
   to = "/dashboard/course/[slug]"
   status = 200
 
-# Handle admin routes
+# Handle admin course management
 [[redirects]]
-  from = "/admin/*"
-  to = "/admin/:splat"
+  from = "/admin/courses/edit/:slug"
+  to = "/admin/courses/edit/[slug]"
   status = 200
 
 # SEO redirects (permanent)
@@ -46,12 +62,6 @@
   from = "/data-science-courses"
   to = "/courses?category=Data Science"
   status = 301
-
-# Catch-all for client-side routing (must be last)
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
 
 # Environment-specific settings
 [context.production.environment]
