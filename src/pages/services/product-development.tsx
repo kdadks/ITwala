@@ -2,16 +2,43 @@ import { NextPage } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
-import { FaCode, FaArrowLeft, FaCheckCircle, FaExternalLinkAlt, FaRocket, FaBolt, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FaCode, FaArrowLeft, FaCheckCircle, FaExternalLinkAlt, FaRocket, FaBolt } from 'react-icons/fa';
+import { ChevronLeft, ChevronRight, Play, Pause } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 const ProductDevelopment: NextPage = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
-  const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+
+  // Auto-play functionality
+  useEffect(() => {
+    if (!isAutoPlaying || isHovered) return;
+
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % products.length);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [isAutoPlaying, isHovered]);
+
+  const nextSlide = () => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % products.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + products.length) % products.length);
+  };
+
+  const goToSlide = (index: number) => {
+    setCurrentIndex(index);
+  };
+
+  const toggleAutoPlay = () => {
+    setIsAutoPlaying(!isAutoPlaying);
+  };
+  // Removed slider state variables as we're using a grid layout instead
 
   const products = [
     {
@@ -20,7 +47,9 @@ const ProductDevelopment: NextPage = () => {
       title: "RaahiRides",
       description: "Travel apps for Eastern UP, connecting travelers and drivers for a seamless journey. Comprehensive travel solutions from point-to-point journeys to corporate retreats.",
       industry: "Travel Industry",
-      color: "indigo"
+      color: "indigo",
+      features: ["Real-time GPS tracking", "Secure payments", "Driver verification", "24/7 support"],
+      ctaText: "Explore RaahiRides"
     },
     {
       href: "https://www.vishalcreations.com",
@@ -28,7 +57,9 @@ const ProductDevelopment: NextPage = () => {
       title: "Vishal Creations",
       description: "Premium Plastic & Chemical Raw Materials Supplier.",
       industry: "Manufacturing",
-      color: "pink"
+      color: "pink",
+      features: ["Quality assurance", "Bulk supply", "Custom formulations", "Fast delivery"],
+      ctaText: "Shop Materials"
     },
     {
       href: "https://www.how2doai.com",
@@ -36,7 +67,9 @@ const ProductDevelopment: NextPage = () => {
       title: "How2doAI",
       description: "A comprehensive AI app finder and comparison platform, enabling AI automation for end-to-end workflows. Discover, compare, and integrate top AI tools.",
       industry: "Artificial Intelligence",
-      color: "cyan"
+      color: "cyan",
+      features: ["AI tool comparison", "Workflow automation", "Integration guides", "Performance analytics"],
+      ctaText: "Discover AI Tools"
     },
     {
       href: "https://ayuhclinic.netlify.app/",
@@ -44,83 +77,21 @@ const ProductDevelopment: NextPage = () => {
       title: "Ayuh Clinic",
       description: "Comprehensive Healthcare Solutions. From professional home care services to natural homeopathic healing - integrated healthcare with compassion and expertise.",
       industry: "Healthcare",
-      color: "green"
+      color: "green",
+      features: ["Home care services", "Homeopathic treatments", "Expert consultations", "Wellness programs"],
+      ctaText: "Book Appointment"
     },
     {
       href: "https://khtherapy.netlify.app/",
-      logo: "/images/KH.svg",
+      logo: "/images/KH.png",
       title: "Khtherapy",
       description: "Physio clinic offering expert physiotherapy and rehabilitation services for all ages. Personalized care for pain relief, mobility, and wellness.",
       industry: "Physiotherapy Clinic",
-      color: "blue"
+      color: "blue",
+      features: ["Pain management", "Rehabilitation programs", "Sports therapy", "Post-surgery care"],
+      ctaText: "Start Therapy"
     }
   ];
-
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % products.length);
-  };
-
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + products.length) % products.length);
-  };
-
-  const goToSlide = (index: number) => {
-    setCurrentSlide(index);
-  };
-
-  const toggleAutoPlay = () => {
-    setIsAutoPlaying(!isAutoPlaying);
-  };
-
-  // Touch handlers for mobile swipe
-  const minSwipeDistance = 50;
-
-  const onTouchStart = (e: React.TouchEvent) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const onTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-
-    if (isLeftSwipe) {
-      nextSlide();
-    } else if (isRightSwipe) {
-      prevSlide();
-    }
-  };
-
-  useEffect(() => {
-    if (!isAutoPlaying || isHovered) return;
-    
-    const interval = setInterval(nextSlide, 6000); // Slower auto-slide for better UX
-    return () => clearInterval(interval);
-  }, [isAutoPlaying, isHovered]);
-
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'ArrowLeft') {
-        prevSlide();
-      } else if (event.key === 'ArrowRight') {
-        nextSlide();
-      } else if (event.key === ' ') {
-        event.preventDefault();
-        toggleAutoPlay();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
 
   const getColorClasses = (color: string) => {
     switch (color) {
@@ -170,312 +141,393 @@ const ProductDevelopment: NextPage = () => {
       </Head>
 
       <main className="pt-8">
-        {/* Enhanced Hero Section with Showcase Products */}
-        <section className="py-12 bg-gradient-to-br from-indigo-50 via-purple-50 to-indigo-100 relative overflow-hidden">
-          {/* Background Pattern */}
+        {/* Compact Hero Section with Integrated Products */}
+        <section className="py-6 bg-gradient-to-br from-indigo-50 via-purple-50 to-indigo-100 relative overflow-hidden">
+          {/* Gradient overlay for depth */}
+          <div className="absolute inset-0 bg-gradient-to-t from-white/20 via-transparent to-indigo-50/30 pointer-events-none"></div>
+          {/* Background Pattern with subtle animation */}
           <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-10 left-10 w-20 h-20 bg-indigo-600 rounded-full blur-xl"></div>
-            <div className="absolute top-32 right-20 w-32 h-32 bg-purple-600 rounded-full blur-xl"></div>
-            <div className="absolute bottom-20 left-1/4 w-24 h-24 bg-indigo-500 rounded-full blur-xl"></div>
+            <div className="absolute top-10 left-10 w-20 h-20 bg-indigo-600 rounded-full blur-xl animate-pulse" style={{ animationDuration: '4s' }}></div>
+            <div className="absolute top-32 right-20 w-32 h-32 bg-purple-600 rounded-full blur-xl animate-pulse" style={{ animationDuration: '6s', animationDelay: '1s' }}></div>
+            <div className="absolute bottom-20 left-1/4 w-24 h-24 bg-indigo-500 rounded-full blur-xl animate-pulse" style={{ animationDuration: '5s', animationDelay: '2s' }}></div>
           </div>
-          
-          <div className="container mx-auto px-4 relative">
-            {/* Main Hero Content */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="max-w-5xl mx-auto text-center mb-8"
-            >
-              <div className="flex justify-center mb-4">
-                <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg">
-                  <FaCode className="w-8 h-8" />
-                </div>
-              </div>
-              
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                Product Strategy & Development
-              </h1>
-              
-              <p className="text-lg md:text-xl text-gray-600 mb-6 max-w-3xl mx-auto leading-relaxed">
-                End-to-end product strategy & development services from concept to launch, building scalable and user-centric solutions that drive business success.
-              </p>
-              
-              <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
-                <Link href="/contact">
-                  <button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center">
-                    <FaRocket className="mr-2" />
-                    Start Your Project
-                  </button>
-                </Link>
-                
-                <Link href="/consulting">
-                  <button className="border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white font-semibold py-3 px-6 rounded-full transition-all duration-300 flex items-center">
-                    <FaArrowLeft className="w-4 h-4 mr-2" />
-                    Back to All Services
-                  </button>
-                </Link>
-              </div>
-              
-              {/* Stats */}
-              <div className="grid grid-cols-3 gap-4 max-w-md mx-auto">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                  className="text-center"
-                >
-                  <div className="text-2xl font-bold text-indigo-600 mb-1">50+</div>
-                  <div className="text-sm text-gray-600">Products Built</div>
-                </motion.div>
-                
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.3 }}
-                  className="text-center"
-                >
-                  <div className="text-2xl font-bold text-purple-600 mb-1">95%</div>
-                  <div className="text-sm text-gray-600">Client Satisfaction</div>
-                </motion.div>
-                
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.4 }}
-                  className="text-center"
-                >
-                  <div className="text-2xl font-bold text-indigo-600 mb-1">24/7</div>
-                  <div className="text-sm text-gray-600">Support</div>
-                </motion.div>
-              </div>
-            </motion.div>
 
-            {/* Showcase Products Section - Integrated into Hero */}
+          <div className="container mx-auto px-4 relative">
+            {/* Compact Main Hero Content */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
-              className="max-w-7xl mx-auto"
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="max-w-6xl mx-auto text-center mb-4"
             >
-              <div className="text-center mb-8">
-                <div className="flex items-center justify-center mb-4">
-                  <div className="bg-indigo-100 p-2 rounded-lg mr-3">
-                    <FaBolt className="text-indigo-600 w-5 h-5" />
+              <div className="flex justify-center mb-3">
+                <motion.div
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2, type: "spring", stiffness: 200 }}
+                >
+                  <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white w-12 h-12 rounded-xl flex items-center justify-center shadow-lg">
+                    <FaCode className="w-6 h-6" />
                   </div>
-                  <span className="text-indigo-600 font-semibold uppercase tracking-wider text-sm">Live Products Portfolio</span>
-                </div>
-                <h2 className="text-2xl md:text-4xl font-bold mb-4 text-gray-900">
-                  Enterprise Products by ITWala Consulting
-                </h2>
-                <p className="text-gray-600 max-w-3xl mx-auto text-lg leading-relaxed">
-                  Explore our portfolio of innovative products built from concept to market research to development to launch - real enterprise solutions making measurable impact across industries.
-                </p>
+                </motion.div>
               </div>
               
-              {/* Enhanced Product Slider */}
-              <div 
-                className="relative group"
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
+              <motion.h1 
+                className="text-3xl md:text-4xl font-bold text-gray-900 mb-3 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
               >
-                {/* Progress Bar with Auto-play Controls */}
-                <div className="flex justify-center items-center mb-6 space-x-4">
-                  <button
-                    onClick={toggleAutoPlay}
-                    className="bg-white/80 backdrop-blur-sm hover:bg-white text-gray-600 hover:text-indigo-600 p-2 rounded-lg shadow-md transition-all duration-300 border border-gray-200"
-                    aria-label={isAutoPlaying ? 'Pause slideshow' : 'Play slideshow'}
+                Product Strategy & Development
+              </motion.h1>
+              
+              <motion.p 
+                className="text-base md:text-lg text-gray-600 mb-4 max-w-3xl mx-auto leading-relaxed"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.6 }}
+              >
+                End-to-end product strategy & development services from concept to launch, building scalable and user-centric solutions.
+              </motion.p>              <div className="flex flex-col sm:flex-row justify-center gap-3 mb-6">
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6, delay: 0.8 }}
+                >
+                  <Link href="/contact">
+                    <button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-2 px-5 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center">
+                      <FaRocket className="mr-2" />
+                      Start Your Project
+                    </button>
+                  </Link>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6, delay: 1.0 }}
+                >
+                  <Link href="/consulting">
+                    <button className="border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white font-semibold py-2 px-5 rounded-full transition-all duration-300 flex items-center">
+                      <FaArrowLeft className="w-4 h-4 mr-2" />
+                      Back to Services
+                    </button>
+                  </Link>
+                </motion.div>
+              </div>
+
+              {/* Compact Stats */}
+              <motion.div 
+                className="flex justify-center space-x-8 mb-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 1.2 }}
+              >
+                <motion.div 
+                  className="text-center"
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <div className="text-xl font-bold text-indigo-600">50+</div>
+                  <div className="text-xs text-gray-600">Products</div>
+                </motion.div>
+                <motion.div 
+                  className="text-center"
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <div className="text-xl font-bold text-purple-600">95%</div>
+                  <div className="text-xs text-gray-600">Satisfaction</div>
+                </motion.div>
+                <motion.div 
+                  className="text-center"
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <div className="text-xl font-bold text-indigo-600">24/7</div>
+                  <div className="text-xs text-gray-600">Support</div>
+                </motion.div>
+              </motion.div>
+            </motion.div>
+
+            {/* Compact Portfolio Grid - Replace Slider */}
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
+              className="max-w-7xl mx-auto group/container"
+            >
+              <div className="text-center mb-4">
+                <div className="flex items-center justify-center mb-2">
+                  <motion.div
+                    initial={{ scale: 0, rotate: -180 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ duration: 0.8, delay: 0.2, type: "spring", stiffness: 200 }}
                   >
-                    {isAutoPlaying ? (
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
-                      </svg>
-                    ) : (
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z"/>
-                      </svg>
-                    )}
-                  </button>
-                  
-                  <div className="bg-gray-200 rounded-full p-1 flex items-center space-x-1">
+                    <div className="bg-indigo-100 p-1.5 rounded-lg mr-2">
+                      <FaBolt className="text-indigo-600 w-4 h-4" />
+                    </div>
+                  </motion.div>
+                  <motion.span 
+                    className="text-indigo-600 font-semibold text-sm"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6, delay: 0.4 }}
+                  >
+                    Live Products Portfolio
+                  </motion.span>
+                </div>
+              </div>
+
+              {/* Sophisticated Product Carousel */}
+              <div className="relative max-w-4xl mx-auto">
+                {/* Carousel Container */}
+                <div
+                  className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-white/10 via-white/5 to-white/10 backdrop-blur-xl border border-white/20 shadow-2xl"
+                  onMouseEnter={() => setIsHovered(true)}
+                  onMouseLeave={() => setIsHovered(false)}
+                >
+                  {/* Main Carousel */}
+                  <div className="relative h-[28rem] md:h-[32rem] lg:h-[36rem]">
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={currentIndex}
+                        initial={{ opacity: 0, x: 300 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -300 }}
+                        transition={{ duration: 0.6, ease: "easeInOut" }}
+                        className="absolute inset-0"
+                      >
+                        {(() => {
+                          const product = products[currentIndex];
+                          const colorClasses = getColorClasses(product.color);
+                          return (
+                            <div className="h-full flex items-center justify-center p-4 md:p-6 lg:p-8">
+                              <div className="max-w-3xl w-full">
+                                {/* Product Card */}
+                                <motion.div
+                                  initial={{ opacity: 0, y: 50 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  transition={{ duration: 0.8, delay: 0.2 }}
+                                  className="bg-white/90 backdrop-blur-xl rounded-3xl p-6 md:p-8 shadow-2xl border border-white/30 relative overflow-hidden"
+                                >
+                                  {/* Glassmorphism background */}
+                                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-white/10 to-white/5"></div>
+
+                                  {/* Floating particles */}
+                                  <div className="absolute top-6 right-6 w-3 h-3 bg-indigo-400/30 rounded-full blur-sm animate-bounce"></div>
+                                  <div className="absolute bottom-8 left-8 w-2 h-2 bg-purple-400/30 rounded-full blur-sm animate-bounce" style={{ animationDelay: '1s' }}></div>
+                                  <div className="absolute top-1/2 right-12 w-2.5 h-2.5 bg-cyan-400/30 rounded-full blur-sm animate-bounce" style={{ animationDelay: '2s' }}></div>
+
+                                  <div className="relative z-10 text-center">
+                                    {/* Logo */}
+                                    <div className="relative mb-4 inline-block">
+                                      <div className="w-20 h-20 bg-gradient-to-br from-white/30 to-white/10 backdrop-blur-xl rounded-2xl flex items-center justify-center shadow-xl border border-white/40 relative overflow-hidden">
+                                        {/* Glassmorphism reflection */}
+                                        <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-transparent opacity-60"></div>
+                                        <Image
+                                          src={product.logo}
+                                          alt={`${product.title} Logo`}
+                                          width={40}
+                                          height={40}
+                                          className="object-contain relative z-10"
+                                        />
+                                      </div>
+                                      {/* Live indicator */}
+                                      <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center shadow-lg">
+                                        <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                                        <div className="absolute inset-0 bg-green-400 rounded-full animate-ping opacity-30"></div>
+                                      </div>
+                                    </div>
+
+                                    {/* Title */}
+                                    <h3 className={`text-xl md:text-2xl lg:text-3xl font-bold mb-2 ${colorClasses.text} bg-gradient-to-r from-current to-current bg-clip-text`}>
+                                      {product.title}
+                                    </h3>
+
+                                    {/* Industry Badge */}
+                                    <div className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs md:text-sm font-medium ${colorClasses.industry} bg-white/20 backdrop-blur-sm border border-white/30 mb-3`}>
+                                      <div className={`w-1.5 h-1.5 ${colorClasses.text.replace('text-', 'bg-')} rounded-full mr-1.5 animate-pulse`}></div>
+                                      {product.industry}
+                                    </div>
+
+                                    {/* Description */}
+                                    <p className="text-gray-700 text-sm md:text-base lg:text-lg leading-relaxed mb-4 max-w-xl mx-auto">
+                                      {product.description}
+                                    </p>
+
+                                    {/* Features */}
+                                    <div className="grid grid-cols-2 gap-2 mb-6 max-w-lg mx-auto">
+                                      {product.features.map((feature, idx) => (
+                                        <motion.div
+                                          key={idx}
+                                          initial={{ opacity: 0, scale: 0.8 }}
+                                          animate={{ opacity: 1, scale: 1 }}
+                                          transition={{ duration: 0.5, delay: 0.4 + idx * 0.1 }}
+                                          className="flex items-center justify-center space-x-1.5 text-xs md:text-sm text-gray-600 bg-white/50 rounded-lg py-1.5 px-2"
+                                        >
+                                          <FaCheckCircle className="text-green-500 flex-shrink-0 text-xs" />
+                                          <span>{feature}</span>
+                                        </motion.div>
+                                      ))}
+                                    </div>
+
+                                    {/* CTA Button */}
+                                    <motion.a
+                                      href={product.href}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-600 text-white font-semibold rounded-xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 group relative overflow-hidden"
+                                      whileHover={{ scale: 1.05 }}
+                                      whileTap={{ scale: 0.95 }}
+                                    >
+                                      <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                      <span className="relative z-10 mr-2 text-sm">{product.ctaText}</span>
+                                      <FaExternalLinkAlt className="relative z-10 group-hover:rotate-12 transition-transform duration-300 text-sm" />
+                                    </motion.a>
+                                  </div>
+                                </motion.div>
+                              </div>
+                            </div>
+                          );
+                        })()}
+                      </motion.div>
+                    </AnimatePresence>
+                  </div>
+
+                  {/* Navigation Controls */}
+                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center space-x-3">
+                    {/* Previous Button */}
+                    <motion.button
+                      onClick={prevSlide}
+                      className="w-10 h-10 bg-white/20 backdrop-blur-xl rounded-full flex items-center justify-center shadow-lg border border-white/30 hover:bg-white/30 transition-all duration-300 group"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      <ChevronLeft className="w-5 h-5 text-white group-hover:text-indigo-600 transition-colors duration-300" />
+                    </motion.button>
+
+                    {/* Play/Pause Button */}
+                    <motion.button
+                      onClick={toggleAutoPlay}
+                      className="w-10 h-10 bg-white/20 backdrop-blur-xl rounded-full flex items-center justify-center shadow-lg border border-white/30 hover:bg-white/30 transition-all duration-300 group"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      {isAutoPlaying ? (
+                        <Pause className="w-5 h-5 text-white group-hover:text-indigo-600 transition-colors duration-300" />
+                      ) : (
+                        <Play className="w-5 h-5 text-white group-hover:text-indigo-600 transition-colors duration-300" />
+                      )}
+                    </motion.button>
+
+                    {/* Next Button */}
+                    <motion.button
+                      onClick={nextSlide}
+                      className="w-10 h-10 bg-white/20 backdrop-blur-xl rounded-full flex items-center justify-center shadow-lg border border-white/30 hover:bg-white/30 transition-all duration-300 group"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      <ChevronRight className="w-5 h-5 text-white group-hover:text-indigo-600 transition-colors duration-300" />
+                    </motion.button>
+                  </div>
+
+                  {/* Dot Indicators */}
+                  <div className="absolute bottom-4 right-4 flex space-x-2">
                     {products.map((_, index) => (
-                      <button
+                      <motion.button
                         key={index}
                         onClick={() => goToSlide(index)}
-                        className={`h-2 rounded-full transition-all duration-300 ${
-                          index === currentSlide
-                            ? 'bg-indigo-600 w-8'
-                            : 'bg-gray-300 hover:bg-gray-400 w-2'
+                        className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                          index === currentIndex
+                            ? 'bg-white shadow-lg scale-125'
+                            : 'bg-white/50 hover:bg-white/70'
                         }`}
-                        aria-label={`Go to product ${index + 1}: ${products[index].title}`}
+                        whileHover={{ scale: 1.2 }}
+                        whileTap={{ scale: 0.8 }}
                       />
                     ))}
                   </div>
-                  
-                  <div className="text-sm text-gray-500 bg-white/80 backdrop-blur-sm px-3 py-1 rounded-lg border border-gray-200">
-                    {isAutoPlaying && !isHovered ? 'Auto' : 'Manual'}
-                  </div>
                 </div>
 
-                {/* Slider Container */}
-                <div 
-                  className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-white to-gray-50 shadow-2xl border border-gray-100"
-                  onTouchStart={onTouchStart}
-                  onTouchMove={onTouchMove}
-                  onTouchEnd={onTouchEnd}
-                >
-                  <div 
-                    className="flex transition-transform duration-700 ease-out"
-                    style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-                  >
-                    {products.map((product, index) => {
-                      const colorClasses = getColorClasses(product.color);
-                      return (
-                        <motion.div
-                          key={index}
-                          className="group/card block w-full flex-shrink-0 relative"
-                          initial={{ opacity: 0, scale: 0.95 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{ duration: 0.5 }}
-                        >
-                          <a
-                            href={product.href}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="block p-8 md:p-12 hover:bg-gradient-to-br hover:from-gray-50 hover:to-white transition-all duration-500"
-                          >
-                            <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
-                              {/* Enhanced Logo Section */}
-                              <div className="flex-shrink-0 relative group/logo">
-                                <div className="absolute inset-0 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-3xl blur-xl opacity-30 group-hover/card:opacity-50 transition-opacity duration-500"></div>
-                                <div className="relative w-32 h-32 lg:w-40 lg:h-40 rounded-3xl flex items-center justify-center bg-white shadow-xl border border-gray-100 group-hover/card:shadow-2xl group-hover/card:scale-105 transition-all duration-500 p-4">
-                                  <Image
-                                    src={product.logo}
-                                    alt={`${product.title} Logo`}
-                                    width={product.title === "Vishal Creations" ? 120 : 80}
-                                    height={product.title === "Vishal Creations" ? 120 : 80}
-                                    className={`object-contain filter group-hover/card:brightness-110 transition-all duration-500 ${
-                                      product.title === "Vishal Creations" ? "max-w-full max-h-full" : ""
-                                    }`}
-                                    style={{
-                                      maxWidth: product.title === "Vishal Creations" ? "100%" : "80px",
-                                      maxHeight: product.title === "Vishal Creations" ? "100%" : "80px"
-                                    }}
-                                  />
-                                  {/* Live Status Indicator */}
-                                  <div className="absolute -top-2 -right-2 flex items-center">
-                                    <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center animate-pulse">
-                                      <div className="w-3 h-3 bg-white rounded-full"></div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                              
-                              {/* Enhanced Content Section */}
-                              <div className="flex-1 text-center lg:text-left space-y-6">
-                                <div className="space-y-4">
-                                  {/* Header with External Link */}
-                                  <div className="flex items-start justify-between">
-                                    <div>
-                                      <h3 className={`text-3xl lg:text-4xl font-bold ${colorClasses.text} group-hover/card:${colorClasses.hover} transition-colors duration-300`}>
-                                        {product.title}
-                                      </h3>
-                                      <div className="flex items-center mt-2">
-                                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${colorClasses.industry} bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200`}>
-                                          {product.industry}
-                                        </span>
-                                        <div className="ml-3 flex items-center text-green-600">
-                                          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2"></div>
-                                          <span className="text-sm font-medium">Live</span>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="flex items-center space-x-3">
-                                      <FaExternalLinkAlt className={`text-gray-400 group-hover/card:${colorClasses.hover} transition-colors duration-300 text-xl`} />
-                                      <div className="hidden lg:block w-12 h-8 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg opacity-20 group-hover/card:opacity-40 transition-opacity duration-300"></div>
-                                    </div>
-                                  </div>
-                                  
-                                  {/* Description */}
-                                  <p className="text-gray-600 text-lg lg:text-xl leading-relaxed font-light">
-                                    {product.description}
-                                  </p>
-                                </div>
-                                
-                                {/* Call to Action */}
-                                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                                  <div className="flex items-center space-x-4">
-                                    <span className="text-sm text-gray-500 font-medium">View Live Product</span>
-                                    <div className="flex space-x-1">
-                                      <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
-                                      <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
-                                      <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
-                                    </div>
-                                  </div>
-                                  <div className={`group-hover/card:translate-x-2 transition-transform duration-300 ${colorClasses.text}`}>
-                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                                    </svg>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </a>
-                        </motion.div>
-                      );
-                    })}
-                  </div>
+                {/* Progress Bar */}
+                <div className="mt-4 h-1 bg-white/20 backdrop-blur-sm rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-500 rounded-full"
+                    initial={{ width: '0%' }}
+                    animate={{ width: `${((currentIndex + 1) / products.length) * 100}%` }}
+                    transition={{ duration: 0.5 }}
+                  />
                 </div>
+              </div>
 
-                {/* Enhanced Navigation Controls */}
-                <div className="absolute inset-y-0 left-0 flex items-center">
-                  <button
-                    onClick={prevSlide}
-                    className="ml-4 bg-white/95 backdrop-blur-sm hover:bg-white text-gray-600 hover:text-indigo-600 p-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-110 opacity-0 group-hover:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100 border border-gray-100"
-                    aria-label="Previous product"
-                    disabled={products.length <= 1}
-                  >
-                    <FaChevronLeft className="w-6 h-6" />
-                  </button>
-                </div>
-                
-                <div className="absolute inset-y-0 right-0 flex items-center">
-                  <button
-                    onClick={nextSlide}
-                    className="mr-4 bg-white/95 backdrop-blur-sm hover:bg-white text-gray-600 hover:text-indigo-600 p-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-110 opacity-0 group-hover:opacity-100 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100 border border-gray-100"
-                    aria-label="Next product"
-                    disabled={products.length <= 1}
-                  >
-                    <FaChevronRight className="w-6 h-6" />
-                  </button>
-                </div>
-
-                {/* Enhanced Product Counter */}
-                <div className="flex justify-center mt-8">
-                  <div className="bg-white/80 backdrop-blur-sm rounded-full px-6 py-3 shadow-lg border border-gray-200">
-                    <div className="flex items-center space-x-4 text-sm text-gray-600">
-                      <span className="font-medium">
-                        {currentSlide + 1} of {products.length}
-                      </span>
-                      <div className="w-px h-4 bg-gray-300"></div>
-                      <span>Enterprise Products</span>
-                      <div className="w-px h-4 bg-gray-300"></div>
-                      <div className="flex items-center space-x-1">
-                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                        <span>All Live</span>
+              {/* Enhanced Portfolio Summary */}
+              <motion.div
+                className="flex justify-center mt-8"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: 1.2 }}
+              >
+                <div className="bg-white/90 backdrop-blur-md rounded-2xl px-8 py-4 shadow-xl border border-white/50 group hover:shadow-2xl transition-all duration-300 hover:scale-105">
+                  <div className="flex items-center space-x-8 text-sm text-gray-600">
+                    <div className="flex items-center space-x-3">
+                      <div className="relative">
+                        <div className="w-4 h-4 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full animate-pulse"></div>
+                        <div className="absolute inset-0 bg-green-400 rounded-full animate-ping opacity-30"></div>
+                      </div>
+                      <div>
+                        <div className="font-bold text-gray-800 text-lg">{products.length}</div>
+                        <div className="text-xs text-gray-500">Live Products</div>
+                      </div>
+                    </div>
+                    <div className="w-px h-8 bg-gradient-to-b from-gray-300 to-gray-200"></div>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-3 h-3 bg-gradient-to-r from-indigo-400 to-purple-400 rounded-full animate-pulse"></div>
+                      <div>
+                        <div className="font-bold text-gray-800 text-lg">100%</div>
+                        <div className="text-xs text-gray-500">Enterprise Ready</div>
+                      </div>
+                    </div>
+                    <div className="w-px h-8 bg-gradient-to-b from-gray-300 to-gray-200"></div>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-3 h-3 bg-gradient-to-r from-cyan-400 to-blue-400 rounded-full animate-pulse"></div>
+                      <div>
+                        <div className="font-bold text-gray-800 text-lg">99.9%</div>
+                        <div className="text-xs text-gray-500">Uptime</div>
+                      </div>
+                    </div>
+                    <div className="w-px h-8 bg-gradient-to-b from-gray-300 to-gray-200"></div>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-3 h-3 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full animate-pulse"></div>
+                      <div>
+                        <div className="font-bold text-gray-800 text-lg">24/7</div>
+                        <div className="text-xs text-gray-500">Support</div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </motion.div>
           </div>
         </section>
 
         {/* Service Details */}
-        <section className="py-20 bg-white">
+        <section className="py-12 bg-white">
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto">
+              <motion.div 
+                className="text-center mb-12"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+              >
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">What We Offer</h2>
+                <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                  Our product development services cover the entire lifecycle from ideation to deployment. We build robust, scalable, and user-friendly products that drive business growth and customer satisfaction.
+                </p>
+              </motion.div>
+              
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
@@ -483,11 +535,6 @@ const ProductDevelopment: NextPage = () => {
                   viewport={{ once: true }}
                   transition={{ duration: 0.5 }}
                 >
-                  <h2 className="text-3xl font-bold text-gray-900 mb-6">What We Offer</h2>
-                  <p className="text-lg text-gray-600 mb-8">
-                    Our product development services cover the entire lifecycle from ideation to deployment. We build robust, scalable, and user-friendly products that drive business growth and customer satisfaction.
-                  </p>
-                  
                   <div className="space-y-6">
                     <div className="flex items-start">
                       <FaCheckCircle className="w-6 h-6 text-indigo-500 mr-4 mt-1 flex-shrink-0" />
@@ -623,7 +670,7 @@ const ProductDevelopment: NextPage = () => {
         </section>
 
         {/* Product Types Section */}
-        <section className="py-20 bg-gray-50">
+        <section className="py-12 bg-gray-50">
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto">
               <motion.div
@@ -763,7 +810,7 @@ const ProductDevelopment: NextPage = () => {
         </section>
 
         {/* CTA Section */}
-        <section className="py-20 bg-gradient-to-br from-primary-50 to-secondary-50">
+        <section className="py-12 bg-gradient-to-br from-primary-50 to-secondary-50">
           <div className="container mx-auto px-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
