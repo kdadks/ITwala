@@ -4,9 +4,9 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useUser, useSupabaseClient } from '@supabase/auth-helpers-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Search, Menu, X, User, LogOut, Settings, BookOpen } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/hooks/useAuth';
-
 import { allCourses } from '@/data/allCourses';
 
 const Navbar = () => {

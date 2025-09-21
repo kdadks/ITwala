@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import { useRouter } from 'next/router';
-import Navbar from './Navbar';
+import GlossyNavbar from './GlossyNavbar';
 import Footer from './Footer';
 import WhatsAppButton from '../common/WhatsAppButton';
 import { useAuth } from '@/hooks/useAuth';
@@ -46,8 +46,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
-      {!isAuthRoute && <Navbar />}
-      <div className={`flex-grow ${isAuthRoute ? '' : 'pt-16'}`}>{children}</div>
+      {!isAuthRoute && <GlossyNavbar />}
+      <div className={`flex-grow ${isAuthRoute ? '' : 'pt-20'}`}>{children}</div>
       {/* Move WhatsAppButton slightly higher to avoid scroll error overlap */}
       <WhatsAppButton positionClass="fixed bottom-20 right-4 sm:bottom-24 sm:right-6" />
       {!isAuthRoute && !isDashboardRoute && <Footer />}
