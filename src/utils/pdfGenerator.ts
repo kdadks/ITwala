@@ -1,6 +1,7 @@
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { InvoiceData } from '../components/admin/InvoiceGenerator';
+import { formatAmount } from './currency';
 
 export const generateInvoicePDF = async (invoiceData: InvoiceData): Promise<Blob> => {
   const doc = new jsPDF();
@@ -76,6 +77,11 @@ export const generateInvoicePDF = async (invoiceData: InvoiceData): Promise<Blob
     doc.text(`Website: ${invoiceData.companyInfo.website}`, 20, yPos);
   }
 
+  if (invoiceData.companyInfo.GSTIN) {
+    yPos += 6;
+    doc.text(`GSTIN: ${invoiceData.companyInfo.GSTIN}`, 20, yPos);
+  }
+
   // Client Information
   yPos = 60;
   doc.setFontSize(14);
@@ -141,8 +147,8 @@ export const generateInvoicePDF = async (invoiceData: InvoiceData): Promise<Blob
   const tableData = invoiceData.items.map(item => [
     item.description,
     item.quantity.toString(),
-    `$${item.rate.toFixed(2)}`,
-    `$${item.amount.toFixed(2)}`
+    formatAmount(item.rate),
+    formatAmount(item.amount)
   ]);
 
   autoTable(doc, {
@@ -177,12 +183,12 @@ export const generateInvoicePDF = async (invoiceData: InvoiceData): Promise<Blob
   // Subtotal
   doc.setFont('helvetica', 'normal');
   doc.text('Subtotal:', totalsX, totalsY);
-  doc.text(`$${invoiceData.subtotal.toFixed(2)}`, 180, totalsY, { align: 'right' });
+  doc.text(formatAmount(invoiceData.subtotal), 180, totalsY, { align: 'right' });
 
   // Tax
   totalsY += 8;
   doc.text(`Tax (${invoiceData.taxRate}%):`, totalsX, totalsY);
-  doc.text(`$${invoiceData.tax.toFixed(2)}`, 180, totalsY, { align: 'right' });
+  doc.text(formatAmount(invoiceData.tax), 180, totalsY, { align: 'right' });
 
   // Total
   totalsY += 8;
@@ -193,7 +199,7 @@ export const generateInvoicePDF = async (invoiceData: InvoiceData): Promise<Blob
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(14);
   doc.text('Total:', totalsX, totalsY + 5);
-  doc.text(`$${invoiceData.total.toFixed(2)}`, 180, totalsY + 5, { align: 'right' });
+  doc.text(formatAmount(invoiceData.total), 180, totalsY + 5, { align: 'right' });
 
   // Reset colors
   doc.setTextColor(0, 0, 0);

@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { InvoiceData, InvoiceItem } from './InvoiceGenerator';
+import { InvoiceData, InvoiceItem, Student } from './InvoiceGenerator';
 import { toast } from 'react-hot-toast';
+import { formatAmount } from '../../utils/currency';
 
 interface InvoiceFormProps {
   onSubmit: (data: InvoiceData) => void;
   loading: boolean;
   courses: any[];
-  students: any[];
+  students: Student[];
   initialData?: InvoiceData | null;
 }
 
@@ -23,14 +24,15 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
     issueDate: new Date().toISOString().split('T')[0],
     dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     companyInfo: {
-      name: 'ITwala Academy',
-      address: '123 Education Street',
-      city: 'Learning City',
-      zipCode: '12345',
-      country: 'United States',
-      email: 'billing@itwala.academy',
-      phone: '+1 (555) 123-4567',
+      name: 'Kdadks Services Pvt Ltd',
+      address: 'KHN 122 AA Sushant Golf City, Geeta Vihar',
+      city: 'Lucknow',
+      zipCode: '226030',
+      country: 'India',
+      email: 'support@kdadks.com',
+      phone: '+91 7982303199',
       website: 'https://itwala.academy',
+      GSTIN: '09AALCK6836C1ZB',
       logo: ''
     },
     clientInfo: {
@@ -92,10 +94,10 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
         clientInfo: {
           name: student.full_name || student.email,
           email: student.email,
-          address: '',
-          city: '',
-          zipCode: '',
-          country: '',
+          address: student.address || student.address_line1 || '',
+          city: student.city || '',
+          zipCode: student.pincode || '',
+          country: student.country || 'India',
           phone: student.phone || ''
         }
       }));
@@ -353,6 +355,22 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              GSTIN
+            </label>
+            <input
+              type="text"
+              value={formData.companyInfo.GSTIN}
+              onChange={(e) => setFormData(prev => ({
+                ...prev,
+                companyInfo: { ...prev.companyInfo, GSTIN: e.target.value }
+              }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+              placeholder="e.g. 09AALCK6836C1ZB"
+            />
+          </div>
         </div>
       </div>
 
@@ -510,7 +528,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 <option value="">-- Select a course --</option>
                 {courses.map((course) => (
                   <option key={course.id} value={course.id}>
-                    {course.title} - ${course.price}
+                    {course.title} - {formatAmount(course.price)}
                   </option>
                 ))}
               </select>
@@ -546,7 +564,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Rate ($)
+                Rate (₹)
               </label>
               <input
                 type="number"
@@ -561,7 +579,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
           
           <div className="mt-4 flex justify-between items-center">
             <span className="text-lg font-medium">
-              Amount: ${((currentItem.quantity || 1) * (currentItem.rate || 0)).toFixed(2)}
+              Amount: {formatAmount((currentItem.quantity || 1) * (currentItem.rate || 0))}
             </span>
             <button
               type="button"
@@ -608,10 +626,10 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                         {item.quantity}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        ${item.rate.toFixed(2)}
+                        {formatAmount(item.rate)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        ${item.amount.toFixed(2)}
+                        {formatAmount(item.amount)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         <button
@@ -654,15 +672,15 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
           <div className="space-y-2">
             <div className="flex justify-between">
               <span className="text-sm text-gray-600">Subtotal:</span>
-              <span className="font-medium">${formData.subtotal.toFixed(2)}</span>
+              <span className="font-medium">{formatAmount(formData.subtotal)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-sm text-gray-600">Tax ({formData.taxRate}%):</span>
-              <span className="font-medium">${formData.tax.toFixed(2)}</span>
+              <span className="font-medium">{formatAmount(formData.tax)}</span>
             </div>
             <div className="flex justify-between text-lg font-bold">
               <span>Total:</span>
-              <span>${formData.total.toFixed(2)}</span>
+              <span>{formatAmount(formData.total)}</span>
             </div>
           </div>
         </div>

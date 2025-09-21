@@ -23,14 +23,28 @@ const Login: NextPage = () => {
     setIsLoading(true);
     
     try {
-      // First try to sign in
-      const { error: signInError } = await supabaseClient.auth.signInWithPassword({
+      console.log('Attempting login for:', data.email);
+      
+      // Clear any existing session conflicts before login
+      if (typeof window !== 'undefined') {
+        const authKeys = Object.keys(localStorage).filter(key => 
+          key.includes('supabase') || key.includes('auth') || key.includes('sb-')
+        );
+        if (authKeys.length > 1) {
+          console.log('Clearing multiple auth tokens before login');
+          authKeys.forEach(key => localStorage.removeItem(key));
+        }
+      }
+      
+      // Attempt to sign in
+      const { data: signInData, error: signInError } = await supabaseClient.auth.signInWithPassword({
         email: data.email,
         password: data.password,
       });
 
       // If sign in succeeds, we're done
-      if (!signInError) {
+      if (!signInError && signInData?.user) {
+        console.log('Login successful for user:', signInData.user.email);
         toast.success('Logged in successfully!');
         
         // Check for enrollment intent
@@ -67,44 +81,33 @@ const Login: NextPage = () => {
           }
         }
         
-        router.push('/dashboard');
+        // Check if user is admin and redirect appropriately
+        if (data.email === 'admin@itwala.com') {
+          router.push('/admin');
+        } else {
+          router.push('/dashboard');
+        }
         return;
       }
 
       // Handle specific error cases
-      if (signInError.message.toLowerCase().includes('invalid login credentials')) {
-        // If login fails for admin, try to create the account
-        if (data.email === 'admin@itwala.com') {
-          const { error: signUpError } = await supabaseClient.auth.signUp({
-            email: data.email,
-            password: data.password,
-            options: {
-              emailRedirectTo: `${window.location.origin}/auth/confirm`,
-              data: {
-                role: 'admin',
-                full_name: 'Admin User'
-              }
-            }
-          });
-
-          if (signUpError) {
-            if (signUpError.message.includes('User already registered')) {
-              toast.error('Please check your email for the confirmation link.');
-            } else {
-              toast.error(signUpError.message);
-            }
+      if (signInError) {
+        console.error('Login error:', signInError);
+        
+        if (signInError.message.toLowerCase().includes('invalid login credentials')) {
+          // Special handling for admin account setup
+          if (data.email === 'admin@itwala.com') {
+            toast.error('Invalid admin credentials. Please contact support if this persists.');
           } else {
-            toast.success('Admin account created! Please check your email for the confirmation link.', { duration: 6000 });
+            toast.error('Invalid email or password. Please check your credentials and try again.');
           }
-          return;
+        } else if (signInError.message.toLowerCase().includes('email not confirmed')) {
+          toast.error('Please check your email for the confirmation link before logging in.');
+        } else if (signInError.message.toLowerCase().includes('too many requests')) {
+          toast.error('Too many login attempts. Please wait a moment before trying again.');
+        } else {
+          toast.error(signInError.message || 'Failed to log in. Please try again.');
         }
-      }
-
-      // Handle other sign-in errors
-      if (signInError.message.toLowerCase().includes('email not confirmed')) {
-        toast.error('Please check your email for the confirmation link before logging in.');
-      } else {
-        toast.error(signInError.message || 'Failed to log in. Please try again.');
       }
     } catch (error: any) {
       const errorMessage = error.message || 'An error occurred. Please try again.';

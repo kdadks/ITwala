@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { InvoiceData } from './InvoiceGenerator';
 import { previewInvoicePDF } from '../../utils/pdfGenerator';
+import { formatAmount } from '../../utils/currency';
 
 interface InvoicePreviewProps {
   data: InvoiceData;
@@ -141,6 +142,11 @@ const InvoicePreview: React.FC<InvoicePreviewProps> = ({
                     </a>
                   </p>
                 )}
+                {data.companyInfo.GSTIN && (
+                  <p>
+                    <strong>GSTIN:</strong> {data.companyInfo.GSTIN}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -213,10 +219,10 @@ const InvoicePreview: React.FC<InvoicePreviewProps> = ({
                         {item.quantity}
                       </td>
                       <td className="border border-gray-200 px-4 py-2 text-right text-sm text-gray-900">
-                        ${item.rate.toFixed(2)}
+                        {formatAmount(item.rate)}
                       </td>
                       <td className="border border-gray-200 px-4 py-2 text-right text-sm text-gray-900">
-                        ${item.amount.toFixed(2)}
+                        {formatAmount(item.amount)}
                       </td>
                     </tr>
                   ))}
@@ -231,16 +237,16 @@ const InvoicePreview: React.FC<InvoicePreviewProps> = ({
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Subtotal:</span>
-                  <span className="text-sm font-medium">${data.subtotal.toFixed(2)}</span>
+                  <span className="text-sm font-medium">{formatAmount(data.subtotal)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Tax ({data.taxRate}%):</span>
-                  <span className="text-sm font-medium">${data.tax.toFixed(2)}</span>
+                  <span className="text-sm font-medium">{formatAmount(data.tax)}</span>
                 </div>
                 <div className="border-t border-gray-200 pt-2">
                   <div className="flex justify-between">
                     <span className="text-lg font-bold text-gray-900">Total:</span>
-                    <span className="text-lg font-bold text-gray-900">${data.total.toFixed(2)}</span>
+                    <span className="text-lg font-bold text-gray-900">{formatAmount(data.total)}</span>
                   </div>
                 </div>
               </div>

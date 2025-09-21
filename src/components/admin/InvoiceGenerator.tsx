@@ -22,6 +22,7 @@ export interface InvoiceData {
     phone: string;
     website?: string;
     logo?: string;
+    GSTIN?: string;
   };
   clientInfo: {
     name: string;
@@ -57,13 +58,27 @@ export interface InvoiceItem {
   };
 }
 
+export interface Student {
+  id: string;
+  email: string;
+  full_name: string;
+  phone?: string;
+  address?: string;
+  address_line1?: string;
+  address_line2?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  pincode?: string;
+}
+
 const InvoiceGenerator: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<'form' | 'preview' | 'history'>('form');
   const [invoiceData, setInvoiceData] = useState<InvoiceData | null>(null);
   const [invoices, setInvoices] = useState<InvoiceData[]>([]);
   const [loading, setLoading] = useState(false);
   const [courses, setCourses] = useState<any[]>([]);
-  const [students, setStudents] = useState<any[]>([]);
+  const [students, setStudents] = useState<Student[]>([]);
   
   const supabase = useSupabaseClient();
 
@@ -92,7 +107,7 @@ const InvoiceGenerator: React.FC = () => {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, email, full_name, phone')
+        .select('id, email, full_name, phone, address, address_line1, address_line2, city, state, country, pincode')
         .eq('role', 'student');
 
       if (error) throw error;
@@ -111,7 +126,46 @@ const InvoiceGenerator: React.FC = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setInvoices(data || []);
+      
+      // Transform old database format to new interface format
+      const transformedInvoices = (data || []).map((invoice: any) => ({
+        id: invoice.id,
+        invoiceNumber: invoice.invoice_number,
+        issueDate: invoice.invoice_date || invoice.issue_date,
+        dueDate: invoice.due_date,
+        companyInfo: {
+          name: invoice.company_name || '',
+          address: invoice.company_address || '',
+          email: invoice.company_email || '',
+          phone: invoice.company_phone || '',
+          website: invoice.company_website || '',
+          city: '',
+          zipCode: '',
+          country: '',
+          GSTIN: ''
+        },
+        clientInfo: {
+          name: invoice.client_name || '',
+          email: invoice.client_email || '',
+          address: invoice.client_address || '',
+          phone: invoice.client_phone || '',
+          city: '',
+          zipCode: '',
+          country: ''
+        },
+        items: invoice.items || [],
+        subtotal: invoice.subtotal || 0,
+        tax: invoice.tax_amount || 0,
+        taxRate: invoice.tax_rate || 0,
+        total: invoice.total_amount || 0,
+        notes: invoice.notes || '',
+        terms: invoice.terms || '',
+        status: invoice.status || 'draft',
+        createdAt: invoice.created_at,
+        updatedAt: invoice.updated_at
+      }));
+      
+      setInvoices(transformedInvoices);
     } catch (error: any) {
       console.error('Error loading invoices:', error);
       toast.error('Failed to load invoices');
@@ -121,21 +175,35 @@ const InvoiceGenerator: React.FC = () => {
   const saveInvoice = async (data: InvoiceData) => {
     setLoading(true);
     try {
+      // Map new structure to old database schema for compatibility
       const invoiceToSave = {
         invoice_number: data.invoiceNumber,
-        issue_date: data.issueDate,
+        invoice_date: data.issueDate, // Use old column name
         due_date: data.dueDate,
-        company_info: data.companyInfo,
-        client_info: data.clientInfo,
+        status: data.status || 'draft',
+        
+        // Flatten company_info to old structure
+        company_name: data.companyInfo.name,
+        company_address: data.companyInfo.address,
+        company_email: data.companyInfo.email,
+        company_phone: data.companyInfo.phone,
+        company_website: data.companyInfo.website,
+        
+        // Flatten client_info to old structure
+        client_name: data.clientInfo.name,
+        client_email: data.clientInfo.email,
+        client_address: data.clientInfo.address,
+        client_phone: data.clientInfo.phone,
+        
         items: data.items,
         subtotal: data.subtotal,
-        tax: data.tax,
-        tax_rate: data.taxRate,
-        total: data.total,
+        tax_amount: data.tax, // Use old column name
+        total_amount: data.total, // Use old column name
         notes: data.notes,
         terms: data.terms,
-        status: data.status || 'draft',
       };
+
+      console.log('Saving invoice with old schema compatibility:', invoiceToSave);
 
       const { data: savedInvoice, error } = await supabase
         .from('invoices')
@@ -143,7 +211,10 @@ const InvoiceGenerator: React.FC = () => {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Invoice save error:', error);
+        throw error;
+      }
 
       setInvoiceData({ ...data, id: savedInvoice.id });
       await loadInvoices();
@@ -151,7 +222,7 @@ const InvoiceGenerator: React.FC = () => {
       return savedInvoice;
     } catch (error: any) {
       console.error('Error saving invoice:', error);
-      toast.error('Failed to save invoice');
+      toast.error('Failed to save invoice: ' + (error.message || 'Unknown error'));
       throw error;
     } finally {
       setLoading(false);
@@ -161,20 +232,32 @@ const InvoiceGenerator: React.FC = () => {
   const updateInvoice = async (id: string, data: Partial<InvoiceData>) => {
     setLoading(true);
     try {
+      // Map new structure to old database schema for compatibility
       const invoiceToUpdate = {
         invoice_number: data.invoiceNumber,
-        issue_date: data.issueDate,
+        invoice_date: data.issueDate, // Use old column name
         due_date: data.dueDate,
-        company_info: data.companyInfo,
-        client_info: data.clientInfo,
+        status: data.status,
+        
+        // Flatten company_info to old structure
+        company_name: data.companyInfo?.name,
+        company_address: data.companyInfo?.address,
+        company_email: data.companyInfo?.email,
+        company_phone: data.companyInfo?.phone,
+        company_website: data.companyInfo?.website,
+        
+        // Flatten client_info to old structure
+        client_name: data.clientInfo?.name,
+        client_email: data.clientInfo?.email,
+        client_address: data.clientInfo?.address,
+        client_phone: data.clientInfo?.phone,
+        
         items: data.items,
         subtotal: data.subtotal,
-        tax: data.tax,
-        tax_rate: data.taxRate,
-        total: data.total,
+        tax_amount: data.tax, // Use old column name
+        total_amount: data.total, // Use old column name
         notes: data.notes,
         terms: data.terms,
-        status: data.status,
         updated_at: new Date().toISOString(),
       };
 

@@ -1051,4 +1051,11 @@ const AnalyticsPage: NextPage = () => {
   );
 };
 
+// Disable static generation for this admin page
+export async function getServerSideProps() {
+  return {
+    props: {},
+  };
+}
+
 export default AnalyticsPage;

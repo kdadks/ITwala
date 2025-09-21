@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Login Test</title>
+    <script src="https://unpkg.com/@supabase/supabase-js"></script>
+</head>
+<body>
+    <h1>Admin Login Test</h1>
+    <div id="result"></div>
+    
+    <script>
+        const supabase = window.supabase.createClient(
+            'https://lyywvmoxtlovvxknpkpw.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx5eXd2bW94dGxvdnZ4a25wa3B3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc0NDAzNjEsImV4cCI6MjA2MzAxNjM2MX0.CRqKHw00aGXWxbk3HwUmjG9-zw3mSjBhf2LArZs9b6k'
+        );
+        
+        async function testAdminLogin() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing admin login...';
+            
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: 'admin@itwala.com',
+                    password: 'Admin@123'
+                });
+                
+                if (error) {
+                    resultDiv.innerHTML = `<p style="color: red;">❌ Login failed: ${error.message}</p>`;
+                    return;
+                }
+                
+                resultDiv.innerHTML = `
+                    <p style="color: green;">✅ Login successful!</p>
+                    <p><strong>User ID:</strong> ${data.user.id}</p>
+                    <p><strong>Email:</strong> ${data.user.email}</p>
+                    <p><strong>Role:</strong> ${data.user.user_metadata?.role || 'N/A'}</p>
+                    <p><strong>Full Name:</strong> ${data.user.user_metadata?.full_name || 'N/A'}</p>
+                    <hr>
+                    <p>✅ Admin login is working correctly!</p>
+                    <p>You can now log in to <a href="http://localhost:3003/auth/login" target="_blank">the application</a> with:</p>
+                    <p><strong>Email:</strong> admin@itwala.com</p>
+                    <p><strong>Password:</strong> Admin@123</p>
+                `;
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color: red;">❌ Test failed: ${error.message}</p>`;
+            }
+        }
+        
+        // Run test on page load
+        testAdminLogin();
+    </script>
+</body>
+</html>

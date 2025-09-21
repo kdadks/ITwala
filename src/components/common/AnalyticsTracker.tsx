@@ -481,26 +481,14 @@ const AnalyticsTracker: React.FC = () => {
           // Continue with session tracking even if page view fails
         }
 
-        // Handle session tracking with upsert to avoid duplicates
+        // Handle session tracking with better conflict resolution
         try {
-          // Use upsert to handle session creation/update in one operation
-          const sessionData: any = {
-            session_id: sessionId,
-            user_id: user?.id || null,
-            user_agent: userAgent,
-            first_page: pageUrl,
-            last_page: pageUrl,
-            total_pages: 1,
-            total_duration_seconds: 0,
-            is_bounce: false,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          };
-
-          // First try to update existing session
+          const currentTime = new Date().toISOString();
+          
+          // Use a more robust upsert approach
           const { data: existingSession, error: selectError } = await supabase
             .from('user_sessions')
-            .select('total_pages')
+            .select('total_pages, first_page, created_at')
             .eq('session_id', sessionId)
             .maybeSingle();
 
@@ -510,43 +498,44 @@ const AnalyticsTracker: React.FC = () => {
               .from('user_sessions')
               .update({
                 last_page: pageUrl,
-                total_pages: existingSession.total_pages + 1,
-                updated_at: new Date().toISOString()
+                total_pages: (existingSession.total_pages || 0) + 1,
+                updated_at: currentTime,
+                user_id: user?.id || null // Update user_id if user logs in during session
               })
               .eq('session_id', sessionId);
 
-            if (sessionError) {
+            if (sessionError && sessionError.code !== '42501') {
               console.warn('Session update failed:', sessionError);
             }
           } else {
-            // Session doesn't exist, try to create it
+            // Session doesn't exist, create it with proper conflict handling
+            const sessionData = {
+              session_id: sessionId,
+              user_id: user?.id || null,
+              user_agent: userAgent,
+              first_page: pageUrl,
+              last_page: pageUrl,
+              total_pages: 1,
+              total_duration_seconds: 0,
+              is_bounce: false,
+              created_at: currentTime,
+              updated_at: currentTime
+            };
+
+            // Use upsert to handle race conditions automatically
             const { error: sessionError } = await supabase
               .from('user_sessions')
-              .insert(sessionData)
-              .select()
-              .single();
+              .upsert(sessionData, {
+                onConflict: 'session_id',
+                ignoreDuplicates: false
+              });
 
             if (sessionError) {
-              // If insert fails due to duplicate (race condition), try update instead
-              if (sessionError.code === '23505') {
-                console.log('Session already exists (race condition), updating instead...');
-                const { error: fallbackError } = await supabase
-                  .from('user_sessions')
-                  .update({
-                    last_page: pageUrl,
-                    total_pages: 1,
-                    updated_at: new Date().toISOString()
-                  })
-                  .eq('session_id', sessionId);
-
-                if (fallbackError) {
-                  console.warn('Session fallback update failed:', fallbackError);
-                }
-              } else if (sessionError.code === '42501') {
+              if (sessionError.code === '42501') {
                 console.warn('⚠️ Session tracking blocked by database permissions.');
                 console.warn('Please run: supabase/fix-analytics-rls-manual.sql in Supabase Dashboard');
               } else {
-                console.warn('Session creation failed (non-critical):', sessionError);
+                console.warn('Session upsert failed (non-critical):', sessionError);
               }
             }
           }

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { InvoiceData } from './InvoiceGenerator';
+import { formatAmount } from '../../utils/currency';
 
 interface InvoiceHistoryProps {
   invoices: InvoiceData[];
@@ -123,7 +124,7 @@ const InvoiceHistory: React.FC<InvoiceHistoryProps> = ({
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Total Revenue</p>
-              <p className="text-2xl font-bold text-gray-900">${(totals.total || 0).toFixed(2)}</p>
+              <p className="text-2xl font-bold text-gray-900">{formatAmount(totals.total || 0)}</p>
             </div>
           </div>
         </div>
@@ -135,7 +136,7 @@ const InvoiceHistory: React.FC<InvoiceHistoryProps> = ({
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Paid</p>
-              <p className="text-2xl font-bold text-gray-900">${(totals.paid || 0).toFixed(2)}</p>
+              <p className="text-2xl font-bold text-gray-900">{formatAmount(totals.paid || 0)}</p>
             </div>
           </div>
         </div>
@@ -147,7 +148,7 @@ const InvoiceHistory: React.FC<InvoiceHistoryProps> = ({
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">Overdue</p>
-              <p className="text-2xl font-bold text-gray-900">${(totals.overdue || 0).toFixed(2)}</p>
+              <p className="text-2xl font-bold text-gray-900">{formatAmount(totals.overdue || 0)}</p>
             </div>
           </div>
         </div>
@@ -299,7 +300,7 @@ const InvoiceHistory: React.FC<InvoiceHistoryProps> = ({
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        ${invoice.total.toFixed(2)}
+                        {formatAmount(invoice.total)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(isOverdue && invoice.status !== 'paid' ? 'overdue' : invoice.status)}`}>

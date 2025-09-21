@@ -95,7 +95,7 @@ const AdminCourses: NextPage = () => {
         price: course.price || 0,
         status: course.status || 'draft',
         created_at: course.created_at,
-        thumbnail: course.thumbnail || 'https://via.placeholder.com/40',
+        thumbnail: course.thumbnail || '/images/Tech Professional at Work.jpeg',
         slug: course.slug,
         category: categoryMap.get(course.category_id) || 'Uncategorized',
         enrollments: course.enrollments?.[0]?.count || 0
@@ -315,7 +315,7 @@ const AdminCourses: NextPage = () => {
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
                               <div className="h-10 w-10 flex-shrink-0 rounded overflow-hidden">
-                                <Image src={course.thumbnail || 'https://via.placeholder.com/40'} alt={course.title} width={40} height={40} className="h-10 w-10 object-cover" />
+                                <Image src={course.thumbnail || '/images/Tech Professional at Work.jpeg'} alt={course.title} width={40} height={40} className="h-10 w-10 object-cover" />
                               </div>
                               <div className="ml-4">
                                 <div className="text-sm font-medium text-gray-900">{course.title}</div>
@@ -379,5 +379,12 @@ const AdminCourses: NextPage = () => {
     </>
   );
 };
+
+// Disable static generation for this admin page
+export async function getServerSideProps() {
+  return {
+    props: {},
+  };
+}
 
 export default AdminCourses;

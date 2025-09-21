@@ -29,15 +29,20 @@ const AdminDashboard: React.FC = () => {
         console.error('Error fetching courses count:', coursesError);
       }
 
-      // Fetch active students with proper count query
-      const { count: studentsCount, error: studentsError } = await supabase
+      // Fetch unique active students count
+      const { data: activeEnrollments, error: studentsError } = await supabase
         .from('enrollments')
-        .select('*', { count: 'exact', head: true })
+        .select('user_id')
         .eq('status', 'active');
 
       if (studentsError) {
         console.error('Error fetching students count:', studentsError);
       }
+
+      // Calculate unique student count
+      const uniqueStudents = activeEnrollments 
+        ? new Set(activeEnrollments.map(e => e.user_id)).size 
+        : 0;
 
       // Fetch course completion rate using enrollments table
       const { count: completionsCount, error: completionsError } = await supabase
@@ -49,20 +54,47 @@ const AdminDashboard: React.FC = () => {
         console.error('Error fetching completions count:', completionsError);
       }
 
-      // Fetch recent activity with safer query (avoid complex joins)
+      // Fetch recent activity with more meaningful data
       const { data: activity, error: activityError } = await supabase
         .from('enrollments')
         .select(`
           id,
           enrolled_at,
           course_id,
-          user_id
+          user_id,
+          status
         `)
         .order('enrolled_at', { ascending: false })
         .limit(5);
 
       if (activityError) {
         console.error('Error fetching recent activity:', activityError);
+      }
+
+      // Fetch course details for recent activities
+      let enhancedActivity: any[] = [];
+      if (activity && activity.length > 0) {
+        const courseIds = [...new Set(activity.map(a => a.course_id))];
+        const userIds = [...new Set(activity.map(a => a.user_id))];
+
+        const { data: coursesData } = await supabase
+          .from('courses')
+          .select('id, title')
+          .in('id', courseIds);
+
+        const { data: usersData } = await supabase
+          .from('profiles')
+          .select('id, full_name, email')
+          .in('id', userIds);
+
+        const courseMap = new Map(coursesData?.map(c => [c.id, c.title]) || []);
+        const userMap = new Map(usersData?.map(u => [u.id, u.full_name || u.email]) || []);
+
+        enhancedActivity = activity.map(a => ({
+          ...a,
+          course_title: courseMap.get(a.course_id) || 'Unknown Course',
+          user_name: userMap.get(a.user_id) || 'Unknown User'
+        }));
       }
 
       // Fetch popular courses with simpler query
@@ -80,14 +112,43 @@ const AdminDashboard: React.FC = () => {
         console.error('Error fetching popular courses:', popularError);
       }
 
+      // Calculate revenue from payments table
+      const { data: paidPayments, error: revenueError } = await supabase
+        .from('payments')
+        .select('amount')
+        .eq('status', 'completed');
+
+      let totalRevenue = 0;
+      if (revenueError) {
+        console.error('Error fetching revenue from payments:', revenueError);
+        
+        // Fallback: try to get revenue from invoices table
+        const { data: paidInvoices, error: invoiceRevenueError } = await supabase
+          .from('invoices')
+          .select('total_amount')
+          .eq('status', 'paid');
+
+        if (!invoiceRevenueError && paidInvoices) {
+          totalRevenue = paidInvoices.reduce((sum, invoice) => {
+            const amount = parseFloat(invoice.total_amount) || 0;
+            return sum + amount;
+          }, 0);
+        }
+      } else if (paidPayments) {
+        totalRevenue = paidPayments.reduce((sum, payment) => {
+          const amount = typeof payment.amount === 'number' ? payment.amount : parseFloat(payment.amount) || 0;
+          return sum + amount;
+        }, 0);
+      }
+
       setStats({
         totalCourses: coursesCount || 0,
-        activeStudents: studentsCount || 0,
-        completionRate: Math.round((completionsCount || 0) / (studentsCount || 1) * 100),
-        revenue: 0 // You'll need to implement revenue calculation based on your business logic
+        activeStudents: uniqueStudents,
+        completionRate: Math.round((completionsCount || 0) / (uniqueStudents || 1) * 100),
+        revenue: totalRevenue
       });
 
-      setRecentActivity(activity || []);
+      setRecentActivity(enhancedActivity || []);
       setPopularCourses(popular || []);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
@@ -176,10 +237,10 @@ const AdminDashboard: React.FC = () => {
               recentActivity.map((activity) => (
                 <div key={activity.id} className="border-l-4 border-primary-500 pl-4">
                   <p className="text-sm text-gray-600">
-                    New enrollment (Course ID: {activity.course_id})
+                    {activity.user_name || 'Student'} enrolled in {activity.course_title || 'course'}
                   </p>
                   <p className="text-xs text-gray-400">
-                    {new Date(activity.enrolled_at).toLocaleDateString()}
+                    {new Date(activity.enrolled_at).toLocaleDateString()} • Status: {activity.status || 'active'}
                   </p>
                 </div>
               ))
