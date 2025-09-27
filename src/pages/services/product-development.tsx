@@ -82,14 +82,34 @@ const ProductDevelopment: NextPage = () => {
       ctaText: "Book Appointment"
     },
     {
-      href: "https://khtherapy.netlify.app/",
+      href: "https://khtherapy.ie/",
       logo: "/images/KH.png",
-      title: "Khtherapy",
+      title: "KH Therapy",
       description: "Physio clinic offering expert physiotherapy and rehabilitation services for all ages. Personalized care for pain relief, mobility, and wellness.",
       industry: "Physiotherapy Clinic",
       color: "blue",
       features: ["Pain management", "Rehabilitation programs", "Sports therapy", "Post-surgery care"],
       ctaText: "Start Therapy"
+    },
+        {
+      href: "https://nirchal.netlify.app/",
+      logo: "/images/Nirchal_Logo.png",
+      title: "Nirchal",
+      description: "Retail garments store offering a wide range of clothing and accessories for all ages. Quality products at affordable prices.",
+      industry: "Retail Garments",
+      color: "pink",
+      features: ["Wide selection", "Affordable prices", "Quality assurance", "Fast shipping"],
+      ctaText: "Start Shopping"
+    },
+           {
+      href: "https://eyogi-main.vercel.app/ssh-app/",
+      logo: "/images/eyogiLogo.png",
+      title: "eYogi Gurukul",
+      description: "Online Learning Platform offering Indian cultural, religious yoga classes and wellness programs for all ages. Expert instructors and personalized plans.",
+      industry: "Education & Wellness",
+      color: "cyan",
+      features: ["Wellness programs", "Digital Platform", "Personalized plans", "Expert instructors"],
+      ctaText: "Start Learning"
     }
   ];
 
