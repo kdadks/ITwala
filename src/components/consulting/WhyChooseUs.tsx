@@ -64,7 +64,7 @@ const advantages: Advantage[] = [
 
 const WhyChooseUs: React.FC = () => {
   return (
-    <section className="py-20 bg-white relative overflow-hidden">
+    <section id="why-choose-us" className="py-20 bg-white relative overflow-hidden scroll-mt-32">
       {/* Decorative background elements */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-1/4 left-0 w-72 h-72 bg-primary-300 rounded-full -translate-x-1/2 blur-3xl"></div>

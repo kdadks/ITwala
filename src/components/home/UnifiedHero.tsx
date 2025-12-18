@@ -4,13 +4,7 @@ import { motion } from 'framer-motion';
 
 const UnifiedHero = () => {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-primary-700 via-primary-600 to-secondary-700 text-white">
-      {/* Abstract shapes background */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-1/2 -right-1/2 w-[1000px] h-[1000px] rounded-full bg-primary-900 opacity-20 blur-3xl"></div>
-        <div className="absolute -bottom-1/2 -left-1/2 w-[800px] h-[800px] rounded-full bg-secondary-800 opacity-10 blur-3xl"></div>
-      </div>
-
+    <section className="relative overflow-hidden text-white">
       {/* Floating elements */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -31,7 +25,7 @@ const UnifiedHero = () => {
             transition={{ duration: 0.6 }}
           >
             <div className="flex justify-center mb-3">
-              <Image src="/images/IT-WALA-logo-64x64.png" alt="IT Wala Logo" width={64} height={64} className="object-contain drop-shadow-lg" priority />
+              <Image src="/images/IT-WALA-logo-64x64.png" alt="IT Wala Logo" width={64} height={64} className="object-contain drop-shadow-lg rounded-2xl" priority />
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 md:mb-3 leading-tight text-white drop-shadow-lg">
               ITWala - Your Complete IT Partner

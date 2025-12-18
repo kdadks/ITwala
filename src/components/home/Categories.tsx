@@ -67,15 +67,15 @@ const Categories = () => {
               whileHover={{ y: -5 }}
               transition={{ duration: 0.2 }}
             >
-              <Link href={`/courses?category=${category.slug}`} passHref>
+              <Link href={`/courses?category=${encodeURIComponent(category.name)}`} passHref>
                 <div className={`bg-white rounded-xl shadow-md overflow-hidden h-full transition-all duration-300 ${hoveredId === category.id ? 'shadow-lg' : ''}`}>
-                  <div className="p-6">
+                  <div className="p-6 flex flex-col h-full">
                     <div className={`inline-flex items-center justify-center p-3 rounded-full mb-4 ${category.color}`}>
                       {category.icon}
                     </div>
                     <h3 className="text-xl font-bold text-gray-900 mb-2">{category.name}</h3>
-                    <p className="text-gray-600 mb-4">{category.description}</p>
-                    <div className="flex items-center text-primary-500 font-medium">
+                    <p className="text-gray-600 mb-4 flex-grow">{category.description}</p>
+                    <div className="flex items-center text-primary-500 font-medium mt-auto">
                       Explore Courses
                       <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>

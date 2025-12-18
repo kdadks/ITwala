@@ -5,6 +5,56 @@ import { FaQuoteLeft, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 const testimonials = [
 	{
 		id: 1,
+		name: 'Raahi Ventures',
+		role: 'Founder, RaahiRides',
+		image:
+			'/images/raahi_rides_logo.png',
+		quote:
+			"ITWala transformed our vision of connecting travelers in Eastern UP into reality. Their expertise in building scalable travel apps with real-time GPS tracking and secure payment systems exceeded our expectations. We now serve 10,000+ active users seamlessly.",
+		rating: 5,
+	},
+	{
+		id: 2,
+		name: 'Vishal Creations',
+		role: 'Manufacturing Excellence',
+		image:
+			'/images/VC Logo.png',
+		quote:
+			"Working with ITWala on our Web Application was a game-changer. Their product development expertise helped us achieve a 40% increase in online orders and successfully serve 500+ B2B clients. Highly recommend their consulting services!",
+		rating: 5,
+	},
+	{
+		id: 3,
+		name: 'Dr. Nidhi Sharma',
+		role: 'Founder, Ayuh Clinic',
+		image:
+			'/images/AYUH_Logo_2.png',
+		quote:
+			"ITWala's healthcare solution expertise transformed our clinic's digital presence. The comprehensive booking system, patient management, and secure payment integration helped us serve 2,000+ patients with a 4.9/5 rating. Outstanding work!",
+		rating: 5,
+	},
+	{
+		id: 4,
+		name: 'KH Therapy Center',
+		role: 'Physiotherapy Excellence',
+		image:
+			'https://images.pexels.com/photos/3757942/pexels-photo-3757942.jpeg?auto=compress&cs=tinysrgb&w=400',
+		quote:
+			"ITWala built us a professional website that perfectly represents our physiotherapy services. With their custom designed fully automated Booking, Payment & Invoicing, we've successfully managed 1,500+ treatments with a 98% recovery rate. Excellent technical support!",
+		rating: 5,
+	},
+	{
+		id: 5,
+		name: 'eYogi Gurukul',
+		role: 'Education & Wellness Platform',
+		image:
+			'https://images.pexels.com/photos/3822864/pexels-photo-3822864.jpeg?auto=compress&cs=tinysrgb&w=400',
+		quote:
+			"ITWala's Next.js solution for our online education platform has been phenomenal. With features like live video classes, course management, and payment integration, we've grown to 3,000+ students across 100+ courses. Their technical expertise is unmatched!",
+		rating: 5,
+	},
+	{
+		id: 6,
 		name: 'Luke Smith',
 		role: 'Software Developer at TechCorp',
 		image:
@@ -14,33 +64,13 @@ const testimonials = [
 		rating: 5,
 	},
 	{
-		id: 2,
-		name: 'Jenny Kim',
-		role: 'Product Manager at RealTech',
-		image:
-			'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
-		quote:
-			"ITwala Academy's Product Management course transformed my approach to building digital products. The real-world examples and practical assignments prepared me for my daily work.",
-		rating: 5,
-	},
-	{
-		id: 3,
+		id: 7,
 		name: 'Ankit Patel',
 		role: 'AI Engineer at StartupX',
 		image:
 			'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
 		quote:
 			'The AI & Machine Learning Fundamentals course provided the perfect foundation for my career transition. I went from knowing basic Python to implementing complex AI models in just a few months.',
-		rating: 4,
-	},
-	{
-		id: 4,
-		name: 'Sonal Mehra',
-		role: 'Consultant, Digital Transformation',
-		image:
-			'https://images.pexels.com/photos/1130626/pexels-photo-1130626.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
-		quote:
-			"The consulting sessions with ITwala Consulting were invaluable for our business. Their expert advice on digital strategy and technology implementation helped us streamline operations and achieve measurable growth.",
 		rating: 5,
 	},
 ];

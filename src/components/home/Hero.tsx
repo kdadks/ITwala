@@ -23,16 +23,13 @@ const Hero = () => {
         <div className="absolute top-1/3 right-1/4 w-8 h-8 bg-secondary-200 rounded-lg opacity-10 transform -rotate-12"></div>
       </motion.div>
 
-      <div className="container mx-auto px-4 py-8 md:py-14 relative z-10">
-        <div className="max-w-3xl mx-auto text-center mb-6 md:mb-8">
+      <div className="container mx-auto px-4 py-6 md:py-10 relative z-10">
+        <div className="max-w-3xl mx-auto text-center mb-4 md:mb-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <div className="flex justify-center mb-4">
-              <Image src="/images/IT-WALA-logo-96x96.png" alt="IT Wala Logo" width={90} height={90} className="object-contain drop-shadow-lg" priority />
-            </div>
             <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-3 md:mb-4 leading-tight text-white drop-shadow-lg">
               Transform Your Future with IT Excellence
             </h1>

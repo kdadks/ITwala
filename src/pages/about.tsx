@@ -15,7 +15,7 @@ const About: NextPage = () => {
       </Head>
 
       <main>
-        <section className="py-12 md:py-20 bg-gradient-to-br from-primary-50 to-secondary-50">
+        <section className="py-12 md:py-20 bg-gradient-to-br from-primary-700 via-primary-600 to-secondary-700 text-white">
           <div className="container mx-auto px-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -23,10 +23,24 @@ const About: NextPage = () => {
               transition={{ duration: 0.5 }}
               className="max-w-4xl mx-auto text-center"
             >
-              <h1 className="text-4xl md:text-5xl font-bold text-primary-800 mb-6">About ITwala Academy & Consulting</h1>
-              <p className="text-xl text-primary-600 mb-8">
+              <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 drop-shadow-lg">About ITwala Academy & Consulting</h1>
+              <p className="text-xl text-gray-100 mb-8 drop-shadow">
                 Empowering businesses and individuals through comprehensive IT education and expert consulting services.
               </p>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="flex justify-center"
+              >
+                <a href="#our-story" className="inline-flex items-center justify-center px-8 py-3 bg-primary-600 text-white font-semibold rounded-full hover:bg-primary-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                  Our Story
+                  <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </a>
+              </motion.div>
             </motion.div>
           </div>
         </section>
@@ -118,7 +132,7 @@ const About: NextPage = () => {
           </div>
         </section>
         
-        <section className="py-16 bg-gradient-to-br from-white via-secondary-50 to-primary-50">
+        <section id="our-story" className="py-16 bg-gradient-to-br from-white via-secondary-50 to-primary-50 scroll-mt-32">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               <motion.div
@@ -128,16 +142,16 @@ const About: NextPage = () => {
                 transition={{ duration: 0.5 }}
               >
                 <div className="relative h-[400px] rounded-2xl overflow-hidden shadow-xl transform hover:scale-105 transition-transform duration-300">
-                  <Image 
+                  <Image
                     src="https://picsum.photos/400/400" // Temporary placeholder
-                    alt="ITwala Team Collaboration" 
+                    alt="ITwala Team Collaboration"
                     layout="fill"
                     objectFit="cover"
                     className="rounded-2xl"
                   />
                 </div>
               </motion.div>
-              
+
               <motion.div
                 initial={{ opacity: 0, x: 30 }}
                 whileInView={{ opacity: 1, x: 0 }}

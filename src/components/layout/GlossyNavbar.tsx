@@ -2,23 +2,16 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { useUser, useSupabaseClient } from '@supabase/auth-helpers-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Menu, X, User, LogOut, Settings, BookOpen, Home, GraduationCap, Phone, Info, Briefcase } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { Menu, X, User, LogOut, Settings, BookOpen, Home, GraduationCap, Phone, Info, Briefcase, Folder } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { allCourses } from '@/data/allCourses';
 
 const GlossyNavbar = () => {
   const router = useRouter();
   const { user, isAdmin, profile, signOut } = useAuth();
-  const supabaseClient = useSupabaseClient();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [suggestions, setSuggestions] = useState<string[]>([]);
 
   // Handle scroll effect for glassmorphic background
   useEffect(() => {
@@ -29,20 +22,6 @@ const GlossyNavbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Search suggestions
-  useEffect(() => {
-    if (searchQuery.trim().length > 0) {
-      const filtered = allCourses
-        .filter(course =>
-          course.title.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-        .map(course => course.title)
-        .slice(0, 5);
-      setSuggestions(filtered);
-    } else {
-      setSuggestions([]);
-    }
-  }, [searchQuery]);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -53,21 +32,13 @@ const GlossyNavbar = () => {
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
-  // Handle search
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/courses?search=${encodeURIComponent(searchQuery)}`);
-      setIsSearchOpen(false);
-      setSearchQuery('');
-    }
-  };
 
   // Navigation items with icons
   const navItems = [
     { label: 'Home', href: '/', icon: Home },
     { label: 'Academy', href: '/academy', icon: GraduationCap },
     { label: 'Courses', href: '/courses', icon: BookOpen },
+    { label: 'Portfolio', href: '/portfolio', icon: Folder },
     { label: 'Consulting', href: '/consulting', icon: Briefcase },
     { label: 'About', href: '/about', icon: Info },
     { label: 'Contact', href: '/contact', icon: Phone }
@@ -82,11 +53,10 @@ const GlossyNavbar = () => {
     ] : [])
   ] : [];
 
-  // Close search on Escape
+  // Close menu on Escape
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        setIsSearchOpen(false);
         setIsMenuOpen(false);
       }
     };
@@ -96,127 +66,200 @@ const GlossyNavbar = () => {
 
   return (
     <>
-      {/* Glassmorphic Sticky Header */}
+      {/* Stunning Rounded Centered Header */}
       <motion.header
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${
-          isScrolled 
-            ? 'bg-white/30 backdrop-blur-3xl border-b border-white/30 shadow-2xl shadow-primary-500/10' 
-            : 'bg-gradient-to-r from-white/15 via-white/10 to-white/15 backdrop-blur-2xl'
-        }`}
-        style={{
-          background: isScrolled 
-            ? 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)'
-            : 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.1) 100%)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          boxShadow: isScrolled 
-            ? '0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
-            : '0 4px 16px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
-        }}
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="fixed top-0 left-0 w-full z-50 px-4 pt-6 pb-4 transition-all duration-500 bg-gradient-to-br from-primary-700 via-primary-600 to-secondary-700"
       >
-        <div className="container mx-auto px-4 lg:px-6">
-          <div className="flex justify-between items-center h-20">
-            
-            {/* Left - Glossy Logo */}
+        {/* Centered Container with Rounded Glassmorphic Design */}
+        <div className="container mx-auto max-w-7xl">
+          <div
+            className={`relative rounded-3xl transition-all duration-500 ${
+              isScrolled
+                ? 'bg-white/70 shadow-2xl shadow-primary-500/20'
+                : 'bg-white/50 shadow-xl'
+            }`}
+            style={{
+              background: isScrolled
+                ? 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(249,250,251,0.90) 50%, rgba(255,255,255,0.95) 100%)'
+                : 'linear-gradient(135deg, rgba(255,255,255,0.75) 0%, rgba(249,250,251,0.70) 50%, rgba(255,255,255,0.75) 100%)',
+              backdropFilter: 'blur(24px)',
+              WebkitBackdropFilter: 'blur(24px)',
+              border: '1px solid rgba(255, 255, 255, 0.5)',
+              boxShadow: isScrolled
+                ? '0 20px 60px rgba(0, 0, 0, 0.12), 0 8px 32px rgba(59, 130, 246, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.8), inset 0 -1px 0 rgba(0, 0, 0, 0.05)'
+                : '0 12px 40px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(59, 130, 246, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.6)'
+            }}
+          >
+            {/* Gradient Border Effect */}
+            <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-primary-400/20 via-secondary-500/20 to-accent-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10" />
+
+            {/* Shimmer Effect Overlay */}
             <motion.div
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.2 }}
-              className="flex items-center"
+              className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-white/40 to-transparent opacity-0"
+              animate={{
+                x: ['-200%', '200%'],
+                opacity: [0, 0.3, 0]
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                repeatDelay: 5,
+                ease: "linear"
+              }}
+            />
+
+            <div className="flex justify-between items-center px-6 lg:px-8 h-20 md:h-24">
+            
+            {/* Left - Stunning Logo with 3D Effect */}
+            <motion.div
+              whileHover={{ scale: 1.05, rotateY: 5 }}
+              transition={{ duration: 0.3, type: "spring", stiffness: 200 }}
+              className="flex items-center relative"
+              style={{ perspective: '1000px' }}
             >
               <Link href="/">
                 <div className="flex items-center space-x-3 group cursor-pointer">
-                  <div className="relative">
-                    {/* Gradient shine effect container */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary-400 via-secondary-500 to-accent-500 rounded-xl blur-sm opacity-70 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <div className="relative bg-white/20 backdrop-blur-sm p-2 rounded-xl border border-white/30">
+                  <div className="relative transform-gpu">
+                    {/* Glowing backdrop */}
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-br from-primary-400 via-secondary-500 to-accent-500 rounded-2xl blur-lg"
+                      animate={{
+                        scale: [1, 1.1, 1],
+                        opacity: [0.6, 0.8, 0.6]
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    />
+
+                    {/* Logo container with depth */}
+                    <div className="relative bg-gradient-to-br from-white via-gray-50 to-white p-3 rounded-2xl border border-white/60 shadow-xl">
                       <Image
                         src="/images/IT-WALA-logo-48x48.png"
-                        alt="ITwala Academy Logo"
-                        width={40}
-                        height={40}
-                        className="h-10 w-10 object-contain relative z-10"
+                        alt="ITwala Logo"
+                        width={44}
+                        height={44}
+                        className="h-11 w-11 object-contain relative z-10 drop-shadow-lg"
                         priority
                       />
-                      {/* Shine overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
+
+                      {/* Holographic shine overlay */}
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"
+                        animate={{
+                          backgroundPosition: ['0% 0%', '100% 100%']
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          repeatType: "reverse"
+                        }}
+                      />
+
+                      {/* Inner glow */}
+                      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary-200/30 via-transparent to-accent-200/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </div>
                   </div>
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary-600 via-secondary-600 to-accent-600 bg-clip-text blur-sm"></div>
-                    <div className="relative">
-                      <span className="text-2xl font-bold bg-gradient-to-r from-primary-600 via-primary-500 to-secondary-500 bg-clip-text text-transparent">ITwala</span>
-                      <div className="text-sm font-medium text-gray-700 mt-0.5">IT- It's Simple</div>
-                    </div>
-                    {/* Shine effect */}
+
+                  {/* Brand text with gradient animation */}
+                  <div className="relative hidden sm:block">
                     <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent opacity-0 group-hover:opacity-100"
+                      className="relative"
+                      whileHover={{ x: 2 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <span className="text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-primary-600 via-primary-500 to-secondary-600 bg-clip-text text-transparent drop-shadow-sm">
+                        ITwala
+                      </span>
+                      <div className="text-xs md:text-sm font-semibold text-gray-600 mt-0.5 tracking-wide">
+                        IT- It's Simple
+                      </div>
+                    </motion.div>
+
+                    {/* Animated shine effect */}
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent opacity-0 group-hover:opacity-100"
                       initial={{ x: '-100%' }}
-                      whileHover={{ x: '100%' }}
-                      transition={{ duration: 0.6 }}
+                      whileHover={{ x: '200%' }}
+                      transition={{ duration: 0.8, ease: "easeInOut" }}
                     />
                   </div>
                 </div>
               </Link>
             </motion.div>
 
-            {/* Center - Navigation Links */}
-            <nav className="hidden lg:flex items-center space-x-8">
-              {navItems.map((item, index) => (
-                <motion.div
-                  key={item.href}
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1, duration: 0.5 }}
-                >
-                  <Link href={item.href}>
-                    <div className={`group relative px-4 py-2 text-sm font-medium transition-all duration-300 ${
-                      router.pathname === item.href 
-                        ? 'text-primary-600' 
-                        : 'text-gray-700 hover:text-primary-600'
-                    }`}>
-                      {item.label}
-                      
-                      {/* Glowing underline effect */}
-                      <div className={`absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary-400 via-secondary-500 to-accent-500 transition-all duration-300 group-hover:w-full ${
-                        router.pathname === item.href ? 'w-full' : ''
-                      }`}>
-                        {/* Shimmer effect */}
-                        <motion.div
-                          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent"
-                          initial={{ x: '-100%' }}
-                          animate={{ x: router.pathname === item.href ? ['100%', '-100%'] : '-100%' }}
-                          transition={{ 
-                            duration: 2, 
-                            repeat: router.pathname === item.href ? Infinity : 0,
-                            ease: "linear"
-                          }}
-                        />
-                      </div>
-                      
-                      {/* Hover glow effect */}
-                      <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary-400/20 via-secondary-500/20 to-accent-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
-                    </div>
-                  </Link>
-                </motion.div>
-              ))}
+            {/* Center - Stunning Navigation Pill Design */}
+            <nav className="hidden lg:flex items-center justify-center absolute left-1/2 transform -translate-x-1/2">
+              <div className="flex items-center space-x-1 bg-white/40 backdrop-blur-md px-3 py-2 rounded-full border border-white/60 shadow-lg">
+                {navItems.map((item, index) => (
+                  <motion.div
+                    key={item.href}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: index * 0.08, duration: 0.4, type: "spring" }}
+                  >
+                    <Link href={item.href}>
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className={`relative px-5 py-2.5 text-sm font-semibold rounded-full transition-all duration-300 cursor-pointer ${
+                          router.pathname === item.href
+                            ? 'text-white'
+                            : 'text-gray-700 hover:text-gray-900'
+                        }`}
+                      >
+                        {/* Active state background with gradient */}
+                        {router.pathname === item.href && (
+                          <motion.div
+                            layoutId="activeTab"
+                            className="absolute inset-0 rounded-full bg-gradient-to-r from-primary-500 via-primary-600 to-secondary-600 shadow-lg"
+                            transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                            style={{
+                              boxShadow: '0 4px 16px rgba(59, 130, 246, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
+                            }}
+                          >
+                            {/* Animated shine effect on active tab */}
+                            <motion.div
+                              className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                              animate={{ x: ['-100%', '100%'] }}
+                              transition={{
+                                duration: 2,
+                                repeat: Infinity,
+                                ease: "linear"
+                              }}
+                            />
+                          </motion.div>
+                        )}
+
+                        {/* Hover state background */}
+                        {router.pathname !== item.href && (
+                          <div className="absolute inset-0 rounded-full bg-white/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        )}
+
+                        <span className="relative z-10">{item.label}</span>
+
+                        {/* Glow effect on hover for inactive tabs */}
+                        {router.pathname !== item.href && (
+                          <motion.div
+                            className="absolute inset-0 rounded-full bg-gradient-to-r from-primary-400/0 via-primary-400/20 to-primary-400/0 opacity-0"
+                            whileHover={{ opacity: 1 }}
+                            transition={{ duration: 0.3 }}
+                          />
+                        )}
+                      </motion.div>
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
             </nav>
 
-            {/* Right - Auth Buttons & Search */}
-            <div className="flex items-center space-x-4">
-              
-              {/* Search Button */}
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className="p-2 text-gray-800 hover:text-primary-600 transition-colors duration-300 relative group bg-white/20 backdrop-blur-sm rounded-full border border-white/30"
-                onClick={() => setIsSearchOpen(true)}
-              >
-                <Search className="w-5 h-5" />
-                <div className="absolute inset-0 rounded-full bg-primary-400/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
-              </motion.button>
+            {/* Right - Stunning Action Buttons */}
+            <div className="flex items-center space-x-3">
 
               {user ? (
                 /* User Menu */
@@ -272,64 +315,126 @@ const GlossyNavbar = () => {
                   </AnimatePresence>
                 </div>
               ) : (
-                /* Auth Buttons for non-logged in users */
-                <div className="hidden lg:flex items-center space-x-3">
+                /* Premium Auth Buttons */
+                <div className="hidden lg:flex items-center space-x-2">
                   <Link href="/auth/login">
                     <motion.div
-                      whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(59, 130, 246, 0.5)" }}
+                      whileHover={{ scale: 1.05, y: -2 }}
                       whileTap={{ scale: 0.95 }}
-                      className="px-6 py-2.5 text-sm font-medium text-gray-700 hover:text-primary-600 transition-all duration-300 relative group cursor-pointer"
-                    >
-                      Log in
-                      <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary-400/10 via-secondary-500/10 to-accent-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
-                    </motion.div>
-                  </Link>
-                  
-                  <Link href="/auth/register">
-                    <motion.div
-                      whileHover={{ 
-                        scale: 1.05, 
-                        boxShadow: "0 0 25px rgba(139, 92, 246, 0.6)" 
-                      }}
-                      whileTap={{ scale: 0.95 }}
-                      className="relative px-6 py-2.5 text-sm font-medium text-white cursor-pointer group overflow-hidden rounded-xl"
+                      className="relative px-6 py-2.5 text-sm font-semibold text-gray-700 hover:text-primary-600 transition-all duration-300 cursor-pointer group bg-white/50 backdrop-blur-sm rounded-full border border-white/60 shadow-md overflow-hidden"
                       style={{
-                        background: 'linear-gradient(135deg, #38a169 0%, #22c55e 50%, #22c55e 100%)',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.6)'
                       }}
                     >
-                      <div className="relative z-10">Sign Up</div>
-                      
-                      {/* Glossy overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                      
-                      {/* Shine animation */}
+                      <span className="relative z-10">Log in</span>
+
+                      {/* Hover gradient background */}
                       <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100"
+                        className="absolute inset-0 bg-gradient-to-r from-primary-50 via-secondary-50 to-primary-50 opacity-0"
+                        whileHover={{ opacity: 1 }}
+                        transition={{ duration: 0.3 }}
+                      />
+
+                      {/* Shimmer effect */}
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent opacity-0 group-hover:opacity-100"
                         initial={{ x: '-100%' }}
                         whileHover={{ x: '100%' }}
                         transition={{ duration: 0.6 }}
                       />
-                      
-                      {/* Glow effect */}
-                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary-400 via-secondary-500 to-accent-500 opacity-20 blur-sm group-hover:opacity-40 transition-opacity duration-300 -z-10"></div>
+                    </motion.div>
+                  </Link>
+
+                  <Link href="/auth/register">
+                    <motion.div
+                      whileHover={{
+                        scale: 1.05,
+                        y: -2,
+                        boxShadow: "0 8px 24px rgba(34, 197, 94, 0.4)"
+                      }}
+                      whileTap={{ scale: 0.95 }}
+                      className="relative px-6 py-2.5 text-sm font-semibold text-white cursor-pointer group overflow-hidden rounded-full"
+                      style={{
+                        background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
+                        boxShadow: '0 6px 20px rgba(16, 185, 129, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
+                      }}
+                    >
+                      <span className="relative z-10 flex items-center space-x-2">
+                        <span>Sign Up</span>
+                        <motion.span
+                          animate={{ x: [0, 3, 0] }}
+                          transition={{ duration: 1.5, repeat: Infinity }}
+                        >
+                          →
+                        </motion.span>
+                      </span>
+
+                      {/* Glossy overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full"></div>
+
+                      {/* Animated shine */}
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+                        animate={{ x: ['-200%', '200%'] }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          repeatDelay: 1,
+                          ease: "linear"
+                        }}
+                      />
+
+                      {/* Outer glow pulse */}
+                      <motion.div
+                        className="absolute inset-0 rounded-full bg-emerald-400 opacity-30 blur-md -z-10"
+                        animate={{
+                          scale: [1, 1.15, 1],
+                          opacity: [0.3, 0.5, 0.3]
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                      />
                     </motion.div>
                   </Link>
                 </div>
               )}
 
-              {/* Mobile Menu Button */}
+              {/* Premium Mobile Menu Button */}
               <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className="lg:hidden p-2 text-gray-800 hover:text-primary-600 transition-colors duration-300 relative group bg-white/20 backdrop-blur-sm rounded-full border border-white/30"
+                whileHover={{ scale: 1.1, rotate: 90 }}
+                whileTap={{ scale: 0.9 }}
+                className="lg:hidden p-3 text-primary-700 hover:text-primary-800 transition-all duration-300 relative group bg-white/90 backdrop-blur-md rounded-full border border-white/70 shadow-lg"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
+                style={{
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.7)'
+                }}
               >
-                {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-                <div className="absolute inset-0 rounded-full bg-primary-400/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={isMenuOpen ? 'close' : 'menu'}
+                    initial={{ rotate: -90, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={{ rotate: 90, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                  </motion.div>
+                </AnimatePresence>
+
+                {/* Glow effect on hover */}
+                <motion.div
+                  className="absolute inset-0 rounded-full bg-gradient-to-r from-primary-400 via-secondary-500 to-accent-500 opacity-0 blur-md"
+                  whileHover={{ opacity: 0.5, scale: 1.2 }}
+                  transition={{ duration: 0.3 }}
+                />
               </motion.button>
             </div>
           </div>
         </div>
+      </div>
 
         {/* Mobile Menu with slide-down animation */}
         <AnimatePresence>
@@ -339,15 +444,10 @@ const GlossyNavbar = () => {
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="lg:hidden overflow-hidden"
-              style={{
-                background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
-                backdropFilter: 'blur(20px)',
-                borderTop: '1px solid rgba(255,255,255,0.2)'
-              }}
+              className="lg:hidden overflow-hidden bg-white/95 backdrop-blur-xl border-t border-gray-200 shadow-lg"
             >
               <div className="container mx-auto px-4 py-6 space-y-4">
-                
+
                 {/* Mobile Navigation Links */}
                 <div className="space-y-2">
                   {navItems.map((item, index) => {
@@ -360,11 +460,11 @@ const GlossyNavbar = () => {
                         transition={{ delay: index * 0.1, duration: 0.3 }}
                       >
                         <Link href={item.href}>
-                          <div 
+                          <div
                             className={`flex items-center space-x-3 px-4 py-3 text-base font-medium rounded-xl transition-all duration-300 ${
                               router.pathname === item.href
-                                ? 'text-primary-600 bg-primary-50/50'
-                                : 'text-gray-700 hover:text-primary-600 hover:bg-white/10'
+                                ? 'text-white bg-primary-600 shadow-md'
+                                : 'text-gray-800 hover:text-primary-600 hover:bg-primary-50'
                             }`}
                             onClick={() => setIsMenuOpen(false)}
                           >
@@ -379,17 +479,17 @@ const GlossyNavbar = () => {
                 
                 {user ? (
                   /* Mobile User Menu */
-                  <div className="border-t border-white/20 pt-4 space-y-2">
+                  <div className="border-t border-gray-200 pt-4 space-y-2">
                     <div className="flex items-center space-x-3 px-4 py-2">
                       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-400 to-secondary-600 flex items-center justify-center text-white font-semibold">
                         {profile?.full_name?.[0] || user.email?.[0]?.toUpperCase()}
                       </div>
                       <div>
                         <div className="text-sm font-medium text-gray-900">{profile?.full_name || 'User'}</div>
-                        <div className="text-xs text-gray-500">{user.email}</div>
+                        <div className="text-xs text-gray-600">{user.email}</div>
                       </div>
                     </div>
-                    
+
                     {userMenuItems.map((item, index) => {
                       const IconComponent = item.icon;
                       return (
@@ -401,7 +501,7 @@ const GlossyNavbar = () => {
                         >
                           <Link href={item.href}>
                             <div
-                              className="flex items-center space-x-3 px-4 py-3 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-white/10 rounded-xl transition-all duration-300"
+                              className="flex items-center space-x-3 px-4 py-3 text-base font-medium text-gray-800 hover:text-primary-600 hover:bg-primary-50 rounded-xl transition-all duration-300"
                               onClick={() => setIsMenuOpen(false)}
                             >
                               <IconComponent className="w-5 h-5" />
@@ -411,7 +511,7 @@ const GlossyNavbar = () => {
                         </motion.div>
                       );
                     })}
-                    
+
                     <motion.button
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
@@ -420,7 +520,7 @@ const GlossyNavbar = () => {
                         signOut();
                         setIsMenuOpen(false);
                       }}
-                      className="flex items-center space-x-3 w-full px-4 py-3 text-base font-medium text-red-600 hover:bg-red-50/50 rounded-xl transition-all duration-300"
+                      className="flex items-center space-x-3 w-full px-4 py-3 text-base font-medium text-red-600 hover:bg-red-50 rounded-xl transition-all duration-300"
                     >
                       <LogOut className="w-5 h-5" />
                       <span>Sign out</span>
@@ -428,13 +528,13 @@ const GlossyNavbar = () => {
                   </div>
                 ) : (
                   /* Mobile Auth Buttons */
-                  <div className="border-t border-white/20 pt-4 space-y-3">
+                  <div className="border-t border-gray-200 pt-4 space-y-3">
                     <Link href="/auth/login">
                       <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: navItems.length * 0.1, duration: 0.3 }}
-                        className="block w-full px-4 py-3 text-center text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-white/10 rounded-xl transition-all duration-300"
+                        className="block w-full px-4 py-3 text-center text-base font-medium text-gray-800 hover:text-primary-600 hover:bg-primary-50 rounded-xl transition-all duration-300 border border-gray-300"
                         onClick={() => setIsMenuOpen(false)}
                       >
                         Log in
@@ -463,84 +563,6 @@ const GlossyNavbar = () => {
           )}
         </AnimatePresence>
       </motion.header>
-
-      {/* Search Modal */}
-      <AnimatePresence>
-        {isSearchOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 backdrop-blur-sm"
-            onClick={() => setIsSearchOpen(false)}
-          >
-            <motion.div
-              initial={{ opacity: 0, y: -50, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -50, scale: 0.95 }}
-              transition={{ duration: 0.3 }}
-              className="w-full max-w-2xl mx-4 mt-24"
-              onClick={e => e.stopPropagation()}
-            >
-              <div 
-                className="relative rounded-2xl shadow-2xl border border-white/40 overflow-hidden"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.85) 100%)',
-                  backdropFilter: 'blur(20px)',
-                }}
-              >
-                <form onSubmit={handleSearch} className="p-6">
-                  <div className="relative">
-                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-600 w-5 h-5" />
-                    <input
-                      type="text"
-                      className="w-full pl-12 pr-12 py-4 text-lg bg-white/60 backdrop-blur-sm border border-white/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-transparent placeholder-gray-600 text-gray-900 shadow-inner"
-                      placeholder="Search courses..."
-                      value={searchQuery}
-                      onChange={e => setSearchQuery(e.target.value)}
-                      autoFocus
-                    />
-                    <button
-                      type="button"
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-800 transition-colors"
-                      onClick={() => setIsSearchOpen(false)}
-                    >
-                      <X className="w-5 h-5" />
-                    </button>
-                  </div>
-                </form>
-                
-                {suggestions.length > 0 && (
-                  <div className="border-t border-white/40 max-h-64 overflow-y-auto bg-white/20">
-                    {suggestions.map((suggestion, idx) => (
-                      <motion.div
-                        key={suggestion}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: idx * 0.05, duration: 0.2 }}
-                        className="px-6 py-4 cursor-pointer hover:bg-white/30 transition-colors text-gray-800 text-base border-b border-white/20 last:border-0"
-                        onClick={() => {
-                          setSearchQuery(suggestion);
-                          router.push(`/courses?search=${encodeURIComponent(suggestion)}`);
-                          setIsSearchOpen(false);
-                          setSearchQuery('');
-                        }}
-                      >
-                        {suggestion}
-                      </motion.div>
-                    ))}
-                  </div>
-                )}
-                
-                <div className="px-6 py-3 text-xs text-gray-600 text-center border-t border-white/40 bg-white/10">
-                  Press <kbd className="px-2 py-1 bg-white/40 rounded border border-white/50 text-xs">Esc</kbd> to close
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </>
   );
 };

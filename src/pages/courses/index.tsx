@@ -15,11 +15,14 @@ const CoursesPage: NextPage = () => {
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 50000]);
   const [sortBy, setSortBy] = useState<string>('popular');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>('');
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [categories, setCategories] = useState<string[]>([]);
   const [levels, setLevels] = useState<string[]>([]);
+  const [suggestions, setSuggestions] = useState<Course[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   // Fetch courses from API
   const fetchCourses = async () => {
@@ -32,13 +35,13 @@ const CoursesPage: NextPage = () => {
       if (selectedLevel !== 'all') params.append('level', selectedLevel);
       if (priceRange[0] > 0) params.append('minPrice', priceRange[0].toString());
       if (priceRange[1] < 50000) params.append('maxPrice', priceRange[1].toString());
-      if (searchQuery) params.append('search', searchQuery);
+      if (debouncedSearchQuery) params.append('search', debouncedSearchQuery);
       params.append('sortBy', sortBy);
 
       console.log('🔍 fetchCourses called with:', {
         selectedCategory,
         selectedLevel,
-        searchQuery,
+        debouncedSearchQuery,
         sortBy,
         url: `/api/courses?${params.toString()}`
       });
@@ -74,33 +77,80 @@ const CoursesPage: NextPage = () => {
     }
   };
 
-  // Sync URL params with filters
+  // Fetch suggestions for type-ahead (immediate, no debounce)
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      if (searchQuery.trim().length < 2) {
+        setSuggestions([]);
+        setShowSuggestions(false);
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/courses?search=${encodeURIComponent(searchQuery)}&limit=5`);
+        if (response.ok) {
+          const data = await response.json();
+          setSuggestions(data.courses || []);
+          setShowSuggestions(true);
+        }
+      } catch (err) {
+        console.error('Error fetching suggestions:', err);
+      }
+    };
+
+    const timer = setTimeout(() => {
+      fetchSuggestions();
+    }, 200); // Quick response for suggestions
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Debounce search query for main results
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 500); // Wait 500ms after user stops typing
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Sync URL params with filters - only run once when router is ready
   useEffect(() => {
     if (router.isReady) {
       console.log('🔄 URL params sync:', {
         routerQuery: router.query,
         currentStates: { selectedCategory, selectedLevel, searchQuery }
       });
-      
-      if (typeof router.query.search === 'string') {
+
+      let hasChanges = false;
+
+      if (typeof router.query.search === 'string' && router.query.search !== searchQuery) {
         setSearchQuery(router.query.search);
+        setDebouncedSearchQuery(router.query.search);
+        hasChanges = true;
       }
-      if (typeof router.query.category === 'string') {
+      if (typeof router.query.category === 'string' && router.query.category !== selectedCategory) {
         console.log('📝 Setting category from URL:', router.query.category);
         setSelectedCategory(router.query.category);
+        hasChanges = true;
       }
-      if (typeof router.query.level === 'string') {
+      if (typeof router.query.level === 'string' && router.query.level !== selectedLevel) {
         setSelectedLevel(router.query.level);
+        hasChanges = true;
+      }
+
+      if (hasChanges) {
+        console.log('✅ URL params applied, filters will update');
       }
     }
   }, [router.isReady, router.query.search, router.query.category, router.query.level]);
 
-  // Fetch courses when filters change
+  // Fetch courses when filters change (use debouncedSearchQuery instead of searchQuery)
   useEffect(() => {
     if (router.isReady) {
       fetchCourses();
     }
-  }, [selectedCategory, selectedLevel, priceRange, sortBy, searchQuery, router.isReady]);
+  }, [selectedCategory, selectedLevel, priceRange, sortBy, debouncedSearchQuery, router.isReady]);
 
   // Initial load to get all courses for filter options only
   useEffect(() => {
@@ -114,26 +164,29 @@ const CoursesPage: NextPage = () => {
             const uniqueLevels = Array.from(new Set(data.courses.map((course: Course) => {
               return course.level.split(' to ').map(l => l.trim());
             }).flat())) as string[];
-            
+
             setCategories(uniqueCategories);
             setLevels(uniqueLevels);
-            
-            // Only set courses if no specific filtering is applied (i.e., showing all courses)
-            if (selectedCategory === 'all' && selectedLevel === 'all' && !searchQuery) {
-              setCourses(data.courses || []);
-            }
+
+            console.log('📦 Initial load - filter options loaded:', {
+              uniqueCategories,
+              uniqueLevels,
+              selectedCategory,
+              hasUrlCategory: !!router.query.category
+            });
           }
         }
       } catch (err) {
         console.error('Error fetching filter options:', err);
       }
     };
-    
+
     // Only run this on initial load when router is ready and we don't have categories yet
     if (router.isReady && categories.length === 0) {
+      console.log('🎯 Fetching filter options...');
       fetchAllCoursesForFilters();
     }
-  }, [router.isReady, categories.length, selectedCategory, selectedLevel, searchQuery]);
+  }, [router.isReady, categories.length]);
 
   if (loading) {
     return (
@@ -215,15 +268,68 @@ const CoursesPage: NextPage = () => {
                 Master artificial intelligence and machine learning with expert-led courses, hands-on projects, and industry-recognized certifications.
               </p>
             </motion.div>
-            
-            <div className="max-w-2xl mx-auto">
+
+            <div className="max-w-2xl mx-auto relative">
               <input
                 type="text"
                 placeholder="Search AI courses, machine learning, data science..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => searchQuery.length >= 2 && setShowSuggestions(true)}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                 className="w-full py-3 px-4 sm:px-6 rounded-full bg-white shadow-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-400 text-sm sm:text-base"
               />
+
+              {/* Type-ahead suggestions dropdown */}
+              {showSuggestions && suggestions.length > 0 && (
+                <div className="absolute z-50 w-full mt-2 bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-200">
+                  <div className="py-2">
+                    {suggestions.map((course, index) => (
+                      <button
+                        key={course.id || index}
+                        onClick={() => {
+                          setSearchQuery(course.title);
+                          setDebouncedSearchQuery(course.title);
+                          setShowSuggestions(false);
+                        }}
+                        className="w-full px-4 py-3 hover:bg-primary-50 transition-colors text-left flex items-start space-x-3"
+                      >
+                        <div className="flex-shrink-0 mt-1">
+                          <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                          </svg>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">{course.title}</p>
+                          <div className="flex items-center space-x-2 mt-1">
+                            <span className="text-xs text-gray-500">{course.category}</span>
+                            {course.level && (
+                              <>
+                                <span className="text-xs text-gray-400">•</span>
+                                <span className="text-xs text-gray-500">{course.level}</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                        {course.registrationFee !== undefined && (
+                          <div className="flex-shrink-0">
+                            <span className="text-sm font-semibold text-primary-600">
+                              ₹{course.registrationFee.toLocaleString()}
+                            </span>
+                          </div>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                  {suggestions.length === 5 && (
+                    <div className="px-4 py-2 bg-gray-50 border-t border-gray-200">
+                      <p className="text-xs text-gray-600 text-center">
+                        Press Enter to see all results
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </section>

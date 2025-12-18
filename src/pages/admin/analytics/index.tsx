@@ -48,6 +48,8 @@ const AnalyticsPage: NextPage = () => {
   const [selectedPage, setSelectedPage] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'sources' | 'countries' | 'devices' | 'pages'>('overview');
   const [exportLoading, setExportLoading] = useState(false);
+  const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const fetchAnalytics = async () => {
     try {
@@ -95,12 +97,22 @@ const AnalyticsPage: NextPage = () => {
       if (views) {
         setPageViews(views);
       }
+
+      setLastRefreshed(new Date());
     } catch (error: any) {
       console.error('Error fetching analytics:', error);
       toast.error('Error loading analytics data');
     } finally {
       setIsLoading(false);
+      setIsRefreshing(false);
     }
+  };
+
+  const handleManualRefresh = async () => {
+    setIsRefreshing(true);
+    await fetchAnalytics();
+    await fetchRealTimePageViews();
+    toast.success('Analytics data refreshed!');
   };
 
   const fetchRealTimePageViews = async () => {
@@ -182,6 +194,19 @@ const AnalyticsPage: NextPage = () => {
       fetchRealTimePageViews();
     }
   }, [timeRange, authChecked, isAdmin]);
+
+  // Real-time polling: refresh data every 30 seconds
+  useEffect(() => {
+    if (!authChecked || !isAdmin) return;
+
+    const refreshInterval = setInterval(() => {
+      console.log('🔄 Auto-refreshing analytics data...');
+      fetchAnalytics();
+      fetchRealTimePageViews();
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(refreshInterval);
+  }, [authChecked, isAdmin, timeRange]);
 
   const filteredAnalytics = useMemo(() => {
     if (!searchTerm) return analytics;
@@ -369,8 +394,13 @@ const AnalyticsPage: NextPage = () => {
                 <div>
                   <h1 className="text-3xl font-bold text-gray-900">Analytics Dashboard</h1>
                   <p className="text-gray-600 mt-1">Monitor your website performance and visitor behavior</p>
+                  {lastRefreshed && (
+                    <p className="text-sm text-gray-500 mt-1">
+                      Last updated: {lastRefreshed.toLocaleTimeString()} • Auto-refreshing every 30s
+                    </p>
+                  )}
                 </div>
-                
+
                 <div className="flex flex-col sm:flex-row gap-3">
                   <input
                     type="text"
@@ -389,7 +419,22 @@ const AnalyticsPage: NextPage = () => {
                     <option value="30days">Last 30 Days</option>
                     <option value="90days">Last 90 Days</option>
                   </select>
-                  
+
+                  <button
+                    onClick={handleManualRefresh}
+                    disabled={isRefreshing}
+                    className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 focus:ring-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                  >
+                    {isRefreshing ? (
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
+                    ) : (
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                    )}
+                    Refresh
+                  </button>
+
                   <button
                     onClick={exportToExcel}
                     disabled={exportLoading}

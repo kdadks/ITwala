@@ -121,7 +121,7 @@ const services: Service[] = [
 
 const ServicesGrid: React.FC = () => {
   return (
-    <section id="services" className="py-20 bg-gray-50 relative overflow-hidden">
+    <section id="services" className="py-20 bg-gray-50 relative overflow-hidden scroll-mt-32">
       {/* Decorative background elements */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-0 left-0 w-96 h-96 bg-primary-200 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl"></div>

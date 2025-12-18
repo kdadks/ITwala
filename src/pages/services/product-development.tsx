@@ -102,7 +102,7 @@ const ProductDevelopment: NextPage = () => {
       ctaText: "Start Shopping"
     },
            {
-      href: "https://eyogi-main.vercel.app/ssh-app/",
+      href: "https://eyogigurukul.com/ssh-app",
       logo: "/images/eyogiLogo.png",
       title: "eYogi Gurukul",
       description: "Online Learning Platform offering Indian cultural, religious yoga classes and wellness programs for all ages. Expert instructors and personalized plans.",
@@ -156,8 +156,125 @@ const ProductDevelopment: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Product Development - ITWala Consulting</title>
-        <meta name="description" content="End-to-end product development services from concept to launch, building scalable and user-centric solutions." />
+        <title>Custom Product Development Services | Web & Mobile App Development - ITWala</title>
+        <meta name="description" content="Top product development company offering custom software, web & mobile app development, MVP development, SaaS solutions. Expert full-stack developers, agile methodology, 50+ successful products launched globally." />
+        <meta name="keywords" content="product development company, custom software development, web application development, mobile app development, MVP development, SaaS development, full stack development, agile development, React development, Node.js development, API development, microservices, e-commerce development, enterprise software, UI UX design, quality assurance, product strategy, scalable solutions" />
+        <link rel="canonical" href="https://academy.it-wala.com/services/product-development" />
+
+        {/* Open Graph */}
+        <meta property="og:title" content="Custom Product Development Services - Web & Mobile Apps | ITWala" />
+        <meta property="og:description" content="Leading product development services: Custom software, web & mobile apps, MVP development, SaaS solutions. 50+ successful products, 95% client satisfaction, agile methodology." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://academy.it-wala.com/services/product-development" />
+        <meta property="og:image" content="https://academy.it-wala.com/images/IT - WALA_logo (1).png" />
+
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Product Development Services - Custom Software & Apps" />
+        <meta name="twitter:description" content="Expert product development: Web apps, mobile apps, MVPs, SaaS. Full-stack team, agile process, 50+ successful launches." />
+        <meta name="twitter:image" content="https://academy.it-wala.com/images/IT - WALA_logo (1).png" />
+
+        {/* Schema.org for Product Development Service */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Service",
+            "serviceType": "Product Development Services",
+            "name": "Custom Product Development",
+            "description": "End-to-end product development services including web applications, mobile apps, MVP development, and SaaS solutions",
+            "provider": {
+              "@type": "Organization",
+              "name": "ITWala",
+              "url": "https://academy.it-wala.com",
+              "logo": "https://academy.it-wala.com/images/IT - WALA_logo (1).png",
+              "aggregateRating": {
+                "@type": "AggregateRating",
+                "ratingValue": "4.8",
+                "reviewCount": "150"
+              }
+            },
+            "areaServed": "Global",
+            "hasOfferCatalog": {
+              "@type": "OfferCatalog",
+              "name": "Product Development Services",
+              "itemListElement": [
+                {
+                  "@type": "Offer",
+                  "itemOffered": {
+                    "@type": "Service",
+                    "name": "MVP Development",
+                    "description": "Rapid prototyping and minimum viable product development"
+                  }
+                },
+                {
+                  "@type": "Offer",
+                  "itemOffered": {
+                    "@type": "Service",
+                    "name": "Full-Stack Development",
+                    "description": "Complete web and mobile application development"
+                  }
+                },
+                {
+                  "@type": "Offer",
+                  "itemOffered": {
+                    "@type": "Service",
+                    "name": "SaaS Development",
+                    "description": "Scalable software as a service solutions"
+                  }
+                },
+                {
+                  "@type": "Offer",
+                  "itemOffered": {
+                    "@type": "Service",
+                    "name": "Mobile App Development",
+                    "description": "iOS and Android mobile application development"
+                  }
+                },
+                {
+                  "@type": "Offer",
+                  "itemOffered": {
+                    "@type": "Service",
+                    "name": "API Development",
+                    "description": "RESTful API and microservices architecture"
+                  }
+                }
+              ]
+            },
+            "offers": {
+              "@type": "Offer",
+              "availability": "https://schema.org/InStock",
+              "priceCurrency": "USD"
+            }
+          })}
+        </script>
+
+        {/* BreadcrumbList Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://academy.it-wala.com"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Services",
+                "item": "https://academy.it-wala.com/services"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "Product Development",
+                "item": "https://academy.it-wala.com/services/product-development"
+              }
+            ]
+          })}
+        </script>
       </Head>
 
       <main className="pt-8">
