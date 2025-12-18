@@ -311,10 +311,10 @@ const CoursesPage: NextPage = () => {
                             )}
                           </div>
                         </div>
-                        {course.registrationFee !== undefined && (
+                        {course.price !== undefined && !course.feesDiscussedPostEnrollment && (
                           <div className="flex-shrink-0">
                             <span className="text-sm font-semibold text-primary-600">
-                              ₹{course.registrationFee.toLocaleString()}
+                              ₹{course.price.toLocaleString()}
                             </span>
                           </div>
                         )}
