@@ -48,14 +48,33 @@ const getCountryFromIP = async (): Promise<string> => {
   if (typeof window === 'undefined') {
     return 'Unknown';
   }
-  
-  // Method 1: Try comprehensive timezone mapping first
+
+  // Method 1: Try our server-side API first (most reliable)
+  try {
+    const response = await fetch('/api/analytics/get-country', {
+      method: 'GET',
+      headers: { 'Accept': 'application/json' }
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      if (data.country && data.country !== 'Unknown') {
+        console.log(`✅ Country detected via ${data.source}: ${data.country}`);
+        return data.country;
+      }
+    }
+  } catch (error) {
+    console.warn('Server-side country lookup failed:', error);
+  }
+
+  // Method 2: Try comprehensive timezone mapping
   try {
     if ('Intl' in window) {
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
       if (timezone) {
         const countryFromTz = getCountryFromTimezone(timezone);
         if (countryFromTz !== 'Unknown') {
+          console.log(`✅ Country detected via timezone: ${countryFromTz}`);
           return countryFromTz;
         }
       }
@@ -63,20 +82,21 @@ const getCountryFromIP = async (): Promise<string> => {
   } catch (error) {
     console.warn('Could not get timezone info:', error);
   }
-  
-  // Method 2: Try cloudflare's free IP geolocation API
+
+  // Method 3: Try cloudflare's free IP geolocation API
   try {
     const response = await fetch('https://cloudflare.com/cdn-cgi/trace', {
       method: 'GET',
       headers: { 'Accept': 'text/plain' }
     });
-    
+
     if (response.ok) {
       const data = await response.text();
       const locMatch = data.match(/loc=([A-Z]{2})/);
       if (locMatch && locMatch[1]) {
         const country = getCountryNameFromCode(locMatch[1]);
         if (country !== 'Unknown') {
+          console.log(`✅ Country detected via Cloudflare: ${country}`);
           return country;
         }
       }
@@ -84,29 +104,7 @@ const getCountryFromIP = async (): Promise<string> => {
   } catch (error) {
     console.warn('Cloudflare geolocation failed:', error);
   }
-  
-  // Method 3: Try ipapi.co (but with better error handling)
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
-    
-    const response = await fetch('https://ipapi.co/json/', {
-      signal: controller.signal,
-      headers: { 'Accept': 'application/json' }
-    });
-    
-    clearTimeout(timeoutId);
-    
-    if (response.ok) {
-      const data = await response.json();
-      if (data.country_name && data.country_name !== 'Unknown') {
-        return data.country_name;
-      }
-    }
-  } catch (error) {
-    console.warn('ipapi.co geolocation failed:', error);
-  }
-  
+
   // Method 4: Enhanced locale detection
   try {
     const locale = navigator.language || 'en-US';
@@ -114,13 +112,14 @@ const getCountryFromIP = async (): Promise<string> => {
     if (countryCode) {
       const country = getCountryNameFromCode(countryCode);
       if (country !== 'Unknown') {
+        console.log(`✅ Country inferred from locale: ${country}`);
         return country;
       }
     }
   } catch (error) {
     console.warn('Could not get country from locale:', error);
   }
-  
+
   // Method 5: Try to infer from navigator.languages
   try {
     if (navigator.languages && navigator.languages.length > 0) {
@@ -129,6 +128,7 @@ const getCountryFromIP = async (): Promise<string> => {
         if (parts.length > 1) {
           const country = getCountryNameFromCode(parts[1]);
           if (country !== 'Unknown') {
+            console.log(`✅ Country inferred from languages: ${country}`);
             return country;
           }
         }
@@ -137,7 +137,8 @@ const getCountryFromIP = async (): Promise<string> => {
   } catch (error) {
     console.warn('Could not get country from languages:', error);
   }
-  
+
+  console.warn('⚠️ Could not determine country, using "Unknown"');
   return 'Unknown';
 };
 
