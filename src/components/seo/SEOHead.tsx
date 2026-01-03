@@ -23,15 +23,9 @@ const SEOHead: React.FC<SEOHeadProps> = ({
   schema,
   breadcrumbs
 }) => {
-  // Ensure title is between 50-60 characters
-  const optimizedTitle = title.length > 60 ? title.substring(0, 57) + '...' : title;
-  
-  // Ensure description is between 120-160 characters
-  const optimizedDescription = description.length > 160
-    ? description.substring(0, 157) + '...'
-    : description.length < 120
-      ? description.padEnd(120, ' Learn more at ITWala.')
-      : description;
+  // Use the specified title and description
+  const optimizedTitle = "ITWala - Web Development, AI Academy & IT Consulting Globally";
+  const optimizedDescription = "Web development, AI education & IT consulting firm. Custom software development, edutech training, product development, digital transformation, training programs & IT staffing solutions globally.";
 
   return (
     <Head>

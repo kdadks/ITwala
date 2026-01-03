@@ -13,8 +13,8 @@
   directory = "netlify/functions"
 
 # Analytics aggregation - runs daily at 2 AM UTC
-[[functions."scheduled-analytics-aggregation".schedule]]
-  cron = "0 2 * * *"
+[functions.scheduled-analytics-aggregation]
+  schedule = "0 2 * * *"
 
 # Static file handling for images and assets
 [[headers]]
