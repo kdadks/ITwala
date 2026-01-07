@@ -55,13 +55,13 @@ const stats = [
 
 const Stats = () => {
 	return (
-		<section className="py-20 bg-green-800 text-white">
+		<section className="pt-0 pb-0 bg-gradient-to-b from-primary-700 to-primary-600 text-white">
 			<div className="container mx-auto px-4">
 				<div className="text-center mb-14">
-					<h2 className="text-4xl md:text-5xl font-extrabold mb-3 tracking-tight">
+					<h2 className="text-4xl md:text-5xl font-extrabold mb-3 tracking-tight mt-4">
 						Impact in Numbers
 					</h2>
-					<p className="text-lg md:text-xl text-white-400 max-w-2xl mx-auto">
+					<p className="text-lg md:text-xl text-white-400 max-w-2xl mx-auto mt-2">
 						Our commitment to quality education has made a real difference
 					</p>
 				</div>
@@ -77,7 +77,7 @@ const Stats = () => {
 								duration: 0.6,
 								type: 'spring',
 							}}
-							className={`relative group bg-green-800 ${stat.ring} rounded-2xl p-8 shadow-xl overflow-hidden transition-transform transform hover:-translate-y-2 hover:shadow-2xl border border-green-700 hover:border-green-500 ring-1`}
+							className={`relative group bg-primary-700 ${stat.ring} rounded-2xl p-8 shadow-xl overflow-hidden transition-transform transform hover:-translate-y-2 hover:shadow-2xl border border-primary-600 hover:border-primary-500 ring-1`}
 						>
 							<div className={`flex items-center justify-center w-16 h-16 mb-6 rounded-full bg-gradient-to-br ${stat.color} text-white shadow-lg border border-white/10 group-hover:scale-110 transition-transform`}>
 								{stat.icon}

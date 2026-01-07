@@ -81,7 +81,7 @@ const Portfolio: NextPage = () => {
       impact: "1,500+ successful treatments, 98% recovery rate"
     },
     {
-      href: "https://nirchal.netlify.app/",
+      href: "https://nirchal.com/",
       logo: "/images/Nirchal_Logo.png",
       title: "Nirchal",
       description: "Retail garments store offering a wide range of clothing and accessories for all ages. Quality products at affordable prices.",

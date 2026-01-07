@@ -48,10 +48,10 @@ const FeaturedCourses = () => {
   };
 
   return (
-    <section className="py-12 md:py-16 bg-white">
+    <section className="py-0 bg-white">
       <div className="container mx-auto px-4">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-10 gap-4">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">Featured Courses</h2>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mt-4">Featured Courses</h2>
           <Link href="/courses">
             <div className="text-primary-500 hover:text-primary-600 font-medium flex items-center text-sm sm:text-base">
               View All Courses

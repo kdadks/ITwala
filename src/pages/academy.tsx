@@ -99,6 +99,7 @@ const Academy: NextPage = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.4, duration: 0.5 }}
+          className="-mt-4"
         >
           <Stats />
         </motion.div>

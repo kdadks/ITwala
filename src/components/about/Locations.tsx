@@ -26,7 +26,7 @@ const locations: Location[] = [
   {
     city: 'Azamgarh',
     address: 'Azamgarh, Uttar Pradesh 276001',
-    mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3600.0429388584654!2d83.1859!3d26.0679!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3991ff77953e65d7%3A0x25ef082e2c5eea8e!2sCivil%20Lines%2C%20Azamgarh%2C%20Uttar%20Pradesh%20276001!5e0!3m2!1sen!2sin!4v1684637298945!5m2!1sen!2sin",
+    mapUrl: "https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d14400.169755433826!2d83.1859!3d26.0679!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjYuMDY3OSw4My4xODU5!5e0!3m2!1sen!2sin!4v1635000000000!5m2!1sen!2sin",
     contactNumber: '+91 7982303199',
     email: 'sales@it-wala.com',
     facilities: [
