@@ -116,7 +116,7 @@ const Navbar = () => {
                   alt="ITwala Academy Logo"
                   width={48}
                   height={48}
-                  className="h-10 w-auto object-contain"
+                  className="h-10 w-auto object-contain rounded-lg"
                   priority
                 />
                 <div className="flex flex-col justify-center leading-tight">

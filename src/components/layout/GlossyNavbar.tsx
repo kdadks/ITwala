@@ -138,14 +138,15 @@ const GlossyNavbar = () => {
                     />
 
                     {/* Logo container with depth */}
-                    <div className="relative bg-gradient-to-br from-white via-gray-50 to-white p-3 rounded-2xl border border-white/60 shadow-xl">
+                    <div className="relative rounded-2xl border border-white/60 shadow-xl">
                       <Image
-                        src="/images/IT-WALA-logo-48x48.png"
+                        src="/images/IT-WALA-logo-64x64.png"
                         alt="ITwala Logo"
-                        width={44}
-                        height={44}
-                        className="h-11 w-11 object-contain relative z-10 drop-shadow-lg"
+                        width={64}
+                        height={64}
+                        className="h-16 w-16 object-contain relative z-10 drop-shadow-lg rounded-lg"
                         priority
+                        quality={100}
                       />
 
                       {/* Holographic shine overlay */}
@@ -167,7 +168,7 @@ const GlossyNavbar = () => {
                   </div>
 
                   {/* Brand text with gradient animation */}
-                  <div className="relative hidden sm:block">
+                  <div className="relative block">
                     <motion.div
                       className="relative"
                       whileHover={{ x: 2 }}
