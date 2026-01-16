@@ -1,27 +1,52 @@
 import Link from 'next/link';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { allCourses as courseData } from '@/data/allCourses';
+import { Course } from '@/types/course';
 
 const FeaturedCourses = () => {
   const sliderRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
+  const [featuredCourses, setFeaturedCourses] = useState<Course[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Get the featured courses - prioritize new courses and popular AI courses
-  const featuredCourses = courseData
-    .sort((a, b) => {
-      // First sort by new categories
-      const isNewCategoryA = a.category === "Prompt Engineering" || a.category === "Agentic AI";
-      const isNewCategoryB = b.category === "Prompt Engineering" || b.category === "Agentic AI";
-      if (isNewCategoryA && !isNewCategoryB) return -1;
-      if (!isNewCategoryA && isNewCategoryB) return 1;
-      
-      // Then sort by newest
-      return new Date(b.publishedDate || "").getTime() - new Date(a.publishedDate || "").getTime();
-    })
-    .slice(0, 4);
+  useEffect(() => {
+    const fetchFeaturedCourses = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch('/api/courses?limit=10');
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch courses');
+        }
+
+        const { courses } = await response.json();
+
+        // Sort and get top 4
+        const sorted = courses
+          .sort((a: Course, b: Course) => {
+            // First sort by new categories
+            const isNewCategoryA = a.category === "Prompt Engineering" || a.category === "Agentic AI";
+            const isNewCategoryB = b.category === "Prompt Engineering" || b.category === "Agentic AI";
+            if (isNewCategoryA && !isNewCategoryB) return -1;
+            if (!isNewCategoryA && isNewCategoryB) return 1;
+
+            // Then sort by newest
+            return new Date(b.publishedDate || "").getTime() - new Date(a.publishedDate || "").getTime();
+          })
+          .slice(0, 4);
+
+        setFeaturedCourses(sorted);
+      } catch (error) {
+        console.error('Error fetching featured courses:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchFeaturedCourses();
+  }, []);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
@@ -46,6 +71,18 @@ const FeaturedCourses = () => {
       sliderRef.current.scrollLeft = scrollLeft - walk;
     }
   };
+
+  if (isLoading) {
+    return (
+      <section className="py-0 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-center items-center h-96">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-0 bg-white">

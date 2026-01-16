@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 
 const UnifiedHero = () => {
   return (
-    <section className="relative overflow-hidden text-white">
+    <section className="relative overflow-hidden bg-gradient-to-br from-primary-700 via-primary-600 to-secondary-700 text-white">
       {/* Floating elements */}
       <motion.div
         initial={{ opacity: 0 }}

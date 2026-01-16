@@ -5,7 +5,6 @@ import FeaturedCourses from '@/components/home/FeaturedCourses';
 import Categories from '@/components/home/Categories';
 import Testimonials from '@/components/home/Testimonials';
 import CtaSection from '@/components/home/CtaSection';
-import Stats from '@/components/home/Stats';
 import Locations from '@/components/about/Locations';
 import AIEducationFAQ from '@/components/seo/AIEducationFAQ';
 import { motion } from 'framer-motion';
@@ -93,40 +92,30 @@ const Academy: NextPage = () => {
         >
           <FeaturedCourses />
         </motion.div>
-        
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.4, duration: 0.5 }}
-          className="-mt-4"
         >
-          <Stats />
+          <Testimonials />
         </motion.div>
-        
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.5, duration: 0.5 }}
         >
-          <Testimonials />
+          <CtaSection />
         </motion.div>
-        
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.6, duration: 0.5 }}
-        >
-          <CtaSection />
-        </motion.div>
-        
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.7, duration: 0.5 }}
         >
           <Locations />
         </motion.div>

@@ -29,9 +29,16 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   // Generate course pages dynamically
   let coursePages: string[] = [];
   try {
-    // Import course data
-    const { courseData } = await import('../data/courses');
-    coursePages = courseData.map(course => `/courses/${course.slug}`);
+    // Fetch course data from API
+    const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
+    const host = process.env.NEXT_PUBLIC_SITE_URL || 'localhost:3000';
+    const apiUrl = `${protocol}://${host}/api/courses`;
+
+    const response = await fetch(apiUrl);
+    if (response.ok) {
+      const { courses } = await response.json();
+      coursePages = courses.map((course: any) => `/courses/${course.slug}`);
+    }
   } catch (error) {
     console.error('Error loading course data for sitemap:', error);
   }

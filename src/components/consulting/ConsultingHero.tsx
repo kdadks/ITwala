@@ -71,6 +71,14 @@ const ConsultingHero = () => {
                 </svg>
               </div>
             </Link>
+            <a href="#process">
+              <div className="inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-semibold bg-primary-500 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-200 focus:ring-offset-primary-900 whitespace-nowrap">
+                Process
+                <svg className="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </a>
             <Link href="/contact">
               <div className="inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-semibold border-2 border-white text-white rounded-full bg-transparent hover:bg-white hover:text-primary-700 transition-all duration-300 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-200 focus:ring-offset-primary-900 whitespace-nowrap">
                 Contact Us
@@ -85,25 +93,43 @@ const ConsultingHero = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-8 text-xs md:text-sm px-2"
+            className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 text-xs md:text-sm px-2 max-w-4xl mx-auto"
           >
-            <div className="flex items-center">
+            <div className="flex items-center justify-center">
               <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-accent-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              <span>100+ Successful Projects</span>
+              <span>20+ Projects Delivered</span>
             </div>
-            <div className="flex items-center">
+            <div className="flex items-center justify-center">
               <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-accent-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
               <span>50+ Expert Consultants</span>
             </div>
-            <div className="flex items-center">
+            <div className="flex items-center justify-center">
               <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-accent-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <span>24/7 Support</span>
+              <span>25+ Countries Served</span>
+            </div>
+            <div className="flex items-center justify-center">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-accent-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>98% Client Satisfaction</span>
+            </div>
+            <div className="flex items-center justify-center">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-accent-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>10+ Years Experience</span>
+            </div>
+            <div className="flex items-center justify-center">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-accent-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6V11m0-5.5v-1a1.5 1.5 0 00-3 0v1.5m9 0V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6V11m0-5.5v-1a1.5 1.5 0 00-3 0v1.5" />
+              </svg>
+              <span>95% Client Retention</span>
             </div>
           </motion.div>
         </div>

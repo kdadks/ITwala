@@ -1,8 +1,28 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 
 const Hero = () => {
+  const [courseCount, setCourseCount] = useState<number | string>('8+');
+
+  useEffect(() => {
+    const fetchCourseCount = async () => {
+      try {
+        const response = await fetch('/api/courses');
+        if (response.ok) {
+          const { courses } = await response.json();
+          setCourseCount(`${courses.length}+`);
+        }
+      } catch (error) {
+        console.error('Error fetching course count:', error);
+        setCourseCount('8+');
+      }
+    };
+
+    fetchCourseCount();
+  }, []);
+
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-primary-700 via-primary-600 to-secondary-700 text-white">
       {/* Abstract shapes background */}
@@ -69,25 +89,33 @@ const Hero = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-6 text-xs md:text-sm px-2"
+            className="px-2"
           >
-            <div className="flex items-center">
-              <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-accent-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-              </svg>
-              <span>500+ Students</span>
-            </div>
-            <div className="flex items-center">
-              <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-accent-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-              </svg>
-              <span>7+ Courses</span>
-            </div>
-            <div className="flex items-center">
-              <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-accent-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-              <span>20+ Projects</span>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6 max-w-5xl mx-auto">
+              <div className="text-center">
+                <div className="text-xl sm:text-2xl md:text-3xl font-bold mb-1">500+</div>
+                <div className="text-xs sm:text-sm text-gray-200">Students Enrolled</div>
+              </div>
+              <div className="text-center">
+                <div className="text-xl sm:text-2xl md:text-3xl font-bold mb-1">{courseCount}</div>
+                <div className="text-xs sm:text-sm text-gray-200">Specialized Courses</div>
+              </div>
+              <div className="text-center">
+                <div className="text-xl sm:text-2xl md:text-3xl font-bold mb-1">20+</div>
+                <div className="text-xs sm:text-sm text-gray-200">Learning Tracks</div>
+              </div>
+              <div className="text-center">
+                <div className="text-xl sm:text-2xl md:text-3xl font-bold mb-1">80%</div>
+                <div className="text-xs sm:text-sm text-gray-200">Job Placement</div>
+              </div>
+              <div className="text-center">
+                <div className="text-xl sm:text-2xl md:text-3xl font-bold mb-1">20+</div>
+                <div className="text-xs sm:text-sm text-gray-200">Projects Delivered</div>
+              </div>
+              <div className="text-center">
+                <div className="text-xl sm:text-2xl md:text-3xl font-bold mb-1">98%</div>
+                <div className="text-xs sm:text-sm text-gray-200">Client Satisfaction</div>
+              </div>
             </div>
           </motion.div>
         </div>

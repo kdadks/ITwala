@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 
 const CtaSection = () => {
   return (
-    <section className="py-20 bg-primary-50">
+    <section className="py-10 bg-primary-50">
       <div className="container mx-auto px-4">
         <div className="max-w-5xl mx-auto">
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden">

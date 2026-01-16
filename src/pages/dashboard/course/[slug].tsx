@@ -4,7 +4,6 @@ import { useRouter } from 'next/router';
 import { useUser } from '@supabase/auth-helpers-react';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { allCourses as courseData } from '@/data/allCourses';
 import { Course } from '@/types/course';
 import CourseHeader from '@/components/dashboard/CourseHeader';
 import CourseNavigation from '@/components/dashboard/CourseNavigation';
@@ -162,26 +161,38 @@ const CoursePage: NextPage<CoursePageProps> = ({ course }) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async ({ params }) => {
-  const slug = params?.slug as string;
-  
-  // In a real app, you would fetch this data from your API or CMS
-  const course = courseData.find((course) => course.slug === slug);
-  
-  if (!course) {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { slug } = context.params as { slug: string };
+
+  try {
+    const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
+    const host = context.req.headers.host || 'localhost:3000';
+    const apiUrl = `${protocol}://${host}/api/courses/${slug}`;
+
+    const response = await fetch(apiUrl);
+
+    if (!response.ok) {
+      return {
+        notFound: true,
+      };
+    }
+
+    const { course } = await response.json();
+
+    // Hydrate module IDs
+    const hydratedCourse = hydrateModuleIds(course);
+
+    return {
+      props: {
+        course: hydratedCourse,
+      },
+    };
+  } catch (error) {
+    console.error('Error fetching course:', error);
     return {
       notFound: true,
     };
   }
-
-  // Hydrate the course data with module IDs
-  const hydratedCourse = hydrateModuleIds(course);
-
-  return {
-    props: {
-      course: hydratedCourse,
-    },
-  };
 };
 
 export default CoursePage;

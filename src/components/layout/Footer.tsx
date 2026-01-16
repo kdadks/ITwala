@@ -3,15 +3,9 @@ import Image from 'next/image';
 import { FaLinkedin, FaEnvelope, FaPhone, FaArrowUp } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
 
-interface Category {
-  name: string;
-  slug: string;
-}
-
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -20,31 +14,6 @@ const Footer = () => {
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Fetch categories from the database
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await fetch('/api/courses/categories');
-        if (response.ok) {
-          const data = await response.json();
-          setCategories(data.categories || []);
-        }
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-        // Fallback to static categories if API fails
-        setCategories([
-          { name: 'Artificial Intelligence', slug: 'Artificial Intelligence' },
-          { name: 'Machine Learning', slug: 'Machine Learning' },
-          { name: 'Data Science', slug: 'Data Science' },
-          { name: 'Product Management', slug: 'Product Management' },
-          { name: 'Software Development', slug: 'Software Development' }
-        ]);
-      }
-    };
-
-    fetchCategories();
   }, []);
 
   const scrollToTop = () => {
@@ -122,7 +91,7 @@ const Footer = () => {
         </div>
 
         {/* Links Section */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-6 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
           {/* Quick Links */}
           <div>
             <h3 className="font-semibold mb-3 text-white text-sm uppercase tracking-wide">
@@ -192,24 +161,6 @@ const Footer = () => {
               <Link href="/services/training-development" className="block text-white hover:text-white transition-colors text-sm">
                 Corporate Training
               </Link>
-            </nav>
-          </div>
-
-          {/* Course Categories */}
-          <div>
-            <h3 className="font-semibold mb-3 text-white text-sm uppercase tracking-wide">
-              Categories
-            </h3>
-            <nav className="space-y-2">
-              {categories.slice(0, 5).map((category) => (
-                <Link
-                  key={category.slug}
-                  href={`/courses?category=${encodeURIComponent(category.name)}`}
-                  className="block text-white hover:text-white transition-colors text-sm"
-                >
-                  {category.name}
-                </Link>
-              ))}
             </nav>
           </div>
 

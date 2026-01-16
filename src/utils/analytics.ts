@@ -151,15 +151,30 @@ export const trackPageView = async (supabase: SupabaseClient): Promise<void> => 
       user_agent: navigator.userAgent,
     };
 
+    // Prepare data for database (only fields that exist in schema)
+    // Schema columns: id, user_id, session_id, page_url, page_title, referrer,
+    // user_agent, ip_address, country, device_type, browser, duration_seconds, created_at
+    const dbData = {
+      session_id: pageViewData.session_id,
+      page_url: pageViewData.page_url,
+      page_title: pageViewData.page_title,
+      referrer: pageViewData.referrer,
+      user_agent: pageViewData.user_agent,
+      country: pageViewData.country,
+      device_type: pageViewData.device_type,
+      browser: pageViewData.browser,
+      // Excluded: os, screen_resolution, language, city, region (not in schema)
+    };
+
     // Insert into Supabase
     const { error } = await supabase
       .from('page_views')
-      .insert([pageViewData]);
+      .insert([dbData]);
 
     if (error) {
       console.error('Error tracking page view:', error);
     } else {
-      console.log('📊 Page view tracked:', pageViewData.page_url);
+      console.log('📊 Page view tracked:', dbData.page_url);
     }
 
     // Track time on page when user leaves
@@ -170,8 +185,8 @@ export const trackPageView = async (supabase: SupabaseClient): Promise<void> => 
       supabase
         .from('page_views')
         .update({ duration_seconds })
-        .eq('session_id', pageViewData.session_id)
-        .eq('page_url', pageViewData.page_url)
+        .eq('session_id', dbData.session_id)
+        .eq('page_url', dbData.page_url)
         .order('created_at', { ascending: false })
         .limit(1)
         .then(({ error }) => {

@@ -1,11 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { FaLaptopCode, FaClipboardCheck, FaRobot, FaTasks, FaChartLine, FaMobileAlt } from 'react-icons/fa';
-import { allCourses as courseData } from '@/data/allCourses';
+import { FaRobot, FaTasks, FaChartLine } from 'react-icons/fa';
 
 // Map of category names to their respective icons and colors
-const categoryMeta = {
+const categoryMeta: Record<string, any> = {
   'Prompt Engineering': {
     icon: <FaRobot className="w-6 h-6" />,
     color: 'bg-purple-100 text-purple-600',
@@ -34,19 +33,67 @@ const categoryMeta = {
   }
 };
 
+interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  icon: React.ReactNode;
+  color: string;
+  description: string;
+}
+
 const Categories = () => {
   const [hoveredId, setHoveredId] = useState<number | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Get unique categories and create category objects
-  const categories = Array.from(new Set(courseData.map(course => course.category)))
-    .map((category, index) => ({
-      id: index + 1,
-      name: category,
-      slug: category.toLowerCase().replace(/\s+/g, '-'),
-      icon: categoryMeta[category]?.icon || categoryMeta.default.icon,
-      color: categoryMeta[category]?.color || categoryMeta.default.color,
-      description: categoryMeta[category]?.description || categoryMeta.default.description
-    }));
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch('/api/courses/categories');
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch categories');
+        }
+
+        const { categories: rawCategories } = await response.json();
+
+        const formattedCategories = rawCategories
+          .map((category: any, index: number) => {
+            const categoryName = typeof category === 'string' ? category : category.name;
+            return {
+              id: index + 1,
+              name: categoryName,
+              slug: categoryName.toLowerCase().replace(/\s+/g, '-'),
+              icon: (categoryMeta[categoryName] as any)?.icon || categoryMeta.default.icon,
+              color: (categoryMeta[categoryName] as any)?.color || categoryMeta.default.color,
+              description: (categoryMeta[categoryName] as any)?.description || categoryMeta.default.description
+            };
+          });
+
+        setCategories(formattedCategories);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <section className="py-8 md:py-12 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-center items-center h-96">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-8 md:py-12 bg-gray-50">

@@ -1,8 +1,8 @@
 // (Component removed from home page, safe to delete or keep for future use)
 
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 import { FaUserGraduate, FaLaptopCode, FaUsers, FaBriefcase, FaProjectDiagram, FaTrophy } from 'react-icons/fa';
-import { allCourses as courseData } from '@/data/allCourses';
 
 const keyConsultingStats = [
 	{
@@ -21,39 +21,62 @@ const keyConsultingStats = [
 	},
 ];
 
-const stats = [
-	{
-		icon: <FaUserGraduate className="w-8 h-8" />,
-		value: '500+',
-		label: 'Students Enrolled',
-		color: 'from-primary-600 to-primary-600',
-		ring: 'ring-primary-500/30',
-	},
-	{
-		icon: <FaLaptopCode className="w-8 h-8" />,
-		value: `${courseData.length}+`,
-		label: 'Specialized Courses',
-		color: 'from-secondary-700 to-secondary-700',
-		ring: 'ring-secondary-500/30',
-	},
-	{
-		icon: <FaUsers className="w-8 h-8" />,
-		value: '20+',
-		label: 'Learning Tracks',
-		color: 'from-accent-700 to-accent-700',
-		ring: 'ring-accent-500/30',
-	},
-	{
-		icon: <FaBriefcase className="w-8 h-8" />,
-		value: '80%',
-		label: 'Job Placement Rate',
-		color: 'from-success-500 to-success-400',
-		ring: 'ring-success-500/30',
-	},
-	...keyConsultingStats,
-];
-
 const Stats = () => {
+	const [courseCount, setCourseCount] = useState<number | string>('8+');
+	const [isLoading, setIsLoading] = useState(true);
+
+	useEffect(() => {
+		const fetchCourseCount = async () => {
+			try {
+				setIsLoading(true);
+				const response = await fetch('/api/courses');
+
+				if (response.ok) {
+					const { courses } = await response.json();
+					setCourseCount(`${courses.length}+`);
+				}
+			} catch (error) {
+				console.error('Error fetching course count:', error);
+				setCourseCount('8+'); // fallback
+			} finally {
+				setIsLoading(false);
+			}
+		};
+
+		fetchCourseCount();
+	}, []);
+
+	const stats = [
+		{
+			icon: <FaUserGraduate className="w-8 h-8" />,
+			value: '500+',
+			label: 'Students Enrolled',
+			color: 'from-primary-600 to-primary-600',
+			ring: 'ring-primary-500/30',
+		},
+		{
+			icon: <FaLaptopCode className="w-8 h-8" />,
+			value: courseCount,
+			label: 'Specialized Courses',
+			color: 'from-secondary-700 to-secondary-700',
+			ring: 'ring-secondary-500/30',
+		},
+		{
+			icon: <FaUsers className="w-8 h-8" />,
+			value: '20+',
+			label: 'Learning Tracks',
+			color: 'from-accent-700 to-accent-700',
+			ring: 'ring-accent-500/30',
+		},
+		{
+			icon: <FaBriefcase className="w-8 h-8" />,
+			value: '80%',
+			label: 'Job Placement Rate',
+			color: 'from-success-500 to-success-400',
+			ring: 'ring-success-500/30',
+		},
+		...keyConsultingStats,
+	];
 	return (
 		<section className="pt-0 pb-0 bg-gradient-to-b from-primary-700 to-primary-600 text-white">
 			<div className="container mx-auto px-4">

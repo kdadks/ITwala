@@ -240,7 +240,7 @@ const CoursePage: NextPage = () => {
 
         <main>
           {/* Course Banner */}
-          <section className="bg-gradient-to-r from-primary-600 to-primary-800 py-16">
+          <section className="bg-gradient-to-br from-primary-700 via-primary-600 to-secondary-700 py-16">
             <div className="container mx-auto px-4">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                 <div>

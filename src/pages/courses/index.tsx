@@ -255,7 +255,7 @@ const CoursesPage: NextPage = () => {
       </Head>
 
       <main>
-        <section className="bg-gradient-to-r from-primary-600 to-primary-800 py-12 md:py-24">
+        <section className="bg-gradient-to-br from-primary-700 via-primary-600 to-secondary-700 py-12 md:py-24">
           <div className="container mx-auto px-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}

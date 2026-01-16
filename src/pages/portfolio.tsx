@@ -257,7 +257,6 @@ const Portfolio: NextPage = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 + index * 0.1, duration: 0.6 }}
-                    className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20"
                   >
                     <div className="text-2xl md:text-3xl font-bold text-yellow-300 mb-1">{stat.number}</div>
                     <div className="text-xs text-gray-200">{stat.label}</div>
@@ -269,7 +268,7 @@ const Portfolio: NextPage = () => {
         </section>
 
         {/* Portfolio Scrolling Section */}
-        <section className="py-20 bg-gray-50 relative overflow-hidden">
+        <section className="py-6 bg-gray-50 relative overflow-hidden">
           <div className="container mx-auto px-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -437,7 +436,7 @@ const Portfolio: NextPage = () => {
         </section>
 
         {/* CTA Section */}
-        <section className="py-20 bg-gradient-to-br from-primary-600 via-primary-700 to-secondary-700 text-white relative overflow-hidden">
+        <section className="py-6 bg-gradient-to-br from-primary-600 via-primary-700 to-secondary-700 text-white relative overflow-hidden">
           <motion.div
             className="absolute inset-0 opacity-20"
             initial={{ opacity: 0 }}

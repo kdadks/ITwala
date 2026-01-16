@@ -11,7 +11,7 @@ import {
 
 const ConsultingCTA: React.FC = () => {
   return (
-    <section className="py-20 bg-white relative overflow-hidden">
+    <section className="py-8 bg-white relative overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-0 left-0 w-96 h-96 bg-primary-300 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl"></div>
@@ -55,7 +55,7 @@ const ConsultingCTA: React.FC = () => {
                     </div>
                     <div className="flex items-center">
                       <FaCheckCircle className="w-5 h-5 text-green-300 mr-3 flex-shrink-0" />
-                      <span className="text-gray-100">Proven track record with 100+ successful projects</span>
+                      <span className="text-gray-100">Proven track record with 20+ successful projects</span>
                     </div>
                     <div className="flex items-center">
                       <FaCheckCircle className="w-5 h-5 text-green-300 mr-3 flex-shrink-0" />
@@ -70,10 +70,6 @@ const ConsultingCTA: React.FC = () => {
                         <FaArrowRight className="w-4 h-4 ml-2" />
                       </div>
                     </Link>
-                    <button className="inline-flex items-center justify-center px-6 py-3 border-2 border-white text-white font-semibold rounded-full hover:bg-white hover:text-primary-700 transition-all duration-300">
-                      Schedule Call
-                      <FaCalendarAlt className="w-4 h-4 ml-2" />
-                    </button>
                   </div>
                 </motion.div>
               </div>

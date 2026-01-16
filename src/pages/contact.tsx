@@ -1,12 +1,11 @@
 import { NextPage } from 'next';
 import Head from 'next/head';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import ContactInfo from '@/components/contact/ContactInfo';
 import Faqs from '@/components/contact/Faqs';
-import { courseData } from '@/data/courses';
 
 const consultingServices = [
   "AI Powered Solutions",
@@ -31,9 +30,26 @@ interface ContactFormData {
 const Contact: NextPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedService, setSelectedService] = useState('');
+  const [courseOptions, setCourseOptions] = useState<string[]>([]);
   const { register, handleSubmit, reset, formState: { errors }, watch } = useForm<ContactFormData>();
   const watchService = watch('service', selectedService);
-  const courseOptions = courseData.map(course => course.title).sort();
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await fetch('/api/courses');
+        if (response.ok) {
+          const { courses } = await response.json();
+          const titles = courses.map((course: any) => course.title).sort();
+          setCourseOptions(titles);
+        }
+      } catch (error) {
+        console.error('Error fetching courses:', error);
+      }
+    };
+
+    fetchCourses();
+  }, []);
   
   const onSubmit = async (data: ContactFormData) => {
     setIsSubmitting(true);
@@ -76,7 +92,7 @@ const Contact: NextPage = () => {
       </Head>
 
       <main>
-        <section className="bg-gradient-to-r from-primary-600 to-primary-800 py-16 md:py-24">
+        <section className="bg-gradient-to-br from-primary-700 via-primary-600 to-secondary-700 py-16 md:py-24">
           <div className="container mx-auto px-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -92,7 +108,7 @@ const Contact: NextPage = () => {
           </div>
         </section>
 
-        <section className="py-16 bg-gray-50">
+        <section className="py-6 bg-gray-50">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2">

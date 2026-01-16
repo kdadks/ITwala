@@ -3,7 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, User, LogOut, Settings, BookOpen, Home, GraduationCap, Phone, Info, Briefcase, Folder } from 'lucide-react';
+import { Menu, X, User, LogOut, Settings, BookOpen, Home, GraduationCap, Phone, Info, Briefcase, Folder, ChevronDown } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
 const GlossyNavbar = () => {
@@ -12,6 +12,7 @@ const GlossyNavbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
   // Handle scroll effect for glassmorphic background
   useEffect(() => {
@@ -27,19 +28,26 @@ const GlossyNavbar = () => {
   useEffect(() => {
     const handleClickOutside = () => {
       setIsUserMenuOpen(false);
+      setActiveDropdown(null);
     };
     document.addEventListener('click', handleClickOutside);
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
 
-  // Navigation items with icons
+  // Navigation items with icons and submenus
   const navItems = [
     { label: 'Home', href: '/', icon: Home },
-    { label: 'Academy', href: '/academy', icon: GraduationCap },
-    { label: 'Courses', href: '/courses', icon: BookOpen },
+    {
+      label: 'Academy',
+      href: '/academy',
+      icon: GraduationCap,
+      submenu: [
+        { label: 'Courses', href: '/courses', icon: BookOpen }
+      ]
+    },
     { label: 'Portfolio', href: '/portfolio', icon: Folder },
-    { label: 'Consulting', href: '/consulting', icon: Briefcase },
+    { label: 'Product & Consulting', href: '/consulting', icon: Briefcase },
     { label: 'About', href: '/about', icon: Info },
     { label: 'Contact', href: '/contact', icon: Phone }
   ];
@@ -203,57 +211,152 @@ const GlossyNavbar = () => {
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: index * 0.08, duration: 0.4, type: "spring" }}
+                    className="relative"
                   >
-                    <Link href={item.href}>
-                      <motion.div
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className={`relative px-5 py-2.5 text-sm font-semibold rounded-full transition-all duration-300 cursor-pointer ${
-                          router.pathname === item.href
-                            ? 'text-white'
-                            : 'text-gray-700 hover:text-gray-900'
-                        }`}
+                    {item.submenu ? (
+                      // Item with dropdown
+                      <div
+                        onMouseEnter={(e) => {
+                          e.stopPropagation();
+                          setActiveDropdown(item.label);
+                        }}
+                        onMouseLeave={(e) => {
+                          e.stopPropagation();
+                          setActiveDropdown(null);
+                        }}
+                        className="relative"
                       >
-                        {/* Active state background with gradient */}
-                        {router.pathname === item.href && (
+                        <Link href={item.href}>
                           <motion.div
-                            layoutId="activeTab"
-                            className="absolute inset-0 rounded-full bg-gradient-to-r from-primary-500 via-primary-600 to-secondary-600 shadow-lg"
-                            transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                            style={{
-                              boxShadow: '0 4px 16px rgba(59, 130, 246, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
-                            }}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            className={`relative px-5 py-2.5 text-sm font-semibold rounded-full transition-all duration-300 cursor-pointer flex items-center gap-1 whitespace-nowrap ${
+                              router.pathname === item.href || router.pathname.startsWith('/courses')
+                                ? 'text-white'
+                                : 'text-gray-700 hover:text-gray-900'
+                            }`}
                           >
-                            {/* Animated shine effect on active tab */}
-                            <motion.div
-                              className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-white/30 to-transparent"
-                              animate={{ x: ['-100%', '100%'] }}
-                              transition={{
-                                duration: 2,
-                                repeat: Infinity,
-                                ease: "linear"
-                              }}
-                            />
+                            {/* Active state background with gradient */}
+                            {(router.pathname === item.href || router.pathname.startsWith('/courses')) && (
+                              <motion.div
+                                layoutId="activeTab"
+                                className="absolute inset-0 rounded-full bg-gradient-to-r from-primary-500 via-primary-600 to-secondary-600 shadow-lg"
+                                transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                                style={{
+                                  boxShadow: '0 4px 16px rgba(59, 130, 246, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
+                                }}
+                              >
+                                <motion.div
+                                  className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                                  animate={{ x: ['-100%', '100%'] }}
+                                  transition={{
+                                    duration: 2,
+                                    repeat: Infinity,
+                                    ease: "linear"
+                                  }}
+                                />
+                              </motion.div>
+                            )}
+
+                            {/* Hover state background */}
+                            {!(router.pathname === item.href || router.pathname.startsWith('/courses')) && (
+                              <div className="absolute inset-0 rounded-full bg-white/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                            )}
+
+                            <span className="relative z-10">{item.label}</span>
+                            <ChevronDown className="w-4 h-4 relative z-10" />
+
+                            {/* Glow effect on hover for inactive tabs */}
+                            {!(router.pathname === item.href || router.pathname.startsWith('/courses')) && (
+                              <motion.div
+                                className="absolute inset-0 rounded-full bg-gradient-to-r from-primary-400/0 via-primary-400/20 to-primary-400/0 opacity-0"
+                                whileHover={{ opacity: 1 }}
+                                transition={{ duration: 0.3 }}
+                              />
+                            )}
                           </motion.div>
-                        )}
+                        </Link>
 
-                        {/* Hover state background */}
-                        {router.pathname !== item.href && (
-                          <div className="absolute inset-0 rounded-full bg-white/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                        )}
+                        {/* Dropdown Menu */}
+                        <AnimatePresence>
+                          {activeDropdown === item.label && (
+                            <motion.div
+                              initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                              animate={{ opacity: 1, y: 0, scale: 1 }}
+                              exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                              transition={{ duration: 0.2 }}
+                              className="absolute top-full mt-2 left-0 w-48 bg-white/90 backdrop-blur-2xl rounded-2xl shadow-2xl border border-white/50 py-2 z-50"
+                              style={{
+                                background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%)',
+                              }}
+                            >
+                              {item.submenu.map((subItem) => {
+                                const SubIcon = subItem.icon;
+                                return (
+                                  <Link key={subItem.href} href={subItem.href}>
+                                    <div className="flex items-center space-x-3 px-4 py-3 text-sm text-gray-800 hover:bg-primary-50 transition-colors duration-200 mx-1 rounded-xl">
+                                      <SubIcon className="w-4 h-4" />
+                                      <span>{subItem.label}</span>
+                                    </div>
+                                  </Link>
+                                );
+                              })}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    ) : (
+                      // Regular menu item
+                      <Link href={item.href}>
+                        <motion.div
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className={`relative px-5 py-2.5 text-sm font-semibold rounded-full transition-all duration-300 cursor-pointer whitespace-nowrap ${
+                            router.pathname === item.href
+                              ? 'text-white'
+                              : 'text-gray-700 hover:text-gray-900'
+                          }`}
+                        >
+                          {/* Active state background with gradient */}
+                          {router.pathname === item.href && (
+                            <motion.div
+                              layoutId="activeTab"
+                              className="absolute inset-0 rounded-full bg-gradient-to-r from-primary-500 via-primary-600 to-secondary-600 shadow-lg"
+                              transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                              style={{
+                                boxShadow: '0 4px 16px rgba(59, 130, 246, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
+                              }}
+                            >
+                              <motion.div
+                                className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                                animate={{ x: ['-100%', '100%'] }}
+                                transition={{
+                                  duration: 2,
+                                  repeat: Infinity,
+                                  ease: "linear"
+                                }}
+                              />
+                            </motion.div>
+                          )}
 
-                        <span className="relative z-10">{item.label}</span>
+                          {/* Hover state background */}
+                          {router.pathname !== item.href && (
+                            <div className="absolute inset-0 rounded-full bg-white/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                          )}
 
-                        {/* Glow effect on hover for inactive tabs */}
-                        {router.pathname !== item.href && (
-                          <motion.div
-                            className="absolute inset-0 rounded-full bg-gradient-to-r from-primary-400/0 via-primary-400/20 to-primary-400/0 opacity-0"
-                            whileHover={{ opacity: 1 }}
-                            transition={{ duration: 0.3 }}
-                          />
-                        )}
-                      </motion.div>
-                    </Link>
+                          <span className="relative z-10">{item.label}</span>
+
+                          {/* Glow effect on hover for inactive tabs */}
+                          {router.pathname !== item.href && (
+                            <motion.div
+                              className="absolute inset-0 rounded-full bg-gradient-to-r from-primary-400/0 via-primary-400/20 to-primary-400/0 opacity-0"
+                              whileHover={{ opacity: 1 }}
+                              transition={{ duration: 0.3 }}
+                            />
+                          )}
+                        </motion.div>
+                      </Link>
+                    )}
                   </motion.div>
                 ))}
               </div>
@@ -453,6 +556,7 @@ const GlossyNavbar = () => {
                 <div className="space-y-2">
                   {navItems.map((item, index) => {
                     const IconComponent = item.icon;
+                    const isActive = router.pathname === item.href || (item.submenu && item.submenu.some(sub => router.pathname === sub.href));
                     return (
                       <motion.div
                         key={item.href}
@@ -463,7 +567,7 @@ const GlossyNavbar = () => {
                         <Link href={item.href}>
                           <div
                             className={`flex items-center space-x-3 px-4 py-3 text-base font-medium rounded-xl transition-all duration-300 ${
-                              router.pathname === item.href
+                              isActive
                                 ? 'text-white bg-primary-600 shadow-md'
                                 : 'text-gray-800 hover:text-primary-600 hover:bg-primary-50'
                             }`}
@@ -473,6 +577,30 @@ const GlossyNavbar = () => {
                             <span>{item.label}</span>
                           </div>
                         </Link>
+
+                        {/* Mobile Submenu */}
+                        {item.submenu && (
+                          <div className="ml-8 mt-2 space-y-1">
+                            {item.submenu.map((subItem) => {
+                              const SubIcon = subItem.icon;
+                              return (
+                                <Link key={subItem.href} href={subItem.href}>
+                                  <div
+                                    className={`flex items-center space-x-3 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-300 ${
+                                      router.pathname === subItem.href
+                                        ? 'text-primary-600 bg-primary-50'
+                                        : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
+                                    }`}
+                                    onClick={() => setIsMenuOpen(false)}
+                                  >
+                                    <SubIcon className="w-4 h-4" />
+                                    <span>{subItem.label}</span>
+                                  </div>
+                                </Link>
+                              );
+                            })}
+                          </div>
+                        )}
                       </motion.div>
                     );
                   })}

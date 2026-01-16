@@ -31,7 +31,7 @@ const missionCards: MissionCard[] = [
 
 const CompanyMission: React.FC = () => {
   return (
-    <section className="py-16 bg-white relative overflow-hidden">
+    <section className="py-6 bg-white relative overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-0 left-0 w-96 h-96 bg-primary-200 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl"></div>

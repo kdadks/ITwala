@@ -3,6 +3,7 @@ import Head from 'next/head';
 import UnifiedHero from '@/components/home/UnifiedHero';
 import ServiceShowcase from '@/components/home/ServiceShowcase';
 import Stats from '@/components/home/Stats';
+import FeaturedCourses from '@/components/home/FeaturedCourses';
 import Testimonials from '@/components/home/Testimonials';
 import BacklinkingHub from '@/components/seo/BacklinkingHub';
 import { motion } from 'framer-motion';
@@ -97,6 +98,15 @@ const Home: NextPage = () => {
           <ServiceShowcase />
         </motion.div>
         
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+        >
+          <FeaturedCourses />
+        </motion.div>
+        
         {/* <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -111,7 +121,6 @@ const Home: NextPage = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.4, duration: 0.5 }}
-          className="mb-16"
         >
           <Testimonials />
         </motion.div>

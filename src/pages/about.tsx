@@ -48,7 +48,7 @@ const About: NextPage = () => {
         <CompanyMission />
         
         {/* Consulting Services Overview Section */}
-        <section className="py-16 bg-gradient-to-br from-primary-50 via-white to-secondary-50">
+        <section className="py-6 bg-gradient-to-br from-primary-50 via-white to-secondary-50">
           <div className="container mx-auto px-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -132,7 +132,7 @@ const About: NextPage = () => {
           </div>
         </section>
         
-        <section id="our-story" className="py-16 bg-gradient-to-br from-white via-secondary-50 to-primary-50 scroll-mt-32">
+        <section id="our-story" className="py-6 bg-gradient-to-br from-white via-secondary-50 to-primary-50 scroll-mt-32">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               <motion.div
@@ -178,7 +178,7 @@ const About: NextPage = () => {
         </section>
         
         {/* Locations Section */}
-        <section className="py-16 bg-gray-50">
+        <section className="py-6 bg-gray-50">
           <div className="container mx-auto px-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}

@@ -19,16 +19,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(500).json({ error: 'Failed to fetch categories' });
     }
 
-    // Extract unique categories
+    // Extract unique categories as strings
     const uniqueCategories = [...new Set(data.map(course => course.category))];
-    
-    // Format categories for the frontend
-    const categories = uniqueCategories.map(category => ({
-      name: category,
-      slug: category
-    }));
 
-    return res.status(200).json({ categories });
+    return res.status(200).json({ categories: uniqueCategories });
   } catch (error) {
     console.error('Error fetching categories:', error);
     return res.status(500).json({ error: 'Internal server error' });

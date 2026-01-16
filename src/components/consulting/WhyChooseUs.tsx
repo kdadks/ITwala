@@ -20,7 +20,7 @@ interface Advantage {
 const advantages: Advantage[] = [
   {
     title: "Proven Expertise",
-    description: "Over 10 years of experience delivering successful IT solutions across diverse industries with a track record of 100+ completed projects.",
+    description: "Over 10 years of experience delivering successful IT solutions across diverse industries with a track record of 20+ completed projects.",
     icon: <FaAward className="w-6 h-6" />,
     color: "text-yellow-600",
     bgColor: "bg-yellow-100"
@@ -64,7 +64,7 @@ const advantages: Advantage[] = [
 
 const WhyChooseUs: React.FC = () => {
   return (
-    <section id="why-choose-us" className="py-20 bg-white relative overflow-hidden scroll-mt-32">
+    <section id="why-choose-us" className="py-8 bg-white relative overflow-hidden scroll-mt-32">
       {/* Decorative background elements */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-1/4 left-0 w-72 h-72 bg-primary-300 rounded-full -translate-x-1/2 blur-3xl"></div>

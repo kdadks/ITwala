@@ -93,7 +93,7 @@ const processSteps: ProcessStep[] = [
 
 const ProcessSection: React.FC = () => {
   return (
-    <section className="py-20 bg-gray-50 relative overflow-hidden">
+    <section id="process" className="py-8 bg-gray-50 relative overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-1/4 left-0 w-96 h-96 bg-primary-300 rounded-full -translate-x-1/2 blur-3xl"></div>
