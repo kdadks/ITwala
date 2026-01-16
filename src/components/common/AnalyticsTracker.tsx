@@ -393,6 +393,12 @@ const AnalyticsTracker: React.FC = () => {
 
     const trackPageView = async () => {
       try {
+        // Skip tracking on localhost
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+          console.log('📊 Analytics tracking skipped - localhost');
+          return;
+        }
+
         const pageUrl = window.location.pathname;
         
         // Prevent duplicate tracking of the same page

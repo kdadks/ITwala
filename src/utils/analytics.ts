@@ -122,6 +122,12 @@ const hasAnalyticsConsent = (): boolean => {
 
 // Track page view
 export const trackPageView = async (supabase: SupabaseClient): Promise<void> => {
+  // Skip tracking on localhost
+  if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+    console.log('📊 Analytics tracking skipped - localhost');
+    return;
+  }
+
   // Check for analytics consent
   if (!hasAnalyticsConsent()) {
     console.log('📊 Analytics tracking skipped - no consent');
@@ -217,6 +223,11 @@ export const trackEvent = async (
   eventName: string,
   eventData?: Record<string, any>
 ): Promise<void> => {
+  // Skip tracking on localhost
+  if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+    return;
+  }
+
   if (!hasAnalyticsConsent()) {
     return;
   }

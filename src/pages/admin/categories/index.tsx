@@ -16,7 +16,7 @@ interface Category {
 
 const CategoriesPage: NextPage = () => {
   const router = useRouter();
-  const { user, isAdmin, isLoading: authLoading, debugInfo } = useAuth();
+  const { user, isAdmin, isLoading: authLoading } = useAuth();
   const supabase = useSupabaseClient();
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -40,35 +40,24 @@ const CategoriesPage: NextPage = () => {
   };
 
   useEffect(() => {
-    console.log('Categories page auth check:', {
-      user: user ? { id: user.id, email: user.email } : null,
-      isAdmin,
-      authLoading,
-      debugInfo
-    });
-
     // Don't do anything while auth is loading
     if (authLoading) {
-      console.log('Still loading auth...');
       return;
     }
 
     // Redirect if not authenticated
     if (!user) {
-      console.log('No user found, redirecting to login');
       router.push('/auth/login');
       return;
     }
 
     // Redirect if not admin
     if (!isAdmin) {
-      console.log('User is not admin, redirecting to dashboard');
       toast.error('You do not have permission to access this page');
       router.push('/dashboard');
       return;
     }
 
-    console.log('Admin check passed, fetching categories');
     fetchCategories();
   }, [user, isAdmin, authLoading, router]);
 

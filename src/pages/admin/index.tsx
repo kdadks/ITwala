@@ -15,23 +15,17 @@ const Admin: NextPage = () => {
   const supabase = useSupabaseClient();
   const [isLoading, setIsLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [debugInfo, setDebugInfo] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const checkAdmin = async () => {
-      console.log('Checking admin status...');
-      
       if (!user) {
-        console.log('No user found, will redirect to login');
         setError('No user found');
         setIsLoading(false);
         return;
       }
 
       try {
-        console.log('Checking user:', { id: user.id, email: user.email, metadata: user.user_metadata });
-        
         // Check profile in Supabase
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
@@ -45,36 +39,15 @@ const Admin: NextPage = () => {
           throw profileError;
         }
 
-        console.log('Profile found:', profile);
-
         // Check for admin status in both metadata and profile
         const isMetadataAdmin = user.user_metadata?.role === 'admin';
         const isProfileAdmin = profile?.role === 'admin';
         const isUserAdmin = isMetadataAdmin || isProfileAdmin;
 
-        console.log('Admin check:', { isMetadataAdmin, isProfileAdmin, isUserAdmin });
         setIsAdmin(isUserAdmin);
 
         if (!isUserAdmin) {
-          console.log('User is not admin');
           setError('Access denied: User is not an admin');
-        }
-
-        // Get debug info with auth token
-        try {
-          const { data: { session } } = await supabase.auth.getSession();
-          if (session?.access_token) {
-            const response = await fetch('/api/debug/admin-check', {
-              headers: {
-                'Authorization': `Bearer ${session.access_token}`
-              }
-            });
-            const debugData = await response.json();
-            console.log('Debug info:', debugData);
-            setDebugInfo(debugData);
-          }
-        } catch (debugError) {
-          console.error('Error fetching debug info:', debugError);
         }
 
       } catch (error: any) {
@@ -111,14 +84,6 @@ const Admin: NextPage = () => {
           {error && (
             <div className="bg-red-50 border border-red-200 rounded p-4 mb-4">
               <p className="text-red-600">{error}</p>
-            </div>
-          )}
-          {debugInfo && (
-            <div className="bg-gray-50 border border-gray-200 rounded p-4 mb-4 text-left">
-              <h3 className="font-bold mb-2">Debug Information:</h3>
-              <pre className="whitespace-pre-wrap text-sm">
-                {JSON.stringify(debugInfo, null, 2)}
-              </pre>
             </div>
           )}
           <button

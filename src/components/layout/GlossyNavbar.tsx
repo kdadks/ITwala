@@ -658,24 +658,24 @@ const GlossyNavbar = () => {
                 ) : (
                   /* Mobile Auth Buttons */
                   <div className="border-t border-gray-200 pt-4 space-y-3">
-                    <Link href="/auth/login">
+                    <Link href="/auth/login" className="block">
                       <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: navItems.length * 0.1, duration: 0.3 }}
-                        className="block w-full px-4 py-3 text-center text-base font-medium text-gray-800 hover:text-primary-600 hover:bg-primary-50 rounded-xl transition-all duration-300 border border-gray-300"
+                        className="w-full px-4 py-3 text-center text-base font-medium text-gray-800 hover:text-primary-600 hover:bg-primary-50 rounded-xl transition-all duration-300 border border-gray-300"
                         onClick={() => setIsMenuOpen(false)}
                       >
                         Log in
                       </motion.div>
                     </Link>
                     
-                    <Link href="/auth/register">
+                    <Link href="/auth/register" className="block">
                       <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: (navItems.length + 1) * 0.1, duration: 0.3 }}
-                        className="block w-full px-4 py-3 text-center text-base font-medium text-white rounded-xl transition-all duration-300 relative overflow-hidden group"
+                        className="w-full px-4 py-3 text-center text-base font-medium text-white rounded-xl transition-all duration-300 relative overflow-hidden group"
                         style={{
                           background: 'linear-gradient(135deg, #38a169 0%, #22c55e 50%, #22c55e 100%)',
                         }}

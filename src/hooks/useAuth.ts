@@ -24,7 +24,6 @@ interface UseAuthReturn {
   hasPermission: (requiredRoles: string[]) => boolean;
   updateProfile: (data: Partial<Profile>) => Promise<void>;
   updatePassword: (currentPassword: string, newPassword: string) => Promise<void>;
-  debugInfo?: any;
 }
 
 export const useAuth = (): UseAuthReturn => {
@@ -36,7 +35,6 @@ export const useAuth = (): UseAuthReturn => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isInstructor, setIsInstructor] = useState(false);
-  const [debugInfo, setDebugInfo] = useState<any>(null);
 
   const checkAdminStatus = (user: any, profileData: Profile | null) => {
     // Check user metadata first (from auth.users)
@@ -45,14 +43,6 @@ export const useAuth = (): UseAuthReturn => {
     const isProfileAdmin = profileData?.role === 'admin';
     // Special case for admin@itwala.com
     const isAdminEmail = user?.email === 'admin@itwala.com';
-    
-    console.log('Admin check:', {
-      isMetadataAdmin,
-      isProfileAdmin,
-      isAdminEmail,
-      metadata: user?.user_metadata,
-      profile: profileData
-    });
 
     // Consider admin if any of the checks pass
     return isMetadataAdmin || isProfileAdmin || isAdminEmail;
@@ -65,7 +55,6 @@ export const useAuth = (): UseAuthReturn => {
     }
 
     try {
-      console.log('Fetching user profile...');
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('*')
@@ -80,10 +69,9 @@ export const useAuth = (): UseAuthReturn => {
       let currentProfile = profileData;
 
       if (!currentProfile) {
-        console.log('Creating new profile...');
         const isAdminEmail = user.email === 'admin@itwala.com';
         const isMetadataAdmin = user.user_metadata?.role === 'admin';
-        
+
         // Set admin role if either email matches or metadata indicates admin
         const { data: newProfile, error: createError } = await supabase
           .from('profiles')
@@ -103,16 +91,14 @@ export const useAuth = (): UseAuthReturn => {
           throw createError;
         }
         currentProfile = newProfile;
-        console.log('Profile created successfully:', currentProfile);
       }
 
       // Ensure the profile has a valid role
       if (!currentProfile.role || currentProfile.role === 'user') {
-        console.log('Updating profile role to student...');
         const isAdminEmail = user.email === 'admin@itwala.com';
         const isMetadataAdmin = user.user_metadata?.role === 'admin';
         const newRole = (isAdminEmail || isMetadataAdmin) ? 'admin' : 'student';
-        
+
         const { data: updatedProfile, error: updateError } = await supabase
           .from('profiles')
           .update({
@@ -127,7 +113,6 @@ export const useAuth = (): UseAuthReturn => {
           console.error('Error updating profile role:', updateError);
         } else {
           currentProfile = updatedProfile;
-          console.log('Profile role updated to:', newRole);
         }
       }
 
@@ -137,27 +122,6 @@ export const useAuth = (): UseAuthReturn => {
       setIsAdmin(adminStatus);
       setIsInstructor(currentProfile?.role === 'instructor');
 
-      console.log('Auth status:', {
-        profile: currentProfile,
-        isAdmin: adminStatus,
-        userMetadata: user.user_metadata
-      });
-
-      // Fetch debug info with auth token from session context
-      try {
-        if (session?.access_token) {
-          const response = await fetch('/api/debug/admin-check', {
-            headers: {
-              'Authorization': `Bearer ${session.access_token}`
-            }
-          });
-          const debugData = await response.json();
-          setDebugInfo(debugData);
-        }
-      } catch (debugError) {
-        console.error('Error fetching debug info:', debugError);
-      }
-        
     } catch (error) {
       console.error('Error fetching profile:', error);
       toast.error('Error loading profile');
@@ -183,10 +147,8 @@ export const useAuth = (): UseAuthReturn => {
 
   const hasPermission = (requiredRoles: string[]): boolean => {
     if (!profile || !profile.role) {
-      console.log('No profile or role found for permission check');
       return false;
     }
-    console.log('Checking permission:', { requiredRoles, userRole: profile.role });
     return requiredRoles.includes(profile.role);
   };
 
@@ -233,6 +195,5 @@ export const useAuth = (): UseAuthReturn => {
     hasPermission,
     updateProfile,
     updatePassword,
-    debugInfo,
   };
 };

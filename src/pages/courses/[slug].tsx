@@ -295,7 +295,7 @@ const CoursePage: NextPage = () => {
                       <h3 className="text-lg font-semibold mb-2">What You'll Learn</h3>
                       <ul className="list-disc list-inside space-y-1">
                         {course.learningOutcomes.map((outcome, index) => (
-                          <li key={index} className="text-gray-700">{outcome}</li>
+                          <li key={`outcome-${index}`} className="text-gray-700">{outcome}</li>
                         ))}
                       </ul>
                     </div>
@@ -303,7 +303,7 @@ const CoursePage: NextPage = () => {
                       <h3 className="text-lg font-semibold mb-2">Requirements</h3>
                       <ul className="list-disc list-inside space-y-1">
                         {course.requirements.map((requirement, index) => (
-                          <li key={index} className="text-gray-700">{requirement}</li>
+                          <li key={`requirement-${index}`} className="text-gray-700">{requirement}</li>
                         ))}
                       </ul>
                     </div>
@@ -314,7 +314,7 @@ const CoursePage: NextPage = () => {
                         <h3 className="text-lg font-semibold mb-2">Course Modules</h3>
                         <div className="space-y-2">
                           {modules.map((module, index) => (
-                            <div key={module.id} className="border rounded-lg p-4">
+                            <div key={module.id || `module-${index}`} className="border rounded-lg p-4">
                               <h4 className="font-medium">{index + 1}. {module.title}</h4>
                               <p className="text-gray-600 text-sm mt-1">{module.description}</p>
                               <p className="text-sm text-gray-500 mt-2">
@@ -335,7 +335,7 @@ const CoursePage: NextPage = () => {
                     <h2 className="text-2xl font-bold mb-4">Frequently Asked Questions</h2>
                     <div className="space-y-4">
                       {faqs.map((faq, index) => (
-                        <div key={index} className="border-b pb-4">
+                        <div key={faq.id || `faq-${index}`} className="border-b pb-4">
                           <h3 className="font-semibold mb-2">{faq.question}</h3>
                           <p className="text-gray-700">{faq.answer}</p>
                         </div>
@@ -351,7 +351,7 @@ const CoursePage: NextPage = () => {
                     <h2 className="text-2xl font-bold mb-4">Student Reviews</h2>
                     <div className="space-y-4">
                       {reviews.map((review, index) => (
-                        <div key={review.id} className="border-b pb-4">
+                        <div key={review.id || `review-${index}`} className="border-b pb-4">
                           <div className="flex items-center mb-2">
                             <span className="font-semibold text-gray-900 mr-2">{review.user}</span>
                             <span className="text-yellow-500">{'★'.repeat(review.rating)}</span>

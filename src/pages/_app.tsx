@@ -24,21 +24,13 @@ export default function App({ Component, pageProps }: AppProps) {
   const [sessionConflictResolved, setSessionConflictResolved] = useState(false);
 
   useEffect(() => {
-    console.log('Supabase client initialized');
-    
     // Check for and clear session conflicts on app start
     const handleSessionConflicts = async () => {
       try {
         const hasConflict = await detectSessionConflicts();
         if (hasConflict) {
-          console.log('Session conflict detected, clearing...');
           await clearSessionConflicts();
           setSessionConflictResolved(true);
-          
-          // Small delay to ensure storage is cleared
-          setTimeout(() => {
-            console.log('Session conflicts cleared, ready to continue');
-          }, 100);
         } else {
           setSessionConflictResolved(true);
         }
@@ -49,14 +41,12 @@ export default function App({ Component, pageProps }: AppProps) {
         setSessionConflictResolved(true);
       }
     };
-    
+
     handleSessionConflicts();
 
     // Listen for auth state changes and handle conflicts
     const { data: { subscription } } = supabaseClient.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth state changed:', event, session ? 'Session exists' : 'No session');
-        
         if (event === 'SIGNED_OUT') {
           // Clear any remaining session data
           await clearSessionConflicts();

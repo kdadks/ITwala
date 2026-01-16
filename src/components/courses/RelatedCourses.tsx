@@ -18,7 +18,7 @@ const RelatedCourses: React.FC<RelatedCoursesProps> = ({ courses }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {courses.map((course, index) => (
             <motion.div
-              key={course.id}
+              key={course.id || `related-${index}`}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}

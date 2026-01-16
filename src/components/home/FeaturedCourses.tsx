@@ -109,9 +109,9 @@ const FeaturedCourses = () => {
           style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
         >
           <div className="flex space-x-4 md:space-x-6">
-            {featuredCourses.map((course) => (
+            {featuredCourses.map((course, index) => (
               <motion.div
-                key={course.id}
+                key={course.id || `featured-${index}`}
                 whileHover={{ y: -5 }}
                 transition={{ duration: 0.2 }}
                 className="flex-shrink-0 w-72 sm:w-80 md:w-1/3 lg:w-1/4"
