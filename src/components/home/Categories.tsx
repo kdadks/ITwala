@@ -114,7 +114,7 @@ const Categories = () => {
               whileHover={{ y: -5 }}
               transition={{ duration: 0.2 }}
             >
-              <Link href={`/courses?category=${encodeURIComponent(category.name)}`} passHref>
+              <Link href={`/courses?category=${encodeURIComponent(category.name)}`}>
                 <div className={`bg-white rounded-xl shadow-md overflow-hidden h-full transition-all duration-300 ${hoveredId === category.id ? 'shadow-lg' : ''}`}>
                   <div className="p-6 flex flex-col h-full">
                     <div className={`inline-flex items-center justify-center p-3 rounded-full mb-4 ${category.color}`}>

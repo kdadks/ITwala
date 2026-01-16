@@ -127,7 +127,6 @@ const ServicesGrid: React.FC = () => {
         <div className="absolute top-0 left-0 w-96 h-96 bg-primary-200 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl"></div>
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-secondary-200 rounded-full translate-x-1/2 translate-y-1/2 blur-3xl"></div>
       </div>
-
       <div className="container mx-auto px-4 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -182,10 +181,10 @@ const ServicesGrid: React.FC = () => {
               </div>
               {/* Consistent Learn More button for all cards, always at the bottom */}
               <div className="mt-8 pt-6 border-t border-gray-200">
-                <Link href={`/services/${service.slug}`} legacyBehavior>
-                  <a className="block w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 px-6 rounded-lg text-center transition-colors duration-300 transform hover:scale-105">
+                <Link href={`/services/${service.slug}`} className="block w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 px-6 rounded-lg text-center transition-colors duration-300 transform hover:scale-105">
+                  
                     Learn More
-                  </a>
+                  
                 </Link>
               </div>
             </motion.div>
