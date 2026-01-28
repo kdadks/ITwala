@@ -17,7 +17,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Allow requests without auth header if ANALYTICS_CRON_SECRET is not set (for testing)
     if (expectedKey !== 'change-me-in-production' && authHeader !== `Bearer ${expectedKey}`) {
-      return res.status(401).json({ error: 'Unauthorized' });
+      console.error('Authentication failed:', {
+        hasAuthHeader: !!authHeader,
+        authHeaderFormat: authHeader ? authHeader.substring(0, 10) + '...' : 'none',
+        expectedFormat: 'Bearer [secret]',
+        secretConfigured: expectedKey !== 'change-me-in-production'
+      });
+      return res.status(401).json({
+        error: 'Unauthorized',
+        debug: {
+          hasAuthHeader: !!authHeader,
+          expectedFormat: 'Bearer [SECRET_KEY]'
+        }
+      });
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);

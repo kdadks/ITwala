@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaQuoteLeft, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
@@ -123,11 +124,13 @@ const Testimonials = () => {
 						>
 							<div className="flex flex-col md:flex-row items-center">
 								<div className="mb-6 md:mb-0 md:mr-8">
-									<div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-4 border-primary-100">
-										<img
+									<div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-4 border-primary-100 relative">
+										<Image
 											src={testimonials[currentIndex].image}
 											alt={testimonials[currentIndex].name}
-											className="w-full h-full object-cover"
+											fill
+											sizes="(max-width: 768px) 96px, 128px"
+											className="object-cover"
 										/>
 									</div>
 								</div>

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Course } from '@/types/course';
@@ -120,12 +121,15 @@ const FeaturedCourses = () => {
                 <Link href={`/courses/${course.slug}`}>
                   <div className="bg-white rounded-xl shadow-md overflow-hidden h-full hover:shadow-lg transition-shadow duration-300">
                     <div className="relative h-48">
-                      <img 
-                        src={course.image} 
+                      <Image
+                        src={course.image}
                         alt={course.title}
-                        className="w-full h-full object-cover"
+                        fill
+                        sizes="(max-width: 640px) 280px, (max-width: 768px) 320px, (max-width: 1024px) 33vw, 25vw"
+                        className="object-cover"
+                        priority={index < 2}
                       />
-                      <div className="absolute top-4 right-4 bg-white py-1 px-2 rounded-full text-xs font-bold text-primary-500">
+                      <div className="absolute top-4 right-4 bg-white py-1 px-2 rounded-full text-xs font-bold text-primary-500 z-10">
                         {course.level}
                       </div>
                     </div>

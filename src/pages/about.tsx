@@ -143,10 +143,10 @@ const About: NextPage = () => {
               >
                 <div className="relative h-[400px] rounded-2xl overflow-hidden shadow-xl transform hover:scale-105 transition-transform duration-300">
                   <Image
-                    src="https://picsum.photos/400/400" // Temporary placeholder
-                    alt="ITwala Team Collaboration"
+                    src="/images/IT - WALA_logo (1).png"
+                    alt="ITwala"
                     layout="fill"
-                    objectFit="cover"
+                    objectFit="contain"
                     className="rounded-2xl"
                   />
                 </div>
