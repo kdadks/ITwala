@@ -37,13 +37,13 @@ LIMIT 10;
 -- MANUALLY RUN THE AGGREGATION (for testing)
 -- ========================================
 -- Run for yesterday:
-SELECT aggregate_daily_analytics((CURRENT_DATE - INTERVAL '1 day')::DATE);
+SELECT aggregate_daily_analytics(target_date := (CURRENT_DATE - 1)::DATE);
 
 -- Run for a specific date:
--- SELECT aggregate_daily_analytics('2024-01-15'::DATE);
+-- SELECT aggregate_daily_analytics(target_date := '2024-01-15'::DATE);
 
 -- Run for today (current data):
--- SELECT aggregate_daily_analytics(CURRENT_DATE);
+-- SELECT aggregate_daily_analytics(target_date := CURRENT_DATE);
 
 -- ========================================
 -- CHECK LAST AGGREGATION RESULT
@@ -84,7 +84,7 @@ LIMIT 7;
 --     'daily-analytics-aggregation',
 --     '0 3 * * *',  -- 3 AM daily
 --     $$
---     SELECT aggregate_daily_analytics((CURRENT_DATE - INTERVAL '1 day')::DATE);
+--     SELECT aggregate_daily_analytics(target_date := (CURRENT_DATE - 1)::DATE);
 --     $$
 -- );
 

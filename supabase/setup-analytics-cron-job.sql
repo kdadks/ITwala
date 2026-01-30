@@ -21,7 +21,7 @@ SELECT cron.schedule(
     'daily-analytics-aggregation',           -- Job name
     '0 2 * * *',                            -- Cron schedule: 2 AM daily
     $$
-    SELECT aggregate_daily_analytics((CURRENT_DATE - INTERVAL '1 day')::DATE);
+    SELECT aggregate_daily_analytics(target_date := (CURRENT_DATE - 1)::DATE);
     $$
 );
 
