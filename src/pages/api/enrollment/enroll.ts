@@ -61,12 +61,12 @@ export default async function handler(
       throw new Error(`Course not found: ${courseError.message}`);
     }
 
-    // For direct enrollment, get existing profile info
+    // For direct enrollment, get existing profile info (including student_id)
     let profileData = null;
     if (directEnrollment) {
       const { data: existingProfile, error: profileFetchError } = await supabase
         .from('profiles')
-        .select('full_name, phone, address_line1, address_line2, city, state, country, pincode, highest_qualification, degree_name, has_laptop')
+        .select('full_name, phone, address_line1, address_line2, city, state, country, pincode, highest_qualification, degree_name, has_laptop, student_id')
         .eq('id', userId)
         .single();
 
@@ -74,6 +74,15 @@ export default async function handler(
         console.error('Error fetching existing profile:', profileFetchError);
         return res.status(400).json({ message: 'Unable to fetch profile for direct enrollment' });
       }
+      
+      profileData = existingProfile;
+    } else {
+      // For form-based enrollment, also fetch profile to check student_id
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('student_id, country, state')
+        .eq('id', userId)
+        .single();
       
       profileData = existingProfile;
     }
@@ -136,42 +145,57 @@ export default async function handler(
       stateName = userDetails.state || '';
     }
 
-    // Get ISO codes for student ID
-    const countryCode = getCountryIsoCode(countryName);
-    const stateCode = getStateIsoCode(stateName, countryCode);
+    // Generate student ID only if profile doesn't already have one (1:1 with student)
+    let studentId = profileData?.student_id || null;
+    
+    if (!studentId) {
+      // Get ISO codes for student ID
+      const countryCode = getCountryIsoCode(countryName);
+      const stateCode = getStateIsoCode(stateName, countryCode);
 
-    // Generate student ID using database function
-    let studentId = null;
-    try {
-      const { data: studentIdResult, error: studentIdError } = await supabase.rpc('generate_student_id', {
-        country_code: countryCode,
-        state_code: stateCode
-      });
+      try {
+        const { data: studentIdResult, error: studentIdError } = await supabase.rpc('generate_student_id', {
+          country_code: countryCode,
+          state_code: stateCode
+        });
 
-      if (studentIdError) {
-        console.error('Error generating student ID:', studentIdError);
-        // Generate a fallback student ID if database function fails
+        if (studentIdError) {
+          console.error('Error generating student ID:', studentIdError);
+          // Generate a fallback student ID if database function fails
+          const now = new Date();
+          const year = now.getFullYear();
+          const month = String(now.getMonth() + 1).padStart(2, '0');
+          const random = String(Math.floor(Math.random() * 9999) + 1).padStart(4, '0');
+          studentId = `${countryCode}-${stateCode}-${year}-${month}-${random}`;
+        } else {
+          studentId = studentIdResult;
+        }
+      } catch (rpcError) {
+        console.error('RPC error generating student ID:', rpcError);
+        // Generate a fallback student ID
         const now = new Date();
         const year = now.getFullYear();
         const month = String(now.getMonth() + 1).padStart(2, '0');
         const random = String(Math.floor(Math.random() * 9999) + 1).padStart(4, '0');
         studentId = `${countryCode}-${stateCode}-${year}-${month}-${random}`;
-      } else {
-        studentId = studentIdResult;
       }
-    } catch (rpcError) {
-      console.error('RPC error generating student ID:', rpcError);
-      // Generate a fallback student ID
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const random = String(Math.floor(Math.random() * 9999) + 1).padStart(4, '0');
-      studentId = `${countryCode}-${stateCode}-${year}-${month}-${random}`;
+
+      // Update profile with student ID (1:1 relationship)
+      const { error: profileUpdateError } = await supabase
+        .from('profiles')
+        .update({ student_id: studentId })
+        .eq('id', userId);
+
+      if (profileUpdateError) {
+        console.error('Error updating profile with student ID:', profileUpdateError);
+      } else {
+        console.log('Student ID assigned to profile:', studentId);
+      }
+    } else {
+      console.log('Using existing student ID from profile:', studentId);
     }
 
-    console.log('Generated student ID:', studentId);
-
-    // Create enrollment record with student ID
+    // Create enrollment record (student_id is now on profile, not enrollment)
     const { data: enrollment, error: enrollmentError } = await supabase
       .from('enrollments')
       .insert({
@@ -179,8 +203,7 @@ export default async function handler(
         course_id: courseId,
         status: 'active',
         progress: 0,
-        enrolled_at: new Date().toISOString(),
-        student_id: studentId
+        enrolled_at: new Date().toISOString()
       })
       .select()
       .single();

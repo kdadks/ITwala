@@ -9,11 +9,11 @@ interface Student {
   id: string;
   full_name: string;
   email: string;
+  student_id: string | null;
   created_at: string;
   enrollments: {
     id: string;
     enrolled_at: string;
-    student_id: string | null;
     course: {
       id: string;
       title: string;
@@ -41,11 +41,11 @@ const StudentsPage: NextPage = () => {
           id,
           full_name,
           email,
+          student_id,
           created_at,
           enrollments(
             id,
             enrolled_at,
-            student_id,
             status,
             progress,
             course:courses(
@@ -79,7 +79,7 @@ const StudentsPage: NextPage = () => {
   useEffect(() => {
     const checkAdmin = async () => {
       if (!user) {
-        router.push('/auth/login');
+        router.push('/admin/login');
         return;
       }
 
@@ -129,7 +129,7 @@ const StudentsPage: NextPage = () => {
     const matchesSearch = 
       student.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       student.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      student.enrollments.some(e => e.student_id?.toLowerCase().includes(searchQuery.toLowerCase()));
+      student.student_id?.toLowerCase().includes(searchQuery.toLowerCase());
 
     if (statusFilter === 'all') return matchesSearch;
     
@@ -206,19 +206,14 @@ const StudentsPage: NextPage = () => {
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="text-sm text-gray-500">{student.email}</div>
                             </td>
-                            <td className="px-6 py-4">
-                              <div className="space-y-1">
-                                {student.enrollments.map(enrollment => (
-                                  enrollment.student_id && (
-                                    <div key={enrollment.id} className="text-sm font-mono bg-gray-100 px-2 py-1 rounded text-gray-700">
-                                      {enrollment.student_id}
-                                    </div>
-                                  )
-                                ))}
-                                {student.enrollments.length === 0 || !student.enrollments.some(e => e.student_id) && (
-                                  <span className="text-sm text-gray-400">-</span>
-                                )}
-                              </div>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              {student.student_id ? (
+                                <div className="text-sm font-mono bg-gray-100 px-2 py-1 rounded text-gray-700 inline-block">
+                                  {student.student_id}
+                                </div>
+                              ) : (
+                                <span className="text-sm text-gray-400">-</span>
+                              )}
                             </td>
                             <td className="px-6 py-4">
                               <div className="space-y-2">

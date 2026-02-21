@@ -61,7 +61,7 @@ const Admin: NextPage = () => {
 
   useEffect(() => {
     if (!user && !isLoading) {
-      router.push('/auth/login');
+      router.push('/admin/login');
     }
   }, [user, isLoading, router]);
 

@@ -13,7 +13,7 @@ const AdminHeader: React.FC = () => {
     try {
       await supabase.auth.signOut();
       toast.success('Logged out successfully');
-      router.push('/');
+      router.push('/admin/login');
     } catch (error) {
       console.error('Error logging out:', error);
       toast.error('Failed to log out');

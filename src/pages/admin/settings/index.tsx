@@ -43,7 +43,7 @@ const AdminSettings: NextPage = () => {
 
     // Redirect if not authenticated
     if (!user) {
-      router.push('/auth/login');
+      router.push('/admin/login');
       return;
     }
 

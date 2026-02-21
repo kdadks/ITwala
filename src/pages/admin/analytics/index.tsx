@@ -155,7 +155,7 @@ const AnalyticsPage: NextPage = () => {
   useEffect(() => {
     const checkAdmin = async () => {
       if (!user) {
-        router.push('/auth/login');
+        router.push('/admin/login');
         return;
       }
 
