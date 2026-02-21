@@ -52,14 +52,16 @@ const GlossyNavbar = () => {
     { label: 'Contact', href: '/contact', icon: Phone }
   ];
 
-  const userMenuItems = user ? [
-    { label: 'Dashboard', href: '/dashboard', icon: User },
-    { label: 'My Courses', href: '/dashboard/courses', icon: BookOpen },
-    { label: 'Settings', href: '/dashboard/settings', icon: Settings },
-    ...(isAdmin ? [
+  // Admin users see only Admin Panel, students see student portal features
+  const userMenuItems = user ? (
+    isAdmin ? [
       { label: 'Admin Panel', href: '/admin', icon: Settings }
-    ] : [])
-  ] : [];
+    ] : [
+      { label: 'Dashboard', href: '/dashboard', icon: User },
+      { label: 'My Courses', href: '/dashboard/courses', icon: BookOpen },
+      { label: 'Settings', href: '/dashboard/settings', icon: Settings }
+    ]
+  ) : [];
 
   // Close menu on Escape
   useEffect(() => {
@@ -419,37 +421,9 @@ const GlossyNavbar = () => {
                   </AnimatePresence>
                 </div>
               ) : (
-                /* Premium Auth Buttons */
-                <div className="hidden lg:flex items-center space-x-2">
-                  <Link href="/auth/login">
-                    <motion.div
-                      whileHover={{ scale: 1.05, y: -2 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="relative px-6 py-2.5 text-sm font-semibold text-gray-700 hover:text-primary-600 transition-all duration-300 cursor-pointer group bg-white/50 backdrop-blur-sm rounded-full border border-white/60 shadow-md overflow-hidden"
-                      style={{
-                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.6)'
-                      }}
-                    >
-                      <span className="relative z-10">Log in</span>
-
-                      {/* Hover gradient background */}
-                      <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-primary-50 via-secondary-50 to-primary-50 opacity-0"
-                        whileHover={{ opacity: 1 }}
-                        transition={{ duration: 0.3 }}
-                      />
-
-                      {/* Shimmer effect */}
-                      <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent opacity-0 group-hover:opacity-100"
-                        initial={{ x: '-100%' }}
-                        whileHover={{ x: '100%' }}
-                        transition={{ duration: 0.6 }}
-                      />
-                    </motion.div>
-                  </Link>
-
-                  <Link href="/auth/register">
+                /* Premium Get Started Button */
+                <div className="hidden lg:flex items-center">
+                  <Link href="/auth">
                     <motion.div
                       whileHover={{
                         scale: 1.05,
@@ -464,7 +438,7 @@ const GlossyNavbar = () => {
                       }}
                     >
                       <span className="relative z-10 flex items-center space-x-2">
-                        <span>Sign Up</span>
+                        <span>Get Started</span>
                         <motion.span
                           animate={{ x: [0, 3, 0] }}
                           transition={{ duration: 1.5, repeat: Infinity }}
@@ -656,32 +630,20 @@ const GlossyNavbar = () => {
                     </motion.button>
                   </div>
                 ) : (
-                  /* Mobile Auth Buttons */
-                  <div className="border-t border-gray-200 pt-4 space-y-3">
-                    <Link href="/auth/login" className="block">
+                  /* Mobile Get Started Button */
+                  <div className="border-t border-gray-200 pt-4">
+                    <Link href="/auth" className="block">
                       <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: navItems.length * 0.1, duration: 0.3 }}
-                        className="w-full px-4 py-3 text-center text-base font-medium text-gray-800 hover:text-primary-600 hover:bg-primary-50 rounded-xl transition-all duration-300 border border-gray-300"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        Log in
-                      </motion.div>
-                    </Link>
-                    
-                    <Link href="/auth/register" className="block">
-                      <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: (navItems.length + 1) * 0.1, duration: 0.3 }}
                         className="w-full px-4 py-3 text-center text-base font-medium text-white rounded-xl transition-all duration-300 relative overflow-hidden group"
                         style={{
-                          background: 'linear-gradient(135deg, #38a169 0%, #22c55e 50%, #22c55e 100%)',
+                          background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
                         }}
                         onClick={() => setIsMenuOpen(false)}
                       >
-                        <span className="relative z-10">Sign Up</span>
+                        <span className="relative z-10">Get Started</span>
                         <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                       </motion.div>
                     </Link>

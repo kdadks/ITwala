@@ -11,6 +11,7 @@ import { toast } from 'react-hot-toast';
 
 interface EnrolledCourse {
   id: string;
+  student_id: string | null;
   course: {
     id: string;
     title: string;
@@ -32,7 +33,7 @@ const MyCoursesPage: NextPage = () => {
 
   useEffect(() => {
     if (!user && !authLoading) {
-      router.push('/auth/login');
+      router.push('/auth');
     }
   }, [user, authLoading, router]);
 
@@ -45,6 +46,7 @@ const MyCoursesPage: NextPage = () => {
           .from('enrollments')
           .select(`
             id,
+            student_id,
             enrolled_at,
             status,
             progress,
@@ -64,6 +66,7 @@ const MyCoursesPage: NextPage = () => {
         // Transform the data to match the EnrolledCourse type
         const transformedData: EnrolledCourse[] = (data || []).map(item => ({
           id: item.id,
+          student_id: item.student_id,
           enrolled_at: item.enrolled_at,
           status: item.status,
           progress: item.progress || 0,
@@ -179,6 +182,14 @@ const MyCoursesPage: NextPage = () => {
                         <p className="text-gray-600 text-sm mb-4 line-clamp-2">
                           {enrollment.course.description}
                         </p>
+                        {enrollment.student_id && (
+                          <div className="mb-3 flex items-center">
+                            <span className="text-xs text-gray-500 mr-2">Student ID:</span>
+                            <span className="text-xs font-mono bg-primary-50 text-primary-700 px-2 py-1 rounded">
+                              {enrollment.student_id}
+                            </span>
+                          </div>
+                        )}
                         <div className="mt-4">
                           <div className="flex justify-between items-center text-sm text-gray-500 mb-2">
                             <span>Progress</span>

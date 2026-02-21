@@ -4,8 +4,6 @@ import { useRouter } from 'next/router';
 import { useUser, useSupabaseClient } from '@supabase/auth-helpers-react';
 import { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
-import AdminHeader from '@/components/admin/AdminHeader';
-import AdminSidebar from '@/components/admin/AdminSidebar';
 
 interface CourseFormData {
   title: string;
@@ -326,20 +324,14 @@ const CreateCourse: NextPage = () => {
         <meta name="description" content="Create a new course on ITwala Academy." />
       </Head>
 
-      <div className="flex h-screen bg-gray-100">
-        <AdminSidebar />
-        
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <AdminHeader />
-          
-          <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
-            <div className="max-w-4xl mx-auto">
-              <div className="mb-8">
-                <h1 className="text-2xl font-bold text-gray-900">Create New Course</h1>
-                <p className="mt-2 text-sm text-gray-600">
-                  Fill in the course details below. You can add modules and lessons after creating the course.
-                </p>
-              </div>
+      <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="mb-8">
+            <h1 className="text-2xl font-bold text-gray-900">Create New Course</h1>
+            <p className="mt-2 text-sm text-gray-600">
+              Fill in the course details below. You can add modules and lessons after creating the course.
+            </p>
+          </div>
 
               <div className="bg-white rounded-lg shadow overflow-hidden">
                 <form onSubmit={handleSubmit} className="p-6 space-y-6">
@@ -855,9 +847,7 @@ const CreateCourse: NextPage = () => {
                 </form>
               </div>
             </div>
-          </main>
-        </div>
-      </div>
+      </main>
     </>
   );
 };

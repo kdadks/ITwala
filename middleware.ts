@@ -65,7 +65,18 @@ export async function middleware(req: NextRequest) {
     console.log('User role:', userRole);
   }
 
+  // Allow access to admin login page
+  if (req.nextUrl.pathname === '/admin/login') {
+    // If already logged in as admin, redirect to admin dashboard
+    if (session && userRole === 'admin') {
+      return NextResponse.redirect(new URL('/admin', req.url));
+    }
+    // Otherwise, allow access to login page
+    return res;
+  }
+
   // Define protected routes and their allowed roles
+  // Admin should not access student portal, students should not access admin
   const protectedRoutes = {
     '/admin': ['admin'],
     '/admin/courses': ['admin'],
@@ -75,11 +86,11 @@ export async function middleware(req: NextRequest) {
     '/admin/revenue': ['admin'],
     '/admin/settings': ['admin'],
     '/admin/instructors': ['admin'],
-    '/dashboard': ['admin', 'instructor', 'user'],
-    '/dashboard/settings': ['admin', 'instructor', 'user'],
-    '/dashboard/courses': ['admin', 'instructor', 'user'],
-    '/dashboard/payments': ['admin', 'user'],
-    '/dashboard/profile': ['admin', 'instructor', 'user'],
+    '/dashboard': ['instructor', 'user', 'student'],
+    '/dashboard/settings': ['instructor', 'user', 'student'],
+    '/dashboard/courses': ['instructor', 'user', 'student'],
+    '/dashboard/payments': ['user', 'student'],
+    '/dashboard/profile': ['instructor', 'user', 'student'],
   };
 
   // Get the most specific matching route
@@ -97,10 +108,18 @@ export async function middleware(req: NextRequest) {
     console.log('Required roles:', matchedRoute[1]);
     console.log('Current user role:', userRole);
 
-    // If user is not logged in, redirect to login with return URL
+    // If user is not logged in, redirect based on route type
     if (!session) {
-      console.log('No session found, redirecting to login');
-      const redirectUrl = new URL('/auth/login', req.url);
+      console.log('No session found, redirecting...');
+
+      // Admin routes go to admin login
+      if (currentPath.startsWith('/admin')) {
+        const redirectUrl = new URL('/admin/login', req.url);
+        return NextResponse.redirect(redirectUrl);
+      }
+
+      // Other protected routes go to public auth
+      const redirectUrl = new URL('/auth', req.url);
       redirectUrl.searchParams.set('redirectTo', req.nextUrl.pathname);
       return NextResponse.redirect(redirectUrl);
     }
@@ -108,6 +127,10 @@ export async function middleware(req: NextRequest) {
     // If user's role is not allowed, redirect appropriately
     if (!matchedRoute[1].includes(userRole)) {
       console.log('Access denied: User role not allowed');
+      // Admin users go to admin panel, others go to dashboard
+      if (userRole === 'admin') {
+        return NextResponse.redirect(new URL('/admin', req.url));
+      }
       return NextResponse.redirect(new URL('/dashboard', req.url));
     }
   }

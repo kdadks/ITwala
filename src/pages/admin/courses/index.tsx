@@ -6,8 +6,6 @@ import { useRouter } from 'next/router';
 import { useUser, useSupabaseClient } from '@supabase/auth-helpers-react';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import AdminHeader from '@/components/admin/AdminHeader';
-import AdminSidebar from '@/components/admin/AdminSidebar';
 import { toast } from 'react-hot-toast';
 
 interface Category {
@@ -234,14 +232,8 @@ const AdminCourses: NextPage = () => {
         <meta name="description" content="Manage courses on ITwala Academy." />
       </Head>
 
-      <div className="flex h-screen bg-gray-100">
-        <AdminSidebar />
-        
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <AdminHeader />
-          
-          <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
-            <div className="max-w-7xl mx-auto">
+      <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
+        <div className="max-w-7xl mx-auto">
               <div className="mb-8 flex justify-between items-center">
                 <h1 className="text-2xl font-bold text-gray-900">Manage Courses</h1>
                 <Link href="/admin/courses/create">
@@ -373,9 +365,7 @@ const AdminCourses: NextPage = () => {
                 )}
               </div>
             </div>
-          </main>
-        </div>
-      </div>
+      </main>
     </>
   );
 };

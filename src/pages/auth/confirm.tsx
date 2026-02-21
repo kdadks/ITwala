@@ -24,10 +24,10 @@ export default function ConfirmEmail() {
 
         setIsConfirmed(true);
         toast.success('Email confirmed successfully!');
-        
-        // Redirect to login after a short delay
+
+        // Redirect to auth after a short delay
         setTimeout(() => {
-          router.push('/auth/login');
+          router.push('/auth');
         }, 2000);
       } catch (error: any) {
         toast.error(error.message || 'Failed to confirm email');
@@ -101,7 +101,7 @@ export default function ConfirmEmail() {
               The email confirmation link is invalid or has expired. Please try logging in again to receive a new confirmation email.
             </p>
             <button
-              onClick={() => router.push('/auth/login')}
+              onClick={() => router.push('/auth')}
               className="mt-6 w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
             >
               Return to Login

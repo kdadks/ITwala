@@ -25,7 +25,7 @@ const ForgotPassword = () => {
       });
       if (error) throw error;
       toast.success('Password reset email sent! Please check your inbox.');
-      router.push('/auth/login');
+      router.push('/auth');
     } catch (error: any) {
       toast.error(error.message || 'Failed to send reset email.');
     } finally {

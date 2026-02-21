@@ -3,8 +3,6 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
 import { useState, useEffect } from 'react';
-import AdminHeader from '@/components/admin/AdminHeader';
-import AdminSidebar from '@/components/admin/AdminSidebar';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -119,17 +117,13 @@ const CategoriesPage: NextPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <>
       <Head>
         <title>Categories - Admin Dashboard</title>
         <meta name="description" content="Manage course categories" />
       </Head>
 
-      <AdminHeader />
-      
-      <div className="flex">
-        <AdminSidebar />
-        <main className="flex-1 p-6">
+      <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
           <div className="max-w-4xl mx-auto">
             <div className="bg-white rounded-lg shadow p-6">
               <h1 className="text-2xl font-bold mb-6">Manage Categories</h1>
@@ -191,9 +185,8 @@ const CategoriesPage: NextPage = () => {
               )}
             </div>
           </div>
-        </main>
-      </div>
-    </div>
+      </main>
+    </>
   );
 };
 

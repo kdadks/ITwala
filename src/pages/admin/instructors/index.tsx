@@ -3,8 +3,6 @@ import Head from 'next/head';
 import Image from 'next/image';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
 import { useState, useEffect } from 'react';
-import AdminHeader from '@/components/admin/AdminHeader';
-import AdminSidebar from '@/components/admin/AdminSidebar';
 import { toast } from 'react-hot-toast';
 
 interface Instructor {
@@ -118,23 +116,17 @@ const InstructorsPage: NextPage = () => {
         <meta name="description" content="Manage instructors at ITwala Academy" />
       </Head>
 
-      <div className="flex h-screen bg-gray-100">
-        <AdminSidebar />
-        
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <AdminHeader />
-          
-          <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
-            <div className="max-w-7xl mx-auto">
-              <div className="mb-6 flex justify-between items-center">
-                <h1 className="text-2xl font-semibold text-gray-900">Instructors</h1>
-                <button
-                  onClick={() => setShowAddModal(true)}
-                  className="px-4 py-2 bg-primary-500 text-white rounded-md hover:bg-primary-600"
-                >
-                  Add Instructor
-                </button>
-              </div>
+      <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-6 flex justify-between items-center">
+            <h1 className="text-2xl font-semibold text-gray-900">Instructors</h1>
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="px-4 py-2 bg-primary-500 text-white rounded-md hover:bg-primary-600"
+            >
+              Add Instructor
+            </button>
+          </div>
 
               {isLoading ? (
                 <div className="flex items-center justify-center h-64">
@@ -198,9 +190,7 @@ const InstructorsPage: NextPage = () => {
                 </div>
               )}
             </div>
-          </main>
-        </div>
-      </div>
+      </main>
 
       {/* Add Instructor Modal */}
       {showAddModal && (

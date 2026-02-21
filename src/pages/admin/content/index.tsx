@@ -3,8 +3,6 @@ import { useRouter } from 'next/router';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import AdminHeader from '@/components/admin/AdminHeader';
-import AdminSidebar from '@/components/admin/AdminSidebar';
 import { toast } from 'react-hot-toast';
 import Head from 'next/head';
 
@@ -126,61 +124,49 @@ const ContentManagementPage: NextPage = () => {
   // Show loading state
   if (authLoading || (isLoading && !sections.length)) {
     return (
-      <div className="min-h-screen bg-gray-100">
+      <>
         <Head>
           <title>Content Management - Admin Dashboard</title>
           <meta name="description" content="Content management dashboard for administrators" />
         </Head>
-        <AdminHeader />
-        <div className="flex">
-          <AdminSidebar />
-          <main className="flex-1 p-6">
-            <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-500 border-t-transparent"></div>
-            </div>
-          </main>
-        </div>
-      </div>
+        <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-500 border-t-transparent"></div>
+          </div>
+        </main>
+      </>
     );
   }
 
   // Show unauthorized message
   if (!isAdmin) {
     return (
-      <div className="min-h-screen bg-gray-100">
+      <>
         <Head>
           <title>Content Management - Admin Dashboard</title>
           <meta name="description" content="Content management dashboard for administrators" />
         </Head>
-        <AdminHeader />
-        <div className="flex">
-          <AdminSidebar />
-          <main className="flex-1 p-6">
-            <div className="flex justify-center items-center h-64">
-              <div className="text-center">
-                <h1 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h1>
-                <p className="text-gray-600">You do not have permission to access this page.</p>
-              </div>
+        <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
+          <div className="flex justify-center items-center h-64">
+            <div className="text-center">
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h1>
+              <p className="text-gray-600">You do not have permission to access this page.</p>
             </div>
-          </main>
-        </div>
-      </div>
+          </div>
+        </main>
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <>
       <Head>
         <title>Content Management - Admin Dashboard</title>
         <meta name="description" content="Content management dashboard for administrators" />
       </Head>
       
-      <AdminHeader />
-      
-      <div className="flex">
-        <AdminSidebar />
-        <main className="flex-1 p-6">
-          <div className="space-y-6">
+      <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
+        <div className="space-y-6">
             <div className="bg-white rounded-lg shadow p-6">
               <h1 className="text-2xl font-bold mb-6">Content Management</h1>
               
@@ -258,9 +244,8 @@ const ContentManagementPage: NextPage = () => {
               </div>
             </div>
           </div>
-        </main>
-      </div>
-    </div>
+      </main>
+    </>
   );
 };
 

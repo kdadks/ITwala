@@ -1,13 +1,14 @@
-import { NextPage } from 'next';
-import Head from 'next/head';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import AdminDashboard from '@/components/admin/AdminDashboard';
-import { toast } from 'react-hot-toast';
+import AdminHeader from '../admin/AdminHeader';
+import AdminSidebar from '../admin/AdminSidebar';
 
-const Admin: NextPage = () => {
+interface AdminLayoutProps {
+  children: ReactNode;
+}
+
+const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const router = useRouter();
   const user = useUser();
   const supabase = useSupabaseClient();
@@ -40,14 +41,14 @@ const Admin: NextPage = () => {
         // Check for admin status in both metadata and profile
         const isMetadataAdmin = user.user_metadata?.role === 'admin';
         const isProfileAdmin = profile?.role === 'admin';
-        const isUserAdmin = isMetadataAdmin || isProfileAdmin;
+        const isAdminEmail = user.email === 'admin@itwala.com';
+        const isUserAdmin = isMetadataAdmin || isProfileAdmin || isAdminEmail;
 
         setIsAdmin(isUserAdmin);
 
         if (!isUserAdmin) {
           setError('Access denied: User is not an admin');
         }
-
       } catch (error: any) {
         console.error('Admin check error:', error);
         setError(`Error checking admin status: ${error.message}`);
@@ -59,26 +60,32 @@ const Admin: NextPage = () => {
     checkAdmin();
   }, [user, supabase]);
 
+  // Redirect to admin login if no user
   useEffect(() => {
     if (!user && !isLoading) {
-      router.push('/auth/login');
+      router.push('/admin/login');
     }
   }, [user, isLoading, router]);
 
+  // Loading state
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading admin panel...</p>
+        </div>
       </div>
     );
   }
 
+  // Access denied state
   if (!isAdmin) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
         <div className="text-center max-w-2xl p-8 bg-white rounded-lg shadow-lg">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h2>
-          <p className="text-gray-600 mb-4">You do not have permission to access this page.</p>
+          <p className="text-gray-600 mb-4">You do not have permission to access the admin panel.</p>
           {error && (
             <div className="bg-red-50 border border-red-200 rounded p-4 mb-4">
               <p className="text-red-600">{error}</p>
@@ -86,7 +93,7 @@ const Admin: NextPage = () => {
           )}
           <button
             onClick={() => router.push('/dashboard')}
-            className="mt-4 bg-primary-600 text-white px-6 py-2 rounded hover:bg-primary-700"
+            className="mt-4 bg-primary-600 text-white px-6 py-2 rounded hover:bg-primary-700 transition-colors"
           >
             Return to Dashboard
           </button>
@@ -95,22 +102,18 @@ const Admin: NextPage = () => {
     );
   }
 
+  // Admin layout
   return (
-    <>
-      <Head>
-        <title>Admin Dashboard - ITwala Academy</title>
-        <meta name="description" content="Admin dashboard for ITwala Academy" />
-      </Head>
-      <AdminDashboard />
-    </>
+    <div className="min-h-screen bg-gray-100">
+      <AdminHeader />
+      <div className="flex">
+        <AdminSidebar />
+        <main className="flex-1 p-6">
+          {children}
+        </main>
+      </div>
+    </div>
   );
 };
 
-// Disable static generation for this admin page
-export async function getServerSideProps() {
-  return {
-    props: {},
-  };
-}
-
-export default Admin;
+export default AdminLayout;

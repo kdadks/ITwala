@@ -2,8 +2,6 @@ import { NextPage } from 'next';
 import Head from 'next/head';
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
 import { useState, useEffect } from 'react';
-import AdminHeader from '@/components/admin/AdminHeader';
-import AdminSidebar from '@/components/admin/AdminSidebar';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/router';
 
@@ -15,6 +13,7 @@ interface Student {
   enrollments: {
     id: string;
     enrolled_at: string;
+    student_id: string | null;
     course: {
       id: string;
       title: string;
@@ -46,6 +45,7 @@ const StudentsPage: NextPage = () => {
           enrollments(
             id,
             enrolled_at,
+            student_id,
             status,
             progress,
             course:courses(
@@ -128,7 +128,8 @@ const StudentsPage: NextPage = () => {
   const filteredStudents = students.filter(student => {
     const matchesSearch = 
       student.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      student.email?.toLowerCase().includes(searchQuery.toLowerCase());
+      student.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      student.enrollments.some(e => e.student_id?.toLowerCase().includes(searchQuery.toLowerCase()));
 
     if (statusFilter === 'all') return matchesSearch;
     
@@ -147,14 +148,8 @@ const StudentsPage: NextPage = () => {
         <meta name="description" content="Manage students at ITwala Academy" />
       </Head>
 
-      <div className="flex h-screen bg-gray-100">
-        <AdminSidebar />
-        
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <AdminHeader />
-          
-          <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
-            <div className="max-w-7xl mx-auto">
+      <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
+        <div className="max-w-7xl mx-auto">
               <div className="mb-6">
                 <h1 className="text-2xl font-semibold text-gray-900">Students</h1>
               </div>
@@ -164,7 +159,7 @@ const StudentsPage: NextPage = () => {
                   <div className="flex-1">
                     <input
                       type="text"
-                      placeholder="Search students..."
+                      placeholder="Search by name, email, or student ID..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="w-full md:max-w-xs px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
@@ -196,6 +191,7 @@ const StudentsPage: NextPage = () => {
                         <tr>
                           <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
                           <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student ID</th>
                           <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Enrolled Courses</th>
                           <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Progress</th>
                         </tr>
@@ -209,6 +205,20 @@ const StudentsPage: NextPage = () => {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="text-sm text-gray-500">{student.email}</div>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="space-y-1">
+                                {student.enrollments.map(enrollment => (
+                                  enrollment.student_id && (
+                                    <div key={enrollment.id} className="text-sm font-mono bg-gray-100 px-2 py-1 rounded text-gray-700">
+                                      {enrollment.student_id}
+                                    </div>
+                                  )
+                                ))}
+                                {student.enrollments.length === 0 || !student.enrollments.some(e => e.student_id) && (
+                                  <span className="text-sm text-gray-400">-</span>
+                                )}
+                              </div>
                             </td>
                             <td className="px-6 py-4">
                               <div className="space-y-2">
@@ -259,9 +269,7 @@ const StudentsPage: NextPage = () => {
                 </div>
               )}
             </div>
-          </main>
-        </div>
-      </div>
+      </main>
     </>
   );
 };

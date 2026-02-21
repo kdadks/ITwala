@@ -25,6 +25,7 @@ const EnrolledCourses = () => {
           .from('enrollments')
           .select(`
             id,
+            student_id,
             enrolled_at,
             progress,
             status,
@@ -53,6 +54,7 @@ const EnrolledCourses = () => {
         const transformedCourses = enrollments?.map((enrollment: any) => ({
           ...enrollment.course,
           enrollmentId: enrollment.id,
+          studentId: enrollment.student_id,
           enrolledAt: enrollment.enrolled_at,
           progress: enrollment.progress || 0,
           status: enrollment.status
@@ -133,6 +135,9 @@ const EnrolledCourses = () => {
                 <div className="flex-1">
                   <h3 className="font-medium text-gray-900">{course.title}</h3>
                   <p className="text-sm text-gray-500">{course.category}</p>
+                  {course.studentId && (
+                    <p className="text-xs font-mono text-primary-600 mt-1">ID: {course.studentId}</p>
+                  )}
                   <div className="mt-2">
                     <div className="flex items-center justify-between text-sm text-gray-500">
                       <span>Progress</span>

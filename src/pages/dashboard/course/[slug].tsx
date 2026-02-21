@@ -24,7 +24,7 @@ const CoursePage: NextPage<CoursePageProps> = ({ course }) => {
 
   useEffect(() => {
     if (!user && !isLoading) {
-      router.push('/auth/login');
+      router.push('/auth');
     }
   }, [user, isLoading, router]);
 

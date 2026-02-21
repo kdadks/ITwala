@@ -3,8 +3,6 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
 import { useState, useEffect, useMemo } from 'react';
-import AdminHeader from '@/components/admin/AdminHeader';
-import AdminSidebar from '@/components/admin/AdminSidebar';
 import { toast } from 'react-hot-toast';
 
 interface AnalyticsData {
@@ -376,18 +374,14 @@ const AnalyticsPage: NextPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <>
       <Head>
         <title>Analytics Dashboard - Admin</title>
         <meta name="description" content="Enterprise analytics dashboard" />
       </Head>
 
-      <AdminHeader />
-      
-      <div className="flex">
-        <AdminSidebar />
-        <main className="flex-1 p-6">
-          <div className="max-w-7xl mx-auto">
+      <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
+        <div className="max-w-7xl mx-auto">
             {/* Header Section */}
             <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -1090,9 +1084,8 @@ const AnalyticsPage: NextPage = () => {
               </div>
             )}
           </div>
-        </main>
-      </div>
-    </div>
+      </main>
+    </>
   );
 };
 

@@ -53,7 +53,7 @@ const Settings: NextPage = () => {
 
   useEffect(() => {
     if (!user && !isLoading) {
-      router.push('/auth/login');
+      router.push('/auth');
     }
   }, [user, isLoading, router]);
 

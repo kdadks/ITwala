@@ -4,8 +4,6 @@ import { useRouter } from 'next/router';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import AdminHeader from '@/components/admin/AdminHeader';
-import AdminSidebar from '@/components/admin/AdminSidebar';
 import { toast } from 'react-hot-toast';
 import { motion } from 'framer-motion';
 import { setupSiteSettings, getSiteSettings, updateSiteSettings } from '@/utils/siteSettings';
@@ -158,33 +156,29 @@ const AdminSettings: NextPage = () => {
 
   if (isLoading || authLoading) {
     return (
-      <div className="min-h-screen bg-gray-100">
-        <AdminHeader />
-        <div className="flex">
-          <AdminSidebar />
-          <main className="flex-1 p-6">
-            <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-500 border-t-transparent"></div>
-            </div>
-          </main>
-        </div>
-      </div>
+      <>
+        <Head>
+          <title>Admin Settings - ITwala Academy</title>
+          <meta name="description" content="Configure admin settings for ITwala Academy" />
+        </Head>
+        <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-500 border-t-transparent"></div>
+          </div>
+        </main>
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <>
       <Head>
         <title>Admin Settings - ITwala Academy</title>
         <meta name="description" content="Configure admin settings for ITwala Academy" />
       </Head>
 
-      <AdminHeader />
-      
-      <div className="flex">
-        <AdminSidebar />
-        <main className="flex-1 p-6">
-          <div className="max-w-4xl mx-auto space-y-6">
+      <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
+        <div className="max-w-4xl mx-auto space-y-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -344,9 +338,8 @@ const AdminSettings: NextPage = () => {
               </div>
             </motion.div>
           </div>
-        </main>
-      </div>
-    </div>
+      </main>
+    </>
   );
 };
 

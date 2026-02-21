@@ -4,8 +4,6 @@ import { useRouter } from 'next/router';
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import AdminHeader from '@/components/admin/AdminHeader';
-import AdminSidebar from '@/components/admin/AdminSidebar';
 import InvoiceGenerator from '@/components/admin/InvoiceGenerator';
 import { toast } from 'react-hot-toast';
 
@@ -77,32 +75,27 @@ const AdminInvoices: NextPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <>
       <Head>
         <title>Invoice Generator - ITwala Academy Admin</title>
         <meta name="description" content="Generate and manage invoices for ITwala Academy" />
       </Head>
 
-      <AdminHeader />
-      
-      <div className="flex">
-        <AdminSidebar />
-        <main className="flex-1 p-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Invoice Generator</h1>
-              <p className="text-gray-600">Create professional invoices for course enrollments and payments</p>
-            </div>
+      <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Invoice Generator</h1>
+            <p className="text-gray-600">Create professional invoices for course enrollments and payments</p>
+          </div>
 
-            <InvoiceGenerator />
-          </motion.div>
-        </main>
-      </div>
-    </div>
+          <InvoiceGenerator />
+        </motion.div>
+      </main>
+    </>
   );
 };
 

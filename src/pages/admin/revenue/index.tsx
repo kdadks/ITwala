@@ -2,8 +2,6 @@ import { NextPage } from 'next';
 import Head from 'next/head';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
 import { useState, useEffect } from 'react';
-import AdminHeader from '@/components/admin/AdminHeader';
-import AdminSidebar from '@/components/admin/AdminSidebar';
 import { toast } from 'react-hot-toast';
 
 interface Payment {
@@ -141,14 +139,8 @@ const RevenuePage: NextPage = () => {
         <meta name="description" content="Track revenue and payment history" />
       </Head>
 
-      <div className="flex h-screen bg-gray-100">
-        <AdminSidebar />
-        
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <AdminHeader />
-          
-          <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
-            <div className="max-w-7xl mx-auto">
+      <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
+        <div className="max-w-7xl mx-auto">
               <h1 className="text-2xl font-semibold text-gray-900 mb-6">Revenue Overview</h1>
 
               {/* Stats Cards */}
@@ -267,9 +259,7 @@ const RevenuePage: NextPage = () => {
                 </div>
               )}
             </div>
-          </main>
-        </div>
-      </div>
+      </main>
     </>
   );
 };

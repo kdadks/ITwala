@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { createPagesServerClient } from '@supabase/auth-helpers-nextjs';
 import { supabaseAdmin } from '@/lib/supabaseClient';
 import { createTransport } from 'nodemailer';
+import { getCountryIsoCode, getStateIsoCode } from '@/utils/locationData';
 
 export default async function handler(
   req: NextApiRequest,
@@ -123,7 +124,54 @@ export default async function handler(
       }
     }
 
-    // Create enrollment record
+    // Get country and state for student ID generation
+    let countryName = 'India';
+    let stateName = '';
+    
+    if (directEnrollment && profileData) {
+      countryName = profileData.country || 'India';
+      stateName = profileData.state || '';
+    } else if (userDetails) {
+      countryName = userDetails.country || 'India';
+      stateName = userDetails.state || '';
+    }
+
+    // Get ISO codes for student ID
+    const countryCode = getCountryIsoCode(countryName);
+    const stateCode = getStateIsoCode(stateName, countryCode);
+
+    // Generate student ID using database function
+    let studentId = null;
+    try {
+      const { data: studentIdResult, error: studentIdError } = await supabase.rpc('generate_student_id', {
+        country_code: countryCode,
+        state_code: stateCode
+      });
+
+      if (studentIdError) {
+        console.error('Error generating student ID:', studentIdError);
+        // Generate a fallback student ID if database function fails
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const random = String(Math.floor(Math.random() * 9999) + 1).padStart(4, '0');
+        studentId = `${countryCode}-${stateCode}-${year}-${month}-${random}`;
+      } else {
+        studentId = studentIdResult;
+      }
+    } catch (rpcError) {
+      console.error('RPC error generating student ID:', rpcError);
+      // Generate a fallback student ID
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const random = String(Math.floor(Math.random() * 9999) + 1).padStart(4, '0');
+      studentId = `${countryCode}-${stateCode}-${year}-${month}-${random}`;
+    }
+
+    console.log('Generated student ID:', studentId);
+
+    // Create enrollment record with student ID
     const { data: enrollment, error: enrollmentError } = await supabase
       .from('enrollments')
       .insert({
@@ -131,7 +179,8 @@ export default async function handler(
         course_id: courseId,
         status: 'active',
         progress: 0,
-        enrolled_at: new Date().toISOString()
+        enrolled_at: new Date().toISOString(),
+        student_id: studentId
       })
       .select()
       .single();
@@ -208,10 +257,13 @@ export default async function handler(
         subject: `New Course Enrollment: ${course.title}`,
         html: `
           <h2>New Course Enrollment</h2>
+          <p><strong>Student ID:</strong> ${studentId}</p>
           <p><strong>Course:</strong> ${course.title}</p>
           <p><strong>Student Name:</strong> ${studentName}</p>
           <p><strong>Student Email:</strong> ${studentEmail}</p>
           <p><strong>Student Phone:</strong> ${studentPhone || 'Not provided'}</p>
+          <p><strong>Country:</strong> ${countryName}</p>
+          <p><strong>State:</strong> ${stateName || 'Not provided'}</p>
           <p><strong>Course Price:</strong> ₹${course.price}</p>
           <p><strong>Enrollment Date:</strong> ${new Date().toLocaleString()}</p>
         `,
@@ -227,6 +279,8 @@ export default async function handler(
           <h2>Enrollment Confirmation</h2>
           <p>Dear ${studentName},</p>
           <p>Thank you for enrolling in <strong>${course.title}</strong>.</p>
+          <p><strong>Your Student ID: ${studentId}</strong></p>
+          <p><em>Please save this Student ID for future reference.</em></p>
           ${directEnrollment ? '<p><em>You have been enrolled using your existing profile information for a faster enrollment process.</em></p>' : ''}
           <p>${course.description}</p>
           <p>Our team will contact you shortly with further details about the course schedule and payment options.</p>
@@ -254,6 +308,7 @@ export default async function handler(
     return res.status(200).json({
       message: 'Successfully enrolled in the course',
       enrollment,
+      studentId: studentId,
       userRole: updatedProfile?.role || 'student',
       course: {
         id: course.id,

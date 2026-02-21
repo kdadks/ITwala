@@ -18,7 +18,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { user, isAdmin, isLoading, hasPermission } = useAuth();
 
   // Check route types
-  const isAdminRoute = router.pathname.startsWith('/admin');
   const isDashboardRoute = router.pathname.startsWith('/dashboard');
   const isAuthRoute = router.pathname.startsWith('/auth');
 
@@ -29,37 +28,20 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   // Track page views on route change
   useEffect(() => {
-    // Don't track admin or auth routes
-    if (isAdminRoute || isAuthRoute) return;
+    // Don't track auth routes
+    if (isAuthRoute) return;
 
     // Track the page view
     trackPageView(supabase);
-  }, [router.pathname, isAdminRoute, isAuthRoute, supabase]);
+  }, [router.pathname, isAuthRoute, supabase]);
 
-  // Show loading state while checking auth
-  if (isLoading && (isAdminRoute || isDashboardRoute)) {
+  // Show loading state while checking auth for protected routes
+  if (isLoading && isDashboardRoute) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
       </div>
     );
-  }
-
-  // Show access denied for unauthorized users trying to access admin routes
-  if (isAdminRoute && user && !hasPermission(['admin'])) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h1>
-          <p className="text-gray-600">You do not have permission to access this page.</p>
-        </div>
-      </div>
-    );
-  }
-
-  // If on admin route and authorized, render without Navbar and Footer
-  if (isAdminRoute) {
-    return <>{children}</>;
   }
 
   return (
@@ -77,7 +59,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       {!isAuthRoute && !isDashboardRoute && <Footer />}
 
       {/* Cookie Consent Banner - Show on all public pages */}
-      {!isAdminRoute && !isAuthRoute && <CookieConsent />}
+      {!isAuthRoute && <CookieConsent />}
     </div>
   );
 };
