@@ -4,6 +4,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
+import { useUser } from '@supabase/auth-helpers-react';
 import CourseBanner from '../../components/courses/CourseBanner';
 import CourseContent from '../../components/courses/CourseContent';
 import CourseReviews from '../../components/courses/CourseReviews';
@@ -18,7 +19,8 @@ import { toast } from 'react-hot-toast';
 const CoursePage: NextPage = () => {
   const router = useRouter();
   const { slug } = router.query;
-  
+  const user = useUser();
+
   const [course, setCourse] = useState<Course | null>(null);
   const [relatedCourses, setRelatedCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
@@ -125,11 +127,29 @@ const CoursePage: NextPage = () => {
   };
 
   const handleEnrollClick = () => {
-    if (enrollmentsEnabled) {
-      setIsEnrollmentModalOpen(true);
-    } else {
+    if (!enrollmentsEnabled) {
       toast.error('Enrollment is currently disabled. Please try again later.');
+      return;
     }
+
+    // Check if user is logged in
+    if (!user) {
+      // Store enrollment intent in localStorage
+      if (course) {
+        localStorage.setItem('enrollmentIntent', JSON.stringify({
+          courseId: course.id,
+          courseTitle: course.title,
+          redirectPath: `/courses/${slug}`
+        }));
+      }
+
+      toast.error('Please log in or sign up to enroll in this course');
+      router.push('/auth?redirect=enrollment');
+      return;
+    }
+
+    // User is logged in, open enrollment modal
+    setIsEnrollmentModalOpen(true);
   };
 
   if (loading || isCheckingSettings) {

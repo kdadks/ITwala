@@ -12,6 +12,9 @@ interface Profile {
   bio?: string;
   created_at: string;
   phone?: string;
+  student_id?: string | null;
+  date_of_birth?: string | null;
+  parent_name?: string | null;
 }
 
 interface UseAuthReturn {

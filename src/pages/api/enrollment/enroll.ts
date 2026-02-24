@@ -107,6 +107,7 @@ export default async function handler(
           profile_updates: {
             full_name: userDetails.name || session.user.user_metadata?.full_name || '',
             phone: userDetails.phone || '',
+            date_of_birth: userDetails.dateOfBirth || '',
             address: fullAddress,
             address_line1: userDetails.addressLine1 || '',
             address_line2: userDetails.addressLine2 || '',

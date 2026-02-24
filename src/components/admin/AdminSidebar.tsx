@@ -10,6 +10,8 @@ const AdminSidebar = () => {
     { href: '/admin/courses', label: 'Courses', icon: '📚', tooltip: 'Manage courses and curriculum' },
     { href: '/admin/students', label: 'Students', icon: '👥', tooltip: 'View and manage students' },
     { href: '/admin/instructors', label: 'Instructors', icon: '👨‍🏫', tooltip: 'Manage course instructors' },
+    { href: '/admin/progress', label: 'Progress', icon: '📋', tooltip: 'Manage student progress' },
+    { href: '/admin/attendance', label: 'Attendance', icon: '✓', tooltip: 'Mark student attendance' },
     { href: '/admin/content', label: 'Content', icon: '📝', tooltip: 'Manage website content' },
     { href: '/admin/categories', label: 'Categories', icon: '🏷️', tooltip: 'Manage course categories' },
     { href: '/admin/invoices', label: 'Invoices', icon: '🧾', tooltip: 'Generate and manage invoices' },

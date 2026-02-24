@@ -11,6 +11,7 @@ import UpcomingSessions from '@/components/dashboard/UpcomingSessions';
 import RecommendedCourses from '@/components/dashboard/RecommendedCourses';
 import Achievements from '@/components/dashboard/Achievements';
 import RecentActivity from '@/components/dashboard/RecentActivity';
+import AttendanceCard from '@/components/dashboard/AttendanceCard';
 
 const Dashboard: NextPage = () => {
   const router = useRouter();
@@ -40,7 +41,8 @@ const Dashboard: NextPage = () => {
       <main className="bg-gray-50 min-h-screen pb-12">
         <DashboardHeader userData={{
           name: profile?.full_name || user?.user_metadata?.full_name || 'Student',
-          email: user?.email
+          email: user?.email,
+          studentId: profile?.student_id
         }} />
         
         <div className="container mx-auto px-4 py-8">
@@ -70,20 +72,28 @@ const Dashboard: NextPage = () => {
                 <RecentActivity />
               </motion.div>
             </div>
-            
+
             <div className="space-y-8">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3, duration: 0.5 }}
               >
-                <Achievements />
+                <AttendanceCard />
               </motion.div>
-              
+
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4, duration: 0.5 }}
+              >
+                <Achievements />
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.5 }}
               >
                 <RecommendedCourses />
               </motion.div>

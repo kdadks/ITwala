@@ -1,7 +1,7 @@
 import { NextPage, GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useUser } from '@supabase/auth-helpers-react';
+import { useUser, useSupabaseClient } from '@supabase/auth-helpers-react';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Course } from '@/types/course';
@@ -17,6 +17,7 @@ interface CoursePageProps {
 const CoursePage: NextPage<CoursePageProps> = ({ course }) => {
   const router = useRouter();
   const user = useUser();
+  const supabase = useSupabaseClient();
   const [isLoading, setIsLoading] = useState(true);
   const [currentModule, setCurrentModule] = useState(0);
   const [currentLesson, setCurrentLesson] = useState(0);
@@ -29,33 +30,89 @@ const CoursePage: NextPage<CoursePageProps> = ({ course }) => {
   }, [user, isLoading, router]);
 
   useEffect(() => {
-    // In a real app, you would fetch the user's progress from your database
-    // This is just mock data for demonstration
-    const mockProgress: Record<string, boolean> = {};
-    let totalLessons = 0;
-    let completed = 0;
-    
-    course.modules.forEach((module: any, mIndex: number) => {
-      module.lessons.forEach((lesson: any, lIndex: number) => {
-        const key = `${mIndex}-${lIndex}`;
-        totalLessons++;
-        // Randomly mark some lessons as completed for demo purposes
-        const isCompleted = Math.random() > 0.6;
-        mockProgress[key] = isCompleted;
-        if (isCompleted) completed++;
-      });
-    });
-    
-    setProgress(mockProgress);
-    setIsLoading(false);
-  }, [course]);
+    const fetchProgress = async () => {
+      if (!user) {
+        setIsLoading(false);
+        return;
+      }
 
-  const markLessonComplete = (moduleIndex: number, lessonIndex: number) => {
+      try {
+        // Fetch actual progress from database
+        const { data: progressData, error } = await supabase
+          .from('progress')
+          .select('lesson_id, completed, class_number')
+          .eq('user_id', user.id)
+          .eq('course_id', course.id);
+
+        if (error) {
+          console.error('Error fetching progress:', error);
+          setProgress({});
+          setIsLoading(false);
+          return;
+        }
+
+        // Transform database progress to the format expected by the UI
+        const progressMap: Record<string, boolean> = {};
+
+        if (progressData && progressData.length > 0) {
+          course.modules.forEach((module: any, mIndex: number) => {
+            module.lessons.forEach((lesson: any, lIndex: number) => {
+              const key = `${mIndex}-${lIndex}`;
+              // Check if this lesson is completed in the database
+              const lessonProgress = progressData.find(
+                p => p.lesson_id === lesson.id || p.class_number === (lIndex + 1)
+              );
+              progressMap[key] = lessonProgress?.completed || false;
+            });
+          });
+        }
+
+        setProgress(progressMap);
+      } catch (error) {
+        console.error('Error loading progress:', error);
+        setProgress({});
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProgress();
+  }, [course, user]);
+
+  const markLessonComplete = async (moduleIndex: number, lessonIndex: number) => {
     const key = `${moduleIndex}-${lessonIndex}`;
-    setProgress((prev) => ({
-      ...prev,
-      [key]: true,
-    }));
+    const lesson = course.modules[moduleIndex]?.lessons[lessonIndex];
+
+    if (!lesson || !user) return;
+
+    try {
+      // Update progress in database
+      const { error } = await supabase
+        .from('progress')
+        .upsert({
+          user_id: user.id,
+          course_id: course.id,
+          lesson_id: lesson.id,
+          class_number: lessonIndex + 1,
+          completed: true,
+          completed_at: new Date().toISOString(),
+        }, {
+          onConflict: 'user_id,course_id,lesson_id'
+        });
+
+      if (error) {
+        console.error('Error marking lesson complete:', error);
+        return;
+      }
+
+      // Update local state
+      setProgress((prev) => ({
+        ...prev,
+        [key]: true,
+      }));
+    } catch (error) {
+      console.error('Error updating progress:', error);
+    }
   };
 
   const handleLessonSelect = (moduleIndex: number, lessonIndex: number) => {

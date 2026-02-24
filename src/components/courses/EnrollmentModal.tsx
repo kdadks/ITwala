@@ -40,6 +40,7 @@ const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ isOpen, onClose, cour
     name: '',
     email: '',
     phone: '',
+    dateOfBirth: '',
     addressLine1: '',
     addressLine2: '',
     state: '',
@@ -242,6 +243,7 @@ const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ isOpen, onClose, cour
             name: formData.name,
             email: formData.email,
             phone: formData.phone,
+            dateOfBirth: formData.dateOfBirth,
             addressLine1: formData.addressLine1,
             addressLine2: formData.addressLine2,
             state: formData.state,
@@ -383,6 +385,8 @@ const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ isOpen, onClose, cour
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                    title="Please enter a valid email address"
                     required
                     disabled={isLoading}
                   />
@@ -403,6 +407,24 @@ const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ isOpen, onClose, cour
                   />
                 </div>
 
+                <div>
+                  <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700">
+                    Date of Birth (DD/MM/YYYY)
+                  </label>
+                  <input
+                    type="text"
+                    id="dateOfBirth"
+                    value={formData.dateOfBirth}
+                    onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    placeholder="DD/MM/YYYY"
+                    pattern="\d{2}/\d{2}/\d{4}"
+                    title="Please enter date in DD/MM/YYYY format (e.g., 15/08/2000)"
+                    disabled={isLoading}
+                  />
+                  <p className="mt-1 text-xs text-gray-500">Format: DD/MM/YYYY (e.g., 15/08/2000)</p>
+                </div>
+
                 <div className="space-y-4 border rounded-lg p-4">
                   <h3 className="font-medium text-gray-900">Address Details</h3>
                   
@@ -416,7 +438,6 @@ const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ isOpen, onClose, cour
                       value={formData.addressLine1}
                       onChange={(e) => setFormData({ ...formData, addressLine1: e.target.value })}
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                      required
                       disabled={isLoading}
                     />
                   </div>
@@ -530,7 +551,6 @@ const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ isOpen, onClose, cour
                       maxLength={selectedCountryCode === 'IN' ? 6 : 20}
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                       placeholder={selectedCountryCode === 'IN' ? '6-digit pincode' : 'Enter postal code'}
-                      required
                       disabled={isLoading}
                     />
                   </div>
@@ -555,6 +575,7 @@ const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ isOpen, onClose, cour
                     <option value="bachelors">Bachelor's Degree</option>
                     <option value="masters">Master's Degree</option>
                     <option value="phd">Ph.D.</option>
+                    <option value="other">Other</option>
                   </select>
                 </div>
 

@@ -4,26 +4,61 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import RatingComponent from '../RatingComponent';
+import { getCountryFromCookie, detectCountryFromIP, getCoursePrice, setCountryInCookie } from '@/utils/countryDetection';
+
+interface CoursePricing {
+  price: number;
+  originalPrice: number | null;
+  currency: string;
+  symbol: string;
+}
 
 const RecommendedCourses = () => {
   const [recommendedCourses, setRecommendedCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [userCountry, setUserCountry] = useState<string>('IN');
+  const [coursePricing, setCoursePricing] = useState<Record<string, CoursePricing>>({});
+
+  useEffect(() => {
+    const initCountry = async () => {
+      let country = getCountryFromCookie();
+      if (!country || country === 'IN') {
+        country = await detectCountryFromIP();
+        setCountryInCookie(country);
+      }
+      setUserCountry(country);
+    };
+    initCountry();
+  }, []);
 
   useEffect(() => {
     const fetchRecommendedCourses = async () => {
       try {
         setLoading(true);
         setError(null);
-        
+
         // Fetch popular courses as recommendations
         const response = await fetch('/api/courses?sortBy=popular&limit=2');
         if (!response.ok) {
           throw new Error('Failed to load recommended courses');
         }
-        
+
         const data = await response.json();
         setRecommendedCourses(data.courses || []);
+
+        // Fetch pricing for each course
+        const pricingPromises = (data.courses || []).map(async (course: Course) => {
+          const pricing = await getCoursePrice(course.id, userCountry);
+          return { courseId: course.id, pricing };
+        });
+
+        const pricingResults = await Promise.all(pricingPromises);
+        const pricingMap: Record<string, CoursePricing> = {};
+        pricingResults.forEach(({ courseId, pricing }) => {
+          pricingMap[courseId] = pricing;
+        });
+        setCoursePricing(pricingMap);
       } catch (err) {
         console.error('Error fetching recommended courses:', err);
         setError(err instanceof Error ? err.message : 'Failed to load courses');
@@ -32,8 +67,10 @@ const RecommendedCourses = () => {
       }
     };
 
-    fetchRecommendedCourses();
-  }, []);
+    if (userCountry) {
+      fetchRecommendedCourses();
+    }
+  }, [userCountry]);
 
   if (loading) {
     return (
@@ -106,9 +143,22 @@ const RecommendedCourses = () => {
                     <div className="space-y-2">
                       <RatingComponent rating={course.rating || 0} />
                       <div className="flex justify-end">
-                        <span className="text-primary-600 font-semibold">
-                          ₹{course.price.toLocaleString()}
-                        </span>
+                        {coursePricing[course.id] ? (
+                          <div className="flex items-center gap-2">
+                            {coursePricing[course.id].originalPrice && (
+                              <span className="text-gray-400 line-through text-sm">
+                                {coursePricing[course.id].symbol}{(coursePricing[course.id].originalPrice / 100).toLocaleString()}
+                              </span>
+                            )}
+                            <span className="text-primary-600 font-semibold">
+                              {coursePricing[course.id].symbol}{(coursePricing[course.id].price / 100).toLocaleString()}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="text-primary-600 font-semibold">
+                            ₹{course.price.toLocaleString()}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>

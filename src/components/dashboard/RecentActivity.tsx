@@ -24,13 +24,13 @@ const RecentActivity = () => {
       try {
         const activityItems: ActivityItem[] = [];
 
-        // Fetch recent enrollments with safer query
+        // Fetch recent enrollments with course titles
         const { data: enrollments, error: enrollmentsError } = await supabase
           .from('enrollments')
           .select(`
             id,
             enrolled_at,
-            course_id
+            course:courses(title)
           `)
           .eq('user_id', user.id)
           .order('enrolled_at', { ascending: false })
@@ -42,10 +42,11 @@ const RecentActivity = () => {
 
         if (enrollments) {
           enrollments.forEach((enrollment: any) => {
+            const courseTitle = enrollment.course?.title || 'Unknown Course';
             activityItems.push({
               id: enrollment.id,
               type: 'course_enrolled',
-              course: `Course ${enrollment.course_id || 'Unknown'}`,
+              course: courseTitle,
               timestamp: formatTimestamp(enrollment.enrolled_at),
               created_at: enrollment.enrolled_at
             });
@@ -58,8 +59,8 @@ const RecentActivity = () => {
           .select(`
             id,
             completed_at,
-            course_id,
-            lesson_id
+            lesson_id,
+            course:courses(title)
           `)
           .eq('user_id', user.id)
           .eq('completed', true)
@@ -74,10 +75,11 @@ const RecentActivity = () => {
         if (progress) {
           progress.forEach((prog: any) => {
             if (prog.completed_at) {
+              const courseTitle = prog.course?.title || 'Unknown Course';
               activityItems.push({
                 id: prog.id,
                 type: 'lesson_completed',
-                course: `Course ${prog.course_id || 'Unknown'}`,
+                course: courseTitle,
                 lesson: `Lesson ${prog.lesson_id || 'Unknown'}`,
                 timestamp: formatTimestamp(prog.completed_at),
                 created_at: prog.completed_at
@@ -92,7 +94,7 @@ const RecentActivity = () => {
           .select(`
             id,
             created_at,
-            course_id
+            course:courses(title)
           `)
           .eq('user_id', user.id)
           .order('created_at', { ascending: false })
@@ -104,10 +106,11 @@ const RecentActivity = () => {
 
         if (reviews) {
           reviews.forEach((review: any) => {
+            const courseTitle = review.course?.title || 'Unknown Course';
             activityItems.push({
               id: review.id,
               type: 'course_reviewed',
-              course: `Course ${review.course_id || 'Unknown'}`,
+              course: courseTitle,
               timestamp: formatTimestamp(review.created_at),
               created_at: review.created_at
             });

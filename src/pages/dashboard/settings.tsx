@@ -2,10 +2,11 @@ import { NextPage } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useUser, useSupabaseClient } from '@supabase/auth-helpers-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
+import { countries, getStatesByCountry, getCountryIsoCode } from '@/utils/locationData';
 
 interface ProfileFormData {
   fullName: string;
@@ -37,19 +38,17 @@ const Settings: NextPage = () => {
   const [activeTab, setActiveTab] = useState('profile');
   const [isUpdating, setIsUpdating] = useState(false);
   
-  const { register: registerProfile, handleSubmit: handleSubmitProfile, reset: resetProfile, formState: { errors: profileErrors } } = useForm<ProfileFormData>();
+  const { register: registerProfile, handleSubmit: handleSubmitProfile, reset: resetProfile, watch: watchProfile, setValue: setValueProfile, formState: { errors: profileErrors } } = useForm<ProfileFormData>();
   const { register: registerPassword, handleSubmit: handleSubmitPassword, reset: resetPassword, watch, formState: { errors: passwordErrors } } = useForm<PasswordFormData>();
-  
-  const newPassword = watch('newPassword', '');
 
-  // Indian states list
-  const indianStates = [
-    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", 
-    "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", 
-    "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", 
-    "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", 
-    "West Bengal"
-  ];
+  const newPassword = watch('newPassword', '');
+  const selectedCountry = watchProfile('country', 'India');
+
+  // Get states for selected country
+  const availableStates = useMemo(() => {
+    const countryCode = getCountryIsoCode(selectedCountry);
+    return getStatesByCountry(countryCode);
+  }, [selectedCountry]);
 
   useEffect(() => {
     if (!user && !isLoading) {
@@ -350,27 +349,35 @@ const Settings: NextPage = () => {
                           </div>
                           
                           <div>
-                            <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-1">State</label>
+                            <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                            <select
+                              id="country"
+                              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                              {...registerProfile('country', {
+                                onChange: (e) => {
+                                  // Reset state when country changes
+                                  setValueProfile('state', '');
+                                }
+                              })}
+                            >
+                              {countries.map(country => (
+                                <option key={country.isoCode} value={country.name}>{country.name}</option>
+                              ))}
+                            </select>
+                          </div>
+
+                          <div>
+                            <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-1">State / Province / Region</label>
                             <select
                               id="state"
                               className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                               {...registerProfile('state')}
                             >
                               <option value="">Select State</option>
-                              {indianStates.map(state => (
-                                <option key={state} value={state}>{state}</option>
+                              {availableStates.map(state => (
+                                <option key={state.isoCode} value={state.name}>{state.name}</option>
                               ))}
                             </select>
-                          </div>
-                          
-                          <div>
-                            <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-1">Country</label>
-                            <input
-                              type="text"
-                              id="country"
-                              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                              {...registerProfile('country')}
-                            />
                           </div>
                           
                           <div>
@@ -388,55 +395,6 @@ const Settings: NextPage = () => {
                         </div>
                       </div>
 
-                      {/* Educational Information */}
-                      <div>
-                        <h3 className="text-lg font-medium text-gray-900 mb-4">Educational Information</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <label htmlFor="highestQualification" className="block text-sm font-medium text-gray-700 mb-1">Highest Qualification</label>
-                            <select
-                              id="highestQualification"
-                              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                              {...registerProfile('highestQualification')}
-                            >
-                              <option value="">Select qualification</option>
-                              <option value="10th">10th</option>
-                              <option value="12th">12th</option>
-                              <option value="diploma">Diploma</option>
-                              <option value="bachelors">Bachelor's Degree</option>
-                              <option value="masters">Master's Degree</option>
-                              <option value="phd">Ph.D.</option>
-                            </select>
-                          </div>
-                          
-                          <div>
-                            <label htmlFor="degreeName" className="block text-sm font-medium text-gray-700 mb-1">Degree Name</label>
-                            <input
-                              type="text"
-                              id="degreeName"
-                              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                              placeholder="e.g., Computer Science, MBA"
-                              {...registerProfile('degreeName')}
-                            />
-                          </div>
-                        </div>
-                        
-                        <div className="mt-4">
-                          <div className="flex items-center">
-                            <input
-                              id="hasLaptop"
-                              type="checkbox"
-                              className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                              {...registerProfile('hasLaptop')}
-                            />
-                            <label htmlFor="hasLaptop" className="ml-3 text-sm font-medium text-gray-700">
-                              I have access to a laptop
-                            </label>
-                          </div>
-                          <p className="mt-1 text-sm text-gray-500">This helps us understand your learning setup for technical courses.</p>
-                        </div>
-                      </div>
-                      
                       <div>
                         <button
                           type="submit"

@@ -2,9 +2,9 @@ import { NextPage } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useSupabaseClient } from '@supabase/auth-helpers-react';
+import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
 import { useForm } from 'react-hook-form';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
@@ -27,9 +27,11 @@ interface RegisterFormData {
 
 const AuthPage: NextPage = () => {
   const supabaseClient = useSupabaseClient();
+  const user = useUser();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
   const [isLoading, setIsLoading] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   // Login form
   const {
@@ -47,6 +49,30 @@ const AuthPage: NextPage = () => {
   } = useForm<RegisterFormData>();
 
   const password = watch('password', '');
+
+  // Check if user is already logged in and redirect
+  useEffect(() => {
+    const checkAuth = async () => {
+      if (user) {
+        // User is already logged in, redirect to dashboard or admin
+        const { data: profile } = await supabaseClient
+          .from('profiles')
+          .select('role, email')
+          .eq('id', user.id)
+          .single();
+
+        if (profile?.role === 'admin' || user.email === 'admin@itwala.com') {
+          router.push('/admin');
+        } else {
+          router.push('/dashboard');
+        }
+      } else {
+        setIsCheckingAuth(false);
+      }
+    };
+
+    checkAuth();
+  }, [user, router, supabaseClient]);
 
   // Login handler
   const onLoginSubmit = async (data: LoginFormData) => {
@@ -76,6 +102,9 @@ const AuthPage: NextPage = () => {
       if (!signInError && signInData?.user) {
         console.log('Login successful for user:', signInData.user.email);
         toast.success('Logged in successfully!');
+
+        // Set checking auth to true to show loading and prevent modal flash
+        setIsCheckingAuth(true);
 
         // Check for enrollment intent
         const enrollmentIntent = localStorage.getItem('enrollmentIntent');
@@ -243,6 +272,18 @@ const AuthPage: NextPage = () => {
       setIsLoading(false);
     }
   };
+
+  // Show loading state while checking authentication
+  if (isCheckingAuth) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

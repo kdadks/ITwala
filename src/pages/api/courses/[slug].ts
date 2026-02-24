@@ -42,7 +42,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         schedule,
         language,
         certification_included,
-        fees_discussed_post_enrollment
+        fees_discussed_post_enrollment,
+        modules
       `)
       .eq('slug', slug)
       .eq('status', 'published')
@@ -84,7 +85,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       schedule: course.schedule,
       language: course.language,
       certificationIncluded: course.certification_included,
-      feesDiscussedPostEnrollment: course.fees_discussed_post_enrollment
+      feesDiscussedPostEnrollment: course.fees_discussed_post_enrollment,
+      modules: course.modules || []
     };
 
     res.status(200).json({ course: transformedCourse });

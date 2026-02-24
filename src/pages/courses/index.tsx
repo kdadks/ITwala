@@ -7,6 +7,14 @@ import CourseGrid from '../../components/courses/CourseGrid';
 import BacklinkingHub from '@/components/seo/BacklinkingHub';
 import { motion } from 'framer-motion';
 import { Course } from '@/types/course';
+import { getCountryFromCookie, detectCountryFromIP, getCoursePrice, setCountryInCookie } from '@/utils/countryDetection';
+
+interface CoursePricing {
+  price: number;
+  originalPrice: number | null;
+  currency: string;
+  symbol: string;
+}
 
 const CoursesPage: NextPage = () => {
   const router = useRouter();
@@ -23,13 +31,29 @@ const CoursesPage: NextPage = () => {
   const [levels, setLevels] = useState<string[]>([]);
   const [suggestions, setSuggestions] = useState<Course[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [userCountry, setUserCountry] = useState<string>('IN');
+  const [coursePricing, setCoursePricing] = useState<Record<string, CoursePricing>>({});
+  const [suggestionPricing, setSuggestionPricing] = useState<Record<string, CoursePricing>>({});
+
+  // Detect user country
+  useEffect(() => {
+    const initCountry = async () => {
+      let country = getCountryFromCookie();
+      if (!country || country === 'IN') {
+        country = await detectCountryFromIP();
+        setCountryInCookie(country);
+      }
+      setUserCountry(country);
+    };
+    initCountry();
+  }, []);
 
   // Fetch courses from API
   const fetchCourses = async () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const params = new URLSearchParams();
       if (selectedCategory !== 'all') params.append('category', selectedCategory);
       if (selectedLevel !== 'all') params.append('level', selectedLevel);
@@ -47,25 +71,38 @@ const CoursesPage: NextPage = () => {
       });
 
       const response = await fetch(`/api/courses?${params.toString()}`);
-      
+
       if (!response.ok) {
         throw new Error('Failed to load courses');
       }
-      
+
       const data = await response.json();
       console.log('📦 API response:', {
         coursesCount: data.courses?.length || 0,
         courses: data.courses?.map(c => ({ id: c.id, title: c.title, category: c.category })) || []
       });
       setCourses(data.courses || []);
-      
+
+      // Fetch pricing for each course
+      const pricingPromises = (data.courses || []).map(async (course: Course) => {
+        const pricing = await getCoursePrice(course.id, userCountry);
+        return { courseId: course.id, pricing };
+      });
+
+      const pricingResults = await Promise.all(pricingPromises);
+      const pricingMap: Record<string, CoursePricing> = {};
+      pricingResults.forEach(({ courseId, pricing }) => {
+        pricingMap[courseId] = pricing;
+      });
+      setCoursePricing(pricingMap);
+
       // Extract unique categories and levels for filters
       if (data.courses && data.courses.length > 0) {
         const uniqueCategories = Array.from(new Set(data.courses.map((course: Course) => course.category))) as string[];
         const uniqueLevels = Array.from(new Set(data.courses.map((course: Course) => {
           return course.level.split(' to ').map(l => l.trim());
         }).flat())) as string[];
-        
+
         setCategories(uniqueCategories);
         setLevels(uniqueLevels);
       }
@@ -82,6 +119,7 @@ const CoursesPage: NextPage = () => {
     const fetchSuggestions = async () => {
       if (searchQuery.trim().length < 2) {
         setSuggestions([]);
+        setSuggestionPricing({});
         setShowSuggestions(false);
         return;
       }
@@ -92,6 +130,19 @@ const CoursesPage: NextPage = () => {
           const data = await response.json();
           setSuggestions(data.courses || []);
           setShowSuggestions(true);
+
+          // Fetch pricing for suggestions
+          const pricingPromises = (data.courses || []).map(async (course: Course) => {
+            const pricing = await getCoursePrice(course.id, userCountry);
+            return { courseId: course.id, pricing };
+          });
+
+          const pricingResults = await Promise.all(pricingPromises);
+          const pricingMap: Record<string, CoursePricing> = {};
+          pricingResults.forEach(({ courseId, pricing }) => {
+            pricingMap[courseId] = pricing;
+          });
+          setSuggestionPricing(pricingMap);
         }
       } catch (err) {
         console.error('Error fetching suggestions:', err);
@@ -99,11 +150,13 @@ const CoursesPage: NextPage = () => {
     };
 
     const timer = setTimeout(() => {
-      fetchSuggestions();
+      if (userCountry) {
+        fetchSuggestions();
+      }
     }, 200); // Quick response for suggestions
 
     return () => clearTimeout(timer);
-  }, [searchQuery]);
+  }, [searchQuery, userCountry]);
 
   // Debounce search query for main results
   useEffect(() => {
@@ -147,10 +200,10 @@ const CoursesPage: NextPage = () => {
 
   // Fetch courses when filters change (use debouncedSearchQuery instead of searchQuery)
   useEffect(() => {
-    if (router.isReady) {
+    if (router.isReady && userCountry) {
       fetchCourses();
     }
-  }, [selectedCategory, selectedLevel, priceRange, sortBy, debouncedSearchQuery, router.isReady]);
+  }, [selectedCategory, selectedLevel, priceRange, sortBy, debouncedSearchQuery, router.isReady, userCountry]);
 
   // Initial load to get all courses for filter options only
   useEffect(() => {
@@ -313,9 +366,15 @@ const CoursesPage: NextPage = () => {
                         </div>
                         {course.price !== undefined && !course.feesDiscussedPostEnrollment && (
                           <div className="flex-shrink-0">
-                            <span className="text-sm font-semibold text-primary-600">
-                              ₹{course.price.toLocaleString()}
-                            </span>
+                            {suggestionPricing[course.id] ? (
+                              <span className="text-sm font-semibold text-primary-600">
+                                {suggestionPricing[course.id].symbol}{(suggestionPricing[course.id].price / 100).toLocaleString()}
+                              </span>
+                            ) : (
+                              <span className="text-sm font-semibold text-primary-600">
+                                ₹{course.price.toLocaleString()}
+                              </span>
+                            )}
                           </div>
                         )}
                       </button>
@@ -398,7 +457,7 @@ const CoursesPage: NextPage = () => {
                       <p className="text-gray-400 mt-2">Try adjusting your filters or search terms.</p>
                     </div>
                   ) : (
-                    <CourseGrid courses={courses} />
+                    <CourseGrid courses={courses} coursePricing={coursePricing} />
                   )}
                 </div>
               </div>

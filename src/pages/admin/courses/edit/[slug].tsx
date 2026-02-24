@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import { useUser, useSupabaseClient } from '@supabase/auth-helpers-react';
 import { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
+import CoursePricingManager from '@/components/admin/CoursePricingManager';
 
 interface CourseFormData {
   title: string;
@@ -389,7 +390,7 @@ const EditCourse: NextPage = () => {
             </p>
           </div>
 
-              <div className="bg-white rounded-lg shadow overflow-hidden">
+              <div className="bg-white rounded-lg shadow overflow-hidden mb-8">
                 <form onSubmit={handleSubmit} className="p-6 space-y-6">
                   <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
                     <div className="sm:col-span-4">
@@ -911,6 +912,14 @@ const EditCourse: NextPage = () => {
                   </div>
                 </form>
               </div>
+
+              {/* Multi-Currency Pricing Section */}
+              {courseId && (
+                <div className="mt-8">
+                  <h2 className="text-xl font-bold text-gray-900 mb-4">Multi-Currency Pricing</h2>
+                  <CoursePricingManager courseId={courseId} />
+                </div>
+              )}
             </div>
       </main>
     </>

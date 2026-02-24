@@ -5,11 +5,19 @@ import { motion } from 'framer-motion';
 import { Course } from '../../types/course';
 import RatingComponent from '../RatingComponent';
 
-interface CourseGridProps {
-  courses: Course[];
+interface CoursePricing {
+  price: number;
+  originalPrice: number | null;
+  currency: string;
+  symbol: string;
 }
 
-const CourseGrid: React.FC<CourseGridProps> = ({ courses }) => {
+interface CourseGridProps {
+  courses: Course[];
+  coursePricing?: Record<string, CoursePricing>;
+}
+
+const CourseGrid: React.FC<CourseGridProps> = ({ courses, coursePricing = {} }) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
       {courses.map((course, index) => (
@@ -52,10 +60,23 @@ const CourseGrid: React.FC<CourseGridProps> = ({ courses }) => {
                       ({course.reviews?.length || 0})
                     </span>
                   </div>
-                  <div className="flex justify-end">
-                    <span className="text-base sm:text-lg font-bold text-primary-600">
-                      ₹{course.price.toLocaleString()}
-                    </span>
+                  <div className="flex justify-end items-center gap-2">
+                    {coursePricing[course.id] ? (
+                      <>
+                        {coursePricing[course.id].originalPrice && (
+                          <span className="text-sm text-gray-400 line-through">
+                            {coursePricing[course.id].symbol}{(coursePricing[course.id].originalPrice / 100).toLocaleString()}
+                          </span>
+                        )}
+                        <span className="text-base sm:text-lg font-bold text-primary-600">
+                          {coursePricing[course.id].symbol}{(coursePricing[course.id].price / 100).toLocaleString()}
+                        </span>
+                      </>
+                    ) : (
+                      <span className="text-base sm:text-lg font-bold text-primary-600">
+                        ₹{course.price.toLocaleString()}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
