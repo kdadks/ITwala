@@ -30,19 +30,33 @@ const CoursePricingManager: React.FC<Props> = ({ courseId }) => {
   const [originalPrice, setOriginalPrice] = useState('');
 
   useEffect(() => {
-    loadPricing();
+    console.log('CoursePricingManager mounted with courseId:', courseId);
+    if (courseId) {
+      loadPricing();
+    } else {
+      console.error('No courseId provided to CoursePricingManager');
+      setIsLoading(false);
+    }
   }, [courseId]);
 
   const loadPricing = async () => {
     try {
+      console.log('Loading pricing for courseId:', courseId);
       const response = await fetch(`/api/admin/pricing/manage?courseId=${courseId}`);
       const data = await response.json();
 
+      console.log('Pricing API response:', { status: response.status, data });
+
       if (response.ok) {
         setPricingList(data.pricing || []);
+        console.log('Loaded pricing list:', data.pricing);
+      } else {
+        console.error('Failed to load pricing:', data);
+        toast.error(data.error || 'Failed to load pricing');
       }
     } catch (error) {
       console.error('Error loading pricing:', error);
+      toast.error('Error loading pricing data');
     } finally {
       setIsLoading(false);
     }
@@ -123,9 +137,16 @@ const CoursePricingManager: React.FC<Props> = ({ courseId }) => {
     return <div className="animate-pulse h-32 bg-gray-200 rounded"></div>;
   }
 
+  console.log('Rendering CoursePricingManager with pricingList:', pricingList);
+
   return (
     <div className="bg-white border rounded-lg p-6">
       <h3 className="text-lg font-semibold text-gray-900 mb-4">Multi-Currency Pricing</h3>
+
+      {/* Debug Info - Remove in production */}
+      <div className="mb-4 p-2 bg-gray-100 rounded text-xs">
+        <strong>Debug:</strong> CourseId: {courseId}, Pricing Count: {pricingList.length}
+      </div>
 
       {/* Add New Pricing */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 pb-6 border-b">
