@@ -163,27 +163,32 @@ const AdminDashboard: React.FC = () => {
   ];
 
   return (
-    <div className="p-4 space-y-6">
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-1">Dashboard Overview</h2>
+        <p className="text-sm text-gray-500">Welcome back! Here's what's happening with your academy.</p>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         {quickActions.map((action, index) => (
           <Link href={action.href} key={index}>
-            <div className={`${action.color} text-white p-4 rounded-lg shadow-sm hover:opacity-90 transition-opacity`}>
-              <h3 className="font-medium">{action.title}</h3>
+            <div className={`${action.color} text-white p-5 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5`}>
+              <h3 className="font-semibold text-base">{action.title}</h3>
             </div>
           </Link>
         ))}
       </div>
 
-      <div className="grid gap-6 mb-8 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-5 mb-8 md:grid-cols-2 xl:grid-cols-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="p-6 bg-white rounded-lg shadow-sm"
+          className="p-6 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200"
         >
-          <h3 className="text-sm font-medium text-gray-500">Total Courses</h3>
-          <div className="mt-2 flex items-baseline">
-            <p className="text-2xl font-semibold text-gray-900">{stats.totalCourses}</p>
+          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Total Courses</h3>
+          <div className="mt-3 flex items-baseline">
+            <p className="text-3xl font-bold text-gray-900">{stats.totalCourses}</p>
           </div>
         </motion.div>
 
@@ -191,11 +196,11 @@ const AdminDashboard: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="p-6 bg-white rounded-lg shadow-sm"
+          className="p-6 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200"
         >
-          <h3 className="text-sm font-medium text-gray-500">Active Students</h3>
-          <div className="mt-2 flex items-baseline">
-            <p className="text-2xl font-semibold text-gray-900">{stats.activeStudents}</p>
+          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Active Students</h3>
+          <div className="mt-3 flex items-baseline">
+            <p className="text-3xl font-bold text-gray-900">{stats.activeStudents}</p>
           </div>
         </motion.div>
 
@@ -203,11 +208,11 @@ const AdminDashboard: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="p-6 bg-white rounded-lg shadow-sm"
+          className="p-6 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200"
         >
-          <h3 className="text-sm font-medium text-gray-500">Course Completion</h3>
-          <div className="mt-2 flex items-baseline">
-            <p className="text-2xl font-semibold text-gray-900">{stats.completionRate}%</p>
+          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Completion Rate</h3>
+          <div className="mt-3 flex items-baseline">
+            <p className="text-3xl font-bold text-gray-900">{stats.completionRate}%</p>
           </div>
         </motion.div>
 
@@ -215,37 +220,37 @@ const AdminDashboard: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="p-6 bg-white rounded-lg shadow-sm"
+          className="p-6 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200"
         >
-          <h3 className="text-sm font-medium text-gray-500">Revenue</h3>
-          <div className="mt-2 flex items-baseline">
-            <p className="text-2xl font-semibold text-gray-900">₹{stats.revenue.toLocaleString()}</p>
+          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Revenue</h3>
+          <div className="mt-3 flex items-baseline">
+            <p className="text-3xl font-bold text-gray-900">₹{stats.revenue.toLocaleString()}</p>
           </div>
         </motion.div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-5 md:grid-cols-2">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="p-6 bg-white rounded-lg shadow-sm"
+          className="p-6 bg-white rounded-xl shadow-sm border border-gray-100"
         >
-          <h3 className="text-lg font-semibold mb-4">Recent Activity</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-5">Recent Activity</h3>
           <div className="space-y-4">
             {recentActivity.length > 0 ? (
               recentActivity.map((activity) => (
-                <div key={activity.id} className="border-l-4 border-primary-500 pl-4">
-                  <p className="text-sm text-gray-600">
+                <div key={activity.id} className="border-l-4 border-primary-500 pl-4 py-2">
+                  <p className="text-sm font-medium text-gray-700">
                     {activity.user_name || 'Student'} enrolled in {activity.course_title || 'course'}
                   </p>
-                  <p className="text-xs text-gray-400">
-                    {new Date(activity.enrolled_at).toLocaleDateString()} • Status: {activity.status || 'active'}
+                  <p className="text-xs text-gray-500 mt-1">
+                    {new Date(activity.enrolled_at).toLocaleDateString()} • <span className="text-green-600 font-medium">{activity.status || 'active'}</span>
                   </p>
                 </div>
               ))
             ) : (
-              <p className="text-sm text-gray-500">No recent activity</p>
+              <p className="text-sm text-gray-500 text-center py-8">No recent activity</p>
             )}
           </div>
         </motion.div>
@@ -254,26 +259,26 @@ const AdminDashboard: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.5 }}
-          className="p-6 bg-white rounded-lg shadow-sm"
+          className="p-6 bg-white rounded-xl shadow-sm border border-gray-100"
         >
-          <h3 className="text-lg font-semibold mb-4">Recent Courses</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-5">Recent Courses</h3>
           <div className="space-y-4">
             {popularCourses.length > 0 ? (
               popularCourses.map((course) => (
-                <div key={course.id} className="flex items-center space-x-4">
+                <div key={course.id} className="flex items-start justify-between py-2">
                   <div className="flex-1">
-                    <h4 className="text-sm font-medium text-gray-900">{course.title}</h4>
-                    <p className="text-xs text-gray-500">
+                    <h4 className="text-sm font-semibold text-gray-900">{course.title}</h4>
+                    <p className="text-xs text-gray-500 mt-1">
                       {course.description ? course.description.substring(0, 50) + '...' : 'No description'}
                     </p>
                   </div>
-                  <div className="text-sm font-medium text-primary-600">
+                  <span className="ml-3 px-2.5 py-1 text-xs font-medium text-green-700 bg-green-50 rounded-full">
                     Active
-                  </div>
+                  </span>
                 </div>
               ))
             ) : (
-              <p className="text-sm text-gray-500">No courses available</p>
+              <p className="text-sm text-gray-500 text-center py-8">No courses available</p>
             )}
           </div>
         </motion.div>

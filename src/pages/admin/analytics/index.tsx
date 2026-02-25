@@ -63,11 +63,14 @@ const AnalyticsPage: NextPage = () => {
       if (error) throw error;
       setAnalytics(data || []);
       
-      // Fetch country data from page_views
+      // Fetch country data from page_views (excluding localhost)
       const { data: countryViews } = await supabase
         .from('page_views')
         .select('country')
-        .gte('created_at', new Date(Date.now() - daysToFetch * 24 * 60 * 60 * 1000).toISOString());
+        .gte('created_at', new Date(Date.now() - daysToFetch * 24 * 60 * 60 * 1000).toISOString())
+        .not('page_url', 'like', '%localhost%')
+        .not('referrer', 'like', '%localhost%')
+        .not('referrer', 'like', '%127.0.0.1%');
       
       if (countryViews) {
         const countryCounts: { [key: string]: number } = {};
@@ -84,11 +87,14 @@ const AnalyticsPage: NextPage = () => {
         setCountryData(sortedCountries);
       }
       
-      // Fetch detailed page views for drill-down
+      // Fetch detailed page views for drill-down (excluding localhost)
       const { data: views } = await supabase
         .from('page_views')
         .select('*')
         .gte('created_at', new Date(Date.now() - daysToFetch * 24 * 60 * 60 * 1000).toISOString())
+        .not('page_url', 'like', '%localhost%')
+        .not('referrer', 'like', '%localhost%')
+        .not('referrer', 'like', '%127.0.0.1%')
         .order('created_at', { ascending: false })
         .limit(1000);
         
@@ -123,6 +129,9 @@ const AnalyticsPage: NextPage = () => {
         .from('page_views')
         .select('page_url, page_title, created_at')
         .gte('created_at', startDate.toISOString())
+        .not('page_url', 'like', '%localhost%')
+        .not('referrer', 'like', '%localhost%')
+        .not('referrer', 'like', '%127.0.0.1%')
         .order('created_at', { ascending: false });
 
       if (error) {

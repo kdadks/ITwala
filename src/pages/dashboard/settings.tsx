@@ -173,14 +173,29 @@ const Settings: NextPage = () => {
 
   const updatePassword = async (data: PasswordFormData) => {
     setIsUpdating(true);
-    
+
     try {
-      const { error } = await supabaseClient.auth.updateUser({
+      if (!user?.email) {
+        throw new Error('User email not found');
+      }
+
+      // First verify the current password by attempting to sign in
+      const { error: signInError } = await supabaseClient.auth.signInWithPassword({
+        email: user.email,
+        password: data.currentPassword,
+      });
+
+      if (signInError) {
+        throw new Error('Current password is incorrect');
+      }
+
+      // If verification succeeds, update to the new password
+      const { error: updateError } = await supabaseClient.auth.updateUser({
         password: data.newPassword,
       });
 
-      if (error) {
-        throw new Error(error.message);
+      if (updateError) {
+        throw new Error(updateError.message);
       }
 
       toast.success('Password updated successfully!');
@@ -308,6 +323,53 @@ const Settings: NextPage = () => {
                               placeholder="Tell us a little about yourself"
                               {...registerProfile('bio')}
                             ></textarea>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Education Information */}
+                      <div>
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">Education Information</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label htmlFor="highestQualification" className="block text-sm font-medium text-gray-700 mb-1">Highest Qualification</label>
+                            <select
+                              id="highestQualification"
+                              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                              {...registerProfile('highestQualification')}
+                            >
+                              <option value="">Select Qualification</option>
+                              <option value="High School">High School</option>
+                              <option value="Diploma">Diploma</option>
+                              <option value="Associate Degree">Associate Degree</option>
+                              <option value="Bachelor's Degree">Bachelor's Degree</option>
+                              <option value="Master's Degree">Master's Degree</option>
+                              <option value="Doctorate (PhD)">Doctorate (PhD)</option>
+                              <option value="Professional Degree">Professional Degree</option>
+                              <option value="Postdoctoral">Postdoctoral</option>
+                              <option value="Other">Other</option>
+                            </select>
+                          </div>
+
+                          <div>
+                            <label htmlFor="degreeName" className="block text-sm font-medium text-gray-700 mb-1">Degree Name</label>
+                            <input
+                              type="text"
+                              id="degreeName"
+                              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                              placeholder="e.g., B.Tech in Computer Science"
+                              {...registerProfile('degreeName')}
+                            />
+                          </div>
+
+                          <div className="flex items-center">
+                            <input
+                              type="checkbox"
+                              id="hasLaptop"
+                              className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                              {...registerProfile('hasLaptop')}
+                            />
+                            <label htmlFor="hasLaptop" className="ml-2 block text-sm text-gray-700">I have a laptop</label>
                           </div>
                         </div>
                       </div>

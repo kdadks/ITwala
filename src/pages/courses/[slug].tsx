@@ -15,6 +15,7 @@ import LoadingState from '../../components/common/LoadingState';
 import ErrorBoundary from '../../components/common/ErrorBoundary';
 import { getSiteSettings } from '@/utils/siteSettings';
 import { toast } from 'react-hot-toast';
+import { detectCountryFromIP, getCountryFromCookie, setCountryInCookie, getCountryInfo } from '@/utils/countryDetection';
 
 const CoursePage: NextPage = () => {
   const router = useRouter();
@@ -36,6 +37,13 @@ const CoursePage: NextPage = () => {
   const [modulesLoading, setModulesLoading] = useState(false);
   const [faqsLoading, setFaqsLoading] = useState(false);
   const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [userCountry, setUserCountry] = useState<string>('IN');
+  const [pricing, setPricing] = useState<{
+    price: number;
+    originalPrice?: number;
+    currency: string;
+    symbol: string;
+  } | null>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -101,13 +109,62 @@ const CoursePage: NextPage = () => {
   }, [slug]);
 
   useEffect(() => {
+    // Detect user's country on mount
+    const initializeCountry = async () => {
+      let country = getCountryFromCookie();
+
+      if (!country || country === 'IN') {
+        // Try to detect from IP
+        const detected = await detectCountryFromIP();
+        country = detected;
+        setCountryInCookie(detected);
+      }
+
+      setUserCountry(country);
+    };
+
+    initializeCountry();
+  }, []);
+
+  useEffect(() => {
     if (!course) return;
+
+    // Fetch country-specific pricing
+    const fetchPricing = async () => {
+      try {
+        const response = await fetch(`/api/pricing/course?courseId=${course.id}&country=${userCountry}`);
+        if (response.ok) {
+          const data = await response.json();
+          setPricing(data.pricing);
+        } else {
+          // Fallback to default course pricing
+          setPricing({
+            price: course.price,
+            originalPrice: course.originalPrice,
+            currency: 'INR',
+            symbol: '₹'
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching pricing:', error);
+        // Fallback to default course pricing
+        setPricing({
+          price: course.price,
+          originalPrice: course.originalPrice,
+          currency: 'INR',
+          symbol: '₹'
+        });
+      }
+    };
+
+    fetchPricing();
+
     // Lazy load modules, faqs, reviews in parallel
     setModulesLoading(true); setFaqsLoading(true); setReviewsLoading(true);
     fetch(`/api/courses/${course.slug}/modules`).then(r => r.json()).then(d => setModules(d.modules || [])).finally(() => setModulesLoading(false));
     fetch(`/api/courses/${course.slug}/faqs`).then(r => r.json()).then(d => setFaqs(d.faqs || [])).finally(() => setFaqsLoading(false));
     fetch(`/api/courses/${course.slug}/reviews`).then(r => r.json()).then(d => setReviews(d.reviews || [])).finally(() => setReviewsLoading(false));
-  }, [course]);
+  }, [course, userCountry]);
 
   const getFacebookShareUrl = () =>
     `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
@@ -233,8 +290,8 @@ const CoursePage: NextPage = () => {
               "offers": {
                 "@type": "Offer",
                 "category": "AI Education",
-                "price": course.price,
-                "priceCurrency": "INR",
+                "price": pricing ? (pricing.price / 100) : course.price,
+                "priceCurrency": pricing ? pricing.currency : "INR",
                 "availability": "InStock",
                 "validFrom": course.publishedDate || new Date().toISOString(),
                 "description": `Registration fee for ${course.title} course`
@@ -275,11 +332,24 @@ const CoursePage: NextPage = () => {
                   <div className="mb-4">
                     <div className="text-sm text-primary-200 mb-1">Registration Fee</div>
                     <div className="text-4xl font-bold text-white mb-2">
-                      ₹{course.price.toLocaleString()}
-                      {course.originalPrice && (
-                        <span className="text-xl text-primary-200 line-through ml-2">
-                          ₹{course.originalPrice.toLocaleString()}
-                        </span>
+                      {pricing ? (
+                        <>
+                          {pricing.symbol}{(pricing.price / 100).toLocaleString()}
+                          {pricing.originalPrice && (
+                            <span className="text-xl text-primary-200 line-through ml-2">
+                              {pricing.symbol}{(pricing.originalPrice / 100).toLocaleString()}
+                            </span>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          ₹{course.price.toLocaleString()}
+                          {course.originalPrice && (
+                            <span className="text-xl text-primary-200 line-through ml-2">
+                              ₹{course.originalPrice.toLocaleString()}
+                            </span>
+                          )}
+                        </>
                       )}
                     </div>
                     {course.feesDiscussedPostEnrollment && (
@@ -390,11 +460,24 @@ const CoursePage: NextPage = () => {
                   <div className="text-center mb-6">
                     <div className="text-sm text-gray-600 mb-2">Registration Fee</div>
                     <div className="text-3xl font-bold text-primary-600 mb-3">
-                      ₹{course.price.toLocaleString()}
-                      {course.originalPrice && (
-                        <span className="text-lg text-gray-500 line-through ml-2">
-                          ₹{course.originalPrice.toLocaleString()}
-                        </span>
+                      {pricing ? (
+                        <>
+                          {pricing.symbol}{(pricing.price / 100).toLocaleString()}
+                          {pricing.originalPrice && (
+                            <span className="text-lg text-gray-500 line-through ml-2">
+                              {pricing.symbol}{(pricing.originalPrice / 100).toLocaleString()}
+                            </span>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          ₹{course.price.toLocaleString()}
+                          {course.originalPrice && (
+                            <span className="text-lg text-gray-500 line-through ml-2">
+                              ₹{course.originalPrice.toLocaleString()}
+                            </span>
+                          )}
+                        </>
                       )}
                     </div>
                     {course.feesDiscussedPostEnrollment && (
@@ -402,7 +485,12 @@ const CoursePage: NextPage = () => {
                         Tuition fees will be discussed post enrollment
                       </div>
                     )}
-                    {course.originalPrice && (
+                    {pricing && pricing.originalPrice && (
+                      <div className="text-sm text-green-600 font-medium">
+                        Save {pricing.symbol}{((pricing.originalPrice - pricing.price) / 100).toLocaleString()}
+                      </div>
+                    )}
+                    {!pricing && course.originalPrice && (
                       <div className="text-sm text-green-600 font-medium">
                         Save ₹{(course.originalPrice - course.price).toLocaleString()}
                       </div>
