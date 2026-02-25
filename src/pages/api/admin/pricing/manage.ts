@@ -29,9 +29,21 @@ export default async function handler(
     try {
       const { courseId } = req.query;
 
+      console.log('[Pricing API] GET request - courseId:', courseId);
+
       if (!courseId) {
         return res.status(400).json({ error: 'Course ID is required' });
       }
+
+      if (!supabaseAdmin) {
+        console.error('[Pricing API] supabaseAdmin is not initialized - check SUPABASE_SERVICE_ROLE_KEY');
+        return res.status(500).json({
+          error: 'Server configuration error',
+          details: 'Supabase admin client not configured'
+        });
+      }
+
+      console.log('[Pricing API] Querying course_pricing table for courseId:', courseId);
 
       const { data, error } = await supabaseAdmin
         .from('course_pricing')
@@ -40,12 +52,21 @@ export default async function handler(
         .eq('is_active', true)
         .order('country_code');
 
-      if (error) throw error;
+      console.log('[Pricing API] Query result:', { data, error });
 
+      if (error) {
+        console.error('[Pricing API] Database error:', error);
+        throw error;
+      }
+
+      console.log('[Pricing API] Returning pricing data:', data);
       return res.status(200).json({ pricing: data || [] });
     } catch (error: any) {
-      console.error('Error fetching pricing:', error);
-      return res.status(500).json({ error: 'Failed to fetch pricing data' });
+      console.error('[Pricing API] Error fetching pricing:', error);
+      return res.status(500).json({
+        error: 'Failed to fetch pricing data',
+        details: error.message || error.toString()
+      });
     }
   }
 
@@ -55,6 +76,13 @@ export default async function handler(
 
       if (!courseId || !pricingData) {
         return res.status(400).json({ error: 'Missing required fields' });
+      }
+
+      if (!supabaseAdmin) {
+        return res.status(500).json({
+          error: 'Server configuration error',
+          details: 'Supabase admin client not configured'
+        });
       }
 
       // Validate pricing data
@@ -96,6 +124,13 @@ export default async function handler(
 
       if (!pricingId) {
         return res.status(400).json({ error: 'Pricing ID is required' });
+      }
+
+      if (!supabaseAdmin) {
+        return res.status(500).json({
+          error: 'Server configuration error',
+          details: 'Supabase admin client not configured'
+        });
       }
 
       const { error } = await supabaseAdmin
