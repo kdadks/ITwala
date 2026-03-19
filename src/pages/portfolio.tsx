@@ -33,7 +33,7 @@ const Portfolio: NextPage = () => {
       industry: "Travel Industry",
       color: "indigo",
       features: ["Real-time GPS tracking", "Secure payments", "Driver verification", "24/7 support"],
-      technologies: ["React Native", "Node.js", "MongoDB", "Google Maps API"],
+      technologies: ["React Native", "Node.js", "Supabase", "Google Maps API"],
       impact: "10,000+ active users, 95% customer satisfaction"
     },
     {
@@ -77,7 +77,7 @@ const Portfolio: NextPage = () => {
       industry: "Physiotherapy Clinic",
       color: "blue",
       features: ["Pain management", "Rehabilitation programs", "Sports therapy", "Post-surgery care"],
-      technologies: ["WordPress", "WooCommerce", "Custom Plugins"],
+      technologies: ["Node.js", "Supabase", "Sum up"],
       impact: "1,500+ successful treatments, 98% recovery rate"
     },
     {
@@ -99,8 +99,18 @@ const Portfolio: NextPage = () => {
       industry: "Education & Wellness",
       color: "cyan",
       features: ["Wellness programs", "Digital Platform", "Personalized plans", "Expert instructors"],
-      technologies: ["Next.js", "Supabase", "Stripe", "WebRTC"],
+      technologies: ["Next.js", "Tailwind CSS", "Supabase", "Stripe", "WebRTC"],
       impact: "3,000+ students enrolled, 100+ courses"
+    },    {
+      href: "https://www.panditrajeshjoshi.com/",
+      logo: "/images/Raj ji.svg",
+      title: "Pandit Rajesh Joshi",
+      description: "Online Platform offering spiritual guidance and religious teachings for all ages. Expert pandit with personalized plans.",
+      industry: "Religious & Spiritual",
+      color: "cyan",
+      features: ["Spiritual guidance", "Religious teachings", "Personalized plans", "Expert pandit"],
+      technologies: ["Next.js", "Tailwind CSS", "Supabase", "Stripe", "WebRTC"],
+      impact: "250+ Poojas conducted, 100+ satisfied clients"
     }
   ];
 
