@@ -5,6 +5,8 @@
 .next/cache/
 **/*.node
 package-lock.json
+.claude
+/agency-agents
 
 # testing
 /coverage
