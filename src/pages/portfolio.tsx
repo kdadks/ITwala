@@ -23,9 +23,9 @@ const Portfolio: NextPage = () => {
       technologies: ["React Native", "Node.js", "Supabase", "Google Maps API"],
       impact: "10,000+ active users, 95% customer satisfaction",
       metrics: [
-        { label: "Active Users", value: "10K+" },
+        { label: "Active Users", value: "1K+" },
         { label: "Satisfaction", value: "95%" },
-        { label: "Daily Rides", value: "500+" }
+        { label: "Daily Rides", value: "50+" }
       ]
     },
     {
@@ -42,7 +42,7 @@ const Portfolio: NextPage = () => {
       metrics: [
         { label: "B2B Clients", value: "500+" },
         { label: "Order Growth", value: "+40%" },
-        { label: "Products", value: "200+" }
+        { label: "Products", value: "20+" }
       ]
     },
     {
@@ -57,7 +57,7 @@ const Portfolio: NextPage = () => {
       technologies: ["React", "TypeScript", "OpenAI API", "PostgreSQL"],
       impact: "50,000+ monthly visitors, 1,000+ AI tools catalogued",
       metrics: [
-        { label: "Monthly Visitors", value: "50K+" },
+        { label: "Monthly Visitors", value: "5K+" },
         { label: "AI Tools", value: "1000+" },
         { label: "Comparisons", value: "5K+/mo" }
       ]
@@ -93,7 +93,7 @@ const Portfolio: NextPage = () => {
       metrics: [
         { label: "Treatments", value: "1.5K+" },
         { label: "Recovery Rate", value: "98%" },
-        { label: "Specialists", value: "12" }
+        { label: "Services", value: "12" }
       ]
     },
     {
@@ -109,8 +109,8 @@ const Portfolio: NextPage = () => {
       impact: "5,000+ products sold, 200+ daily orders",
       metrics: [
         { label: "Products Sold", value: "5K+" },
-        { label: "Daily Orders", value: "200+" },
-        { label: "Catalog", value: "1000+" }
+        { label: "Daily Orders", value: "20+" },
+        { label: "Catalog", value: "100+" }
       ]
     },
     {
@@ -123,10 +123,10 @@ const Portfolio: NextPage = () => {
       color: "cyan",
       features: ["Wellness programs", "Digital Platform", "Personalized plans", "Expert instructors"],
       technologies: ["Next.js", "Tailwind CSS", "Supabase", "Stripe", "WebRTC"],
-      impact: "3,000+ students enrolled, 100+ courses",
+      impact: "1,000+ students enrolled, 100+ courses",
       metrics: [
-        { label: "Students", value: "3K+" },
-        { label: "Courses", value: "100+" },
+        { label: "Students", value: "1K+" },
+        { label: "Courses", value: "13+" },
         { label: "Completion", value: "85%" }
       ]
     },
@@ -145,6 +145,40 @@ const Portfolio: NextPage = () => {
         { label: "Poojas", value: "250+" },
         { label: "Clients", value: "100+" },
         { label: "Rating", value: "5.0/5" }
+      ]
+    },
+    {
+      href: "https://www.adamstown.info",
+      logo: "/images/adam.jpeg",
+      title: "Adamstown.info",
+      description: "Built-and-owned digital property by ITWala — a full-stack informational platform covering the Adamstown area. Demonstrates end-to-end product ownership from development and hosting to SEO and content strategy.",
+      industry: "Digital Media",
+      category: "Web Platform",
+      color: "indigo",
+      features: ["Built & owned by ITWala", "SEO optimised", "Content strategy", "Performance first"],
+      technologies: ["Next.js", "Tailwind CSS", "Vercel", "Google Analytics"],
+      impact: "ITWala-owned product — built, hosted and operated in-house",
+      metrics: [
+        { label: "Monthly Visitors", value: "1000+" },
+        { label: "Ranking", value: "Top 3" },
+        { label: "Daily Visitors", value: "100+" }
+      ]
+    },
+    {
+      href: "https://www.ukkneeandsportsinjuryclinic.co.uk/",
+      logo: "/images/UK.jpg",
+      title: "UK Knee & Sports Clinic",
+      description: "Comprehensive SEO Improvement Program for a leading UK Knee Surgeon and sports injury clinic. Delivered on-page optimisation, technical audits, local SEO, and content strategy to boost organic search visibility and drive new patient enquiries.",
+      industry: "Healthcare",
+      category: "Healthcare",
+      color: "green",
+      features: ["Technical SEO audit", "On-page optimisation", "Local SEO", "Content strategy"],
+      technologies: ["Google Search Console", "RankMath", "Schema Markup", "Analytics"],
+      impact: "Improved organic rankings and increased patient enquiry volume",
+      metrics: [
+        { label: "Organic Traffic", value: "+60%" },
+        { label: "Rankings", value: "Top 5" },
+        { label: "Enquiries", value: "+40%" }
       ]
     }
   ];
@@ -215,7 +249,7 @@ const Portfolio: NextPage = () => {
                 "@id": "https://it-wala.com/portfolio#projectlist",
                 "name": "Featured Projects",
                 "description": "Collection of 50+ successful digital transformation projects",
-                "numberOfItems": 8,
+                "numberOfItems": 10,
                 "itemListElement": [
                   {
                     "@type": "CreativeWork",
@@ -344,6 +378,38 @@ const Portfolio: NextPage = () => {
                       "audienceType": "Religious & Spiritual"
                     },
                     "keywords": "spiritual guidance, religious services, online platform"
+                  },
+                  {
+                    "@type": "CreativeWork",
+                    "position": 9,
+                    "name": "Adamstown.info",
+                    "description": "Built-and-owned digital property by ITWala covering the Adamstown area. Full-stack product owned and operated in-house.",
+                    "url": "https://www.adamstown.info",
+                    "image": "https://it-wala.com/images/IT - WALA_logo (1).png",
+                    "creator": {
+                      "@id": "https://it-wala.com/#organization"
+                    },
+                    "audience": {
+                      "@type": "Audience",
+                      "audienceType": "Digital Media"
+                    },
+                    "keywords": "digital property, web platform, ITWala owned, SEO, content strategy"
+                  },
+                  {
+                    "@type": "CreativeWork",
+                    "position": 10,
+                    "name": "UK Knee & Sports Injury Clinic",
+                    "description": "SEO Improvement Program for a leading UK Knee Surgeon and sports injury clinic. Boosted organic rankings and patient enquiry volume.",
+                    "url": "https://www.ukkneeandsportsinjuryclinic.co.uk/",
+                    "image": "https://it-wala.com/images/IT - WALA_logo (1).png",
+                    "creator": {
+                      "@id": "https://it-wala.com/#organization"
+                    },
+                    "audience": {
+                      "@type": "Audience",
+                      "audienceType": "Healthcare"
+                    },
+                    "keywords": "SEO, healthcare, Knee Surgeon, sports injury, organic search, local SEO"
                   }
                 ]
               },
@@ -502,7 +568,7 @@ const Portfolio: NextPage = () => {
                 className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-4 md:mb-6"
               >
                 {[
-                  { icon: TrendingUp, number: "100K+", label: "Active Users", numColor: "text-cyan-300", iconBg: "from-blue-500 to-cyan-500" },
+                  { icon: TrendingUp, number: "10K+", label: "Active Users", numColor: "text-cyan-300", iconBg: "from-blue-500 to-cyan-500" },
                   { icon: Award, number: "95%", label: "Client Satisfaction", numColor: "text-pink-300", iconBg: "from-purple-500 to-pink-500" },
                   { icon: Sparkles, number: "50+", label: "Projects Delivered", numColor: "text-orange-300", iconBg: "from-orange-500 to-red-500" },
                   { icon: Users, number: "7", label: "Industries Served", numColor: "text-emerald-300", iconBg: "from-green-500 to-emerald-500" }
@@ -750,7 +816,7 @@ const Portfolio: NextPage = () => {
                     <div className="flex items-start gap-3">
                       <div className="w-2 h-2 rounded-full bg-primary-600 mt-2 flex-shrink-0"></div>
                       <p className="text-gray-700 leading-relaxed">
-                        <strong className="text-gray-900">100,000+ active users</strong> across all platforms with proven engagement and satisfaction metrics
+                        <strong className="text-gray-900">10,000+ active users</strong> across all platforms with proven engagement and satisfaction metrics
                       </p>
                     </div>
                     <div className="flex items-start gap-3">
@@ -766,13 +832,13 @@ const Portfolio: NextPage = () => {
                     <div className="flex items-start gap-3">
                       <div className="w-2 h-2 rounded-full bg-secondary-600 mt-2 flex-shrink-0"></div>
                       <p className="text-gray-700 leading-relaxed">
-                        <strong className="text-gray-900">Specialized in modern tech stack</strong> including React, Next.js, React Native, Node.js, TypeScript, Supabase, and cloud platforms
+                        <strong className="text-gray-900">Specialized in modern tech stack</strong> including Python,.Net, React, Next.js, React Native, Node.js, TypeScript, Supabase,Postgres Sql and cloud platforms
                       </p>
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="w-2 h-2 rounded-full bg-secondary-600 mt-2 flex-shrink-0"></div>
                       <p className="text-gray-700 leading-relaxed">
-                        <strong className="text-gray-900">Proven results</strong>: Travel apps with 10K+ users, Healthcare platforms serving 2K+ patients, AI tools with 50K+ monthly visitors
+                        <strong className="text-gray-900">Proven results</strong>: Travel apps with 5K+ users, Healthcare platforms serving 2K+ patients, AI tools with 5K+ monthly visitors
                       </p>
                     </div>
                     <div className="flex items-start gap-3">
