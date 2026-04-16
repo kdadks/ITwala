@@ -166,7 +166,7 @@ const AdminDashboard: React.FC = () => {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold text-gray-900 mb-1">Dashboard Overview</h2>
-        <p className="text-sm text-gray-500">Welcome back! Here's what's happening with your academy.</p>
+        <p className="text-sm text-gray-500">Welcome back! Here&apos;s what&apos;s happening with your academy.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">

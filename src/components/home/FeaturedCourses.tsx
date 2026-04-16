@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Course } from '@/types/course';
+import { formatCurrency } from '@/utils/currency';
 
 const FeaturedCourses = () => {
   const sliderRef = useRef<HTMLDivElement>(null);
@@ -163,7 +164,7 @@ const FeaturedCourses = () => {
                           <span className="text-xs text-gray-500 ml-1">({course.reviews?.length || 0})</span>
                         </div>
                         <div className="flex justify-end">
-                          <span className="text-lg font-bold text-primary-600">₹{course.price.toLocaleString()}</span>
+                          <span className="text-lg font-bold text-primary-600">{formatCurrency(course.price, { decimals: 0 })}</span>
                         </div>
                       </div>
                     </div>

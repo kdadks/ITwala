@@ -47,6 +47,7 @@ const AdminProgress: NextPage = () => {
   useEffect(() => {
     fetchStudents();
     fetchCourses();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchStudents = async () => {
@@ -115,6 +116,7 @@ const AdminProgress: NextPage = () => {
     } else {
       setProgress({});
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedStudent, selectedCourse]);
 
   const toggleProgress = (classNumber: number) => {
@@ -140,8 +142,8 @@ const AdminProgress: NextPage = () => {
       let classNumber = 0;
 
       // Iterate through modules and lessons
-      for (const module of selectedCourseData.modules || []) {
-        for (const lesson of module.lessons || []) {
+      for (const courseModule of selectedCourseData.modules || []) {
+        for (const lesson of courseModule.lessons || []) {
           classNumber++;
           const key = `${classNumber}`;
           const isCompleted = progress[key] || false;

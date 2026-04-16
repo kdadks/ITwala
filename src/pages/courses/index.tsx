@@ -7,7 +7,8 @@ import CourseGrid from '../../components/courses/CourseGrid';
 import BacklinkingHub from '@/components/seo/BacklinkingHub';
 import { motion } from 'framer-motion';
 import { Course } from '@/types/course';
-import { getCountryFromCookie, detectCountryFromIP, getCoursePrice, setCountryInCookie } from '@/utils/countryDetection';
+import { detectCountryFromIP, getCoursePrice, setCountryInCookie } from '@/utils/countryDetection';
+import { formatCurrency } from '@/utils/currency';
 
 interface CoursePricing {
   price: number;
@@ -35,14 +36,11 @@ const CoursesPage: NextPage = () => {
   const [coursePricing, setCoursePricing] = useState<Record<string, CoursePricing>>({});
   const [suggestionPricing, setSuggestionPricing] = useState<Record<string, CoursePricing>>({});
 
-  // Detect user country
+  // Detect user country — always re-detect from IP to avoid stale cookies
   useEffect(() => {
     const initCountry = async () => {
-      let country = getCountryFromCookie();
-      if (!country || country === 'IN') {
-        country = await detectCountryFromIP();
-        setCountryInCookie(country);
-      }
+      const country = await detectCountryFromIP();
+      setCountryInCookie(country);
       setUserCountry(country);
     };
     initCountry();
@@ -203,6 +201,7 @@ const CoursesPage: NextPage = () => {
     if (router.isReady && userCountry) {
       fetchCourses();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCategory, selectedLevel, priceRange, sortBy, debouncedSearchQuery, router.isReady, userCountry]);
 
   // Initial load to get all courses for filter options only
@@ -239,6 +238,7 @@ const CoursesPage: NextPage = () => {
       console.log('🎯 Fetching filter options...');
       fetchAllCoursesForFilters();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.isReady, categories.length]);
 
   if (loading) {
@@ -372,7 +372,7 @@ const CoursesPage: NextPage = () => {
                               </span>
                             ) : (
                               <span className="text-sm font-semibold text-primary-600">
-                                ₹{course.price.toLocaleString()}
+                                {formatCurrency(course.price, { decimals: 0 })}
                               </span>
                             )}
                           </div>
@@ -430,7 +430,7 @@ const CoursesPage: NextPage = () => {
                         Showing <span className="font-semibold">{courses.length}</span> results
                         {selectedCategory && selectedCategory !== 'all' && (
                           <span className="text-primary-600 ml-2">
-                            for category: "{selectedCategory}"
+                            for category: &quot;{selectedCategory}&quot;
                           </span>
                         )}
                       </p>

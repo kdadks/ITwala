@@ -49,16 +49,19 @@ export default async function handler(
       return res.status(404).json({ error: 'Course not found' });
     }
 
+    // courses.price is stored in full units (e.g. 2999 for ₹2,999)
+    // course_pricing.price is in smallest unit (paise/cents).
+    // Multiply by 100 so the display logic (÷100) yields the correct value.
     return res.status(200).json({
       pricing: {
-        price: courseData.price,
-        originalPrice: courseData.original_price,
+        price: courseData.price * 100,
+        originalPrice: courseData.original_price ? courseData.original_price * 100 : undefined,
         currency: 'INR',
         symbol: '₹',
       }
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching pricing:', error);
     return res.status(500).json({ error: 'Failed to fetch pricing' });
   }

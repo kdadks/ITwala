@@ -171,7 +171,7 @@ const ProductStrategy: NextPage = () => {
             >
               <h2 className="text-3xl font-bold text-gray-900 mb-6">Ready to Define Your Product Strategy?</h2>
               <p className="text-lg text-gray-600 mb-8">
-                Let's work together to create a winning product strategy that drives growth and market success.
+                {"Let's work together to create a winning product strategy that drives growth and market success."}
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <Link href="/contact">

@@ -869,7 +869,7 @@ const Portfolio: NextPage = () => {
               </h2>
 
               <p className="text-lg text-gray-600 mb-8">
-                Let's discuss how we can help transform your business.
+                {"Let's discuss how we can help transform your business."}
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 justify-center">

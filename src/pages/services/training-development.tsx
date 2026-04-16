@@ -94,7 +94,7 @@ const TrainingDevelopment: NextPage = () => {
                       <FaCheckCircle className="w-6 h-6 text-orange-500 mr-4 mt-1 flex-shrink-0" />
                       <div>
                         <h3 className="text-lg font-semibold text-gray-900 mb-2">Custom Corporate Training</h3>
-                        <p className="text-gray-600">Tailored training programs designed specifically for your organization's needs.</p>
+                        <p className="text-gray-600">Tailored training programs designed specifically for your organization&apos;s needs.</p>
                       </div>
                     </div>
                   </div>
@@ -428,7 +428,7 @@ const TrainingDevelopment: NextPage = () => {
             >
               <h2 className="text-3xl font-bold text-gray-900 mb-6">Ready to Upskill Your Team?</h2>
               <p className="text-lg text-gray-600 mb-8">
-                Invest in your team's growth with our comprehensive training programs and unlock their full potential.
+                {"Invest in your team's growth with our comprehensive training programs and unlock their full potential."}
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <Link href="/contact">

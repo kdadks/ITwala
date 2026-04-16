@@ -57,6 +57,7 @@ const CategoriesPage: NextPage = () => {
     }
 
     fetchCategories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, isAdmin, authLoading, router]);
 
   const handleAddCategory = async (e: React.FormEvent) => {

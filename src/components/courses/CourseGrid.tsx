@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Course } from '../../types/course';
 import RatingComponent from '../RatingComponent';
+import { formatCurrency } from '@/utils/currency';
 
 interface CoursePricing {
   price: number;
@@ -74,7 +75,7 @@ const CourseGrid: React.FC<CourseGridProps> = ({ courses, coursePricing = {} }) 
                       </>
                     ) : (
                       <span className="text-base sm:text-lg font-bold text-primary-600">
-                        ₹{course.price.toLocaleString()}
+                        {formatCurrency(course.price, { decimals: 0 })}
                       </span>
                     )}
                   </div>

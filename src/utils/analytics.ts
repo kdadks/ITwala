@@ -1,4 +1,9 @@
 import { SupabaseClient } from '@supabase/supabase-js';
+import {
+  insertPageView,
+  updatePageViewDuration,
+  insertAnalyticsEvent,
+} from '@/services/supabaseService';
 
 interface PageViewData {
   page_url: string;
@@ -122,15 +127,21 @@ const hasAnalyticsConsent = (): boolean => {
 
 // Track page view
 export const trackPageView = async (supabase: SupabaseClient): Promise<void> => {
-  // Skip tracking on localhost
-  if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
-    console.log('📊 Analytics tracking skipped - localhost');
+  // Skip tracking outside production
+  if (process.env.NODE_ENV !== 'production') {
+    return;
+  }
+
+  // Skip tracking on localhost (belt-and-suspenders for non-standard NODE_ENV)
+  if (
+    typeof window !== 'undefined' &&
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ) {
     return;
   }
 
   // Check for analytics consent
   if (!hasAnalyticsConsent()) {
-    console.log('📊 Analytics tracking skipped - no consent');
     return;
   }
 
@@ -140,79 +151,38 @@ export const trackPageView = async (supabase: SupabaseClient): Promise<void> => 
     // Get location data
     const location = await getLocationData();
 
-    // Collect page view data
-    const pageViewData: PageViewData = {
-      page_url: window.location.pathname,
+    const sessionId = getSessionId();
+    const pageUrl = window.location.pathname;
+
+    const dbData = {
+      session_id: sessionId,
+      page_url: pageUrl,
       page_title: document.title,
       referrer: document.referrer || 'direct',
+      user_agent: navigator.userAgent,
       country: location.country,
-      city: location.city,
-      region: location.region,
       device_type: getDeviceType(),
       browser: getBrowser(),
-      os: getOS(),
-      screen_resolution: `${window.screen.width}x${window.screen.height}`,
-      language: navigator.language,
-      session_id: getSessionId(),
-      user_agent: navigator.userAgent,
     };
 
-    // Prepare data for database (only fields that exist in schema)
-    // Schema columns: id, user_id, session_id, page_url, page_title, referrer,
-    // user_agent, ip_address, country, device_type, browser, duration_seconds, created_at
-    const dbData = {
-      session_id: pageViewData.session_id,
-      page_url: pageViewData.page_url,
-      page_title: pageViewData.page_title,
-      referrer: pageViewData.referrer,
-      user_agent: pageViewData.user_agent,
-      country: pageViewData.country,
-      device_type: pageViewData.device_type,
-      browser: pageViewData.browser,
-      // Excluded: os, screen_resolution, language, city, region (not in schema)
-    };
-
-    // Insert into Supabase
-    const { error } = await supabase
-      .from('page_views')
-      .insert([dbData]);
-
-    if (error) {
-      console.error('Error tracking page view:', error);
-    } else {
-      console.log('📊 Page view tracked:', dbData.page_url);
-    }
+    await insertPageView(supabase, dbData);
 
     // Track time on page when user leaves
     const trackTimeOnPage = () => {
       const duration_seconds = Math.round((Date.now() - startTime) / 1000);
-
-      // Update the page view with duration
-      supabase
-        .from('page_views')
-        .update({ duration_seconds })
-        .eq('session_id', dbData.session_id)
-        .eq('page_url', dbData.page_url)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .then(({ error }) => {
-          if (error) {
-            console.error('Error updating page duration:', error);
-          }
-        });
+      updatePageViewDuration(supabase, sessionId, pageUrl, duration_seconds).catch(
+        (err: unknown) => console.error('Error updating page duration:', err)
+      );
     };
 
-    // Track on page unload
     window.addEventListener('beforeunload', trackTimeOnPage);
 
-    // Also track on visibility change (user switches tabs)
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) {
         trackTimeOnPage();
       }
     });
-
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error in trackPageView:', error);
   }
 };
@@ -221,10 +191,17 @@ export const trackPageView = async (supabase: SupabaseClient): Promise<void> => 
 export const trackEvent = async (
   supabase: SupabaseClient,
   eventName: string,
-  eventData?: Record<string, any>
+  eventData?: Record<string, unknown>
 ): Promise<void> => {
-  // Skip tracking on localhost
-  if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+  // Skip tracking outside production
+  if (process.env.NODE_ENV !== 'production') {
+    return;
+  }
+
+  if (
+    typeof window !== 'undefined' &&
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ) {
     return;
   }
 
@@ -233,22 +210,14 @@ export const trackEvent = async (
   }
 
   try {
-    const { error } = await supabase
-      .from('analytics_events')
-      .insert([{
-        event_name: eventName,
-        event_data: eventData || {},
-        page_url: window.location.pathname,
-        session_id: getSessionId(),
-        created_at: new Date().toISOString(),
-      }]);
-
-    if (error) {
-      console.error('Error tracking event:', error);
-    } else {
-      console.log('📊 Event tracked:', eventName);
-    }
-  } catch (error) {
+    await insertAnalyticsEvent(
+      supabase,
+      eventName,
+      eventData ?? {},
+      window.location.pathname,
+      getSessionId()
+    );
+  } catch (error: unknown) {
     console.error('Error in trackEvent:', error);
   }
 };
@@ -256,13 +225,11 @@ export const trackEvent = async (
 // Initialize analytics listener
 export const initializeAnalytics = () => {
   // Listen for cookie consent updates
-  window.addEventListener('cookieConsentUpdated', (event: any) => {
-    const prefs = event.detail;
-    console.log('🍪 Cookie consent updated:', prefs);
-
-    // If analytics consent was just given, track current page
+  window.addEventListener('cookieConsentUpdated', (event: Event) => {
+    const customEvent = event as CustomEvent<{ analytics: boolean }>;
+    const prefs = customEvent.detail;
     if (prefs.analytics) {
-      console.log('📊 Analytics consent granted - tracking enabled');
+      // Consent just granted — caller can trigger a fresh trackPageView
     }
   });
 };

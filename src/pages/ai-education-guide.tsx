@@ -78,7 +78,7 @@ const AIEducationGuide: NextPage = () => {
         <section className="py-12 bg-gray-50">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto">
-              <h2 className="text-2xl font-bold mb-6">What You'll Learn</h2>
+              <h2 className="text-2xl font-bold mb-6">{"What You'll Learn"}</h2>
               <div className="grid md:grid-cols-2 gap-4">
                 <ul className="space-y-2">
                   <li>• What is AI Education and Why It Matters</li>
@@ -261,9 +261,9 @@ const AIEducationGuide: NextPage = () => {
               <div className="bg-green-50 p-6 rounded-lg my-8">
                 <h3>Ready to Start Your AI Education Journey?</h3>
                 <p>
-                  Join thousands of successful graduates who have transformed their careers with ITWala Academy's 
-                  comprehensive AI education programs. Our expert-designed curriculum, hands-on projects, and 
-                  career support ensure you're ready for the AI-driven future.
+                  Join thousands of successful graduates who have transformed their careers with ITWala Academy&apos;s
+                  comprehensive AI education programs. Our expert-designed curriculum, hands-on projects, and
+                  career support ensure you&apos;re ready for the AI-driven future.
                 </p>
                 <Link href="/courses" className="inline-block bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors mt-4">
                   Explore Our AI Courses

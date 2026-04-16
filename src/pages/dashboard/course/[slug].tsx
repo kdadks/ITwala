@@ -77,6 +77,7 @@ const CoursePage: NextPage<CoursePageProps> = ({ course }) => {
     };
 
     fetchProgress();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [course, user]);
 
   const markLessonComplete = async (moduleIndex: number, lessonIndex: number) => {

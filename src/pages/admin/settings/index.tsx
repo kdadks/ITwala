@@ -90,6 +90,7 @@ const AdminSettings: NextPage = () => {
     return () => {
       isMounted = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, isAdmin, authLoading, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {

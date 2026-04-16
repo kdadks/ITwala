@@ -1,15 +1,56 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Course } from '../../types/course';
 import RatingComponent from '../RatingComponent';
 
-interface RelatedCoursesProps {
-  courses: Course[];
+interface LocalPricing {
+  price: number;
+  symbol: string;
 }
 
-const RelatedCourses: React.FC<RelatedCoursesProps> = ({ courses }) => {
+interface RelatedCoursesProps {
+  courses: Course[];
+  userCountry?: string;
+}
+
+const RelatedCourses: React.FC<RelatedCoursesProps> = ({ courses, userCountry = 'IN' }) => {
+  const [pricing, setPricing] = useState<Record<string, LocalPricing>>({});
+
+  useEffect(() => {
+    if (!courses.length) return;
+
+    const fetchPricing = async () => {
+      const results = await Promise.all(
+        courses.map(async (course) => {
+          try {
+            const res = await fetch(`/api/pricing/course?courseId=${course.id}&country=${userCountry}`);
+            if (res.ok) {
+              const data = await res.json();
+              return { id: course.id, pricing: data.pricing as LocalPricing };
+            }
+          } catch {
+            // fall through to default
+          }
+          return { id: course.id, pricing: { price: course.price * 100, symbol: '₹' } };
+        })
+      );
+      const map: Record<string, LocalPricing> = {};
+      results.forEach(({ id, pricing: p }) => { if (id) map[id] = p; });
+      setPricing(map);
+    };
+
+    fetchPricing();
+  }, [courses, userCountry]);
+
+  const formatPrice = (course: Course) => {
+    const p = pricing[course.id ?? ''];
+    if (p) return `${p.symbol}${(p.price / 100).toLocaleString()}`;
+    // While loading, show INR price from course record (full units, no division)
+    return `₹${course.price.toLocaleString()}`;
+  };
+
   return (
     <section className="py-12 bg-gray-50">
       <div className="container mx-auto px-4">
@@ -51,7 +92,7 @@ const RelatedCourses: React.FC<RelatedCoursesProps> = ({ courses }) => {
                       </div>
                       <div className="flex justify-end">
                         <span className="text-sm font-medium text-gray-900">
-                          ₹{course.price.toLocaleString()}
+                          {formatPrice(course)}
                         </span>
                       </div>
                     </div>

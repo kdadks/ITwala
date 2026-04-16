@@ -310,7 +310,7 @@ const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ isOpen, onClose, cour
             ) : showDirectEnrollment && hasExistingProfile ? (
               <div>
                 <p className="text-sm text-gray-500 mb-4">
-                  Welcome back! Since you've enrolled in courses before, you can enroll directly.
+                  Welcome back! Since you&apos;ve enrolled in courses before, you can enroll directly.
                 </p>
                 <div className="bg-blue-50 border border-blue-200 rounded-md p-4 mb-4">
                   <div className="flex">
@@ -321,7 +321,7 @@ const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ isOpen, onClose, cour
                     </div>
                     <div className="ml-3">
                       <p className="text-sm text-blue-800">
-                        <strong>Quick Enrollment:</strong> We'll use your existing profile information to enroll you directly. A confirmation email will be sent to you.
+                        <strong>Quick Enrollment:</strong> We&apos;ll use your existing profile information to enroll you directly. A confirmation email will be sent to you.
                       </p>
                     </div>
                   </div>
@@ -572,8 +572,8 @@ const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ isOpen, onClose, cour
                     <option value="10th">10th</option>
                     <option value="12th">12th</option>
                     <option value="diploma">Diploma</option>
-                    <option value="bachelors">Bachelor's Degree</option>
-                    <option value="masters">Master's Degree</option>
+                    <option value="bachelors">Bachelor&apos;s Degree</option>
+                    <option value="masters">Master&apos;s Degree</option>
                     <option value="phd">Ph.D.</option>
                     <option value="other">Other</option>
                   </select>

@@ -69,17 +69,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const cfCountry = req.headers['cf-ipcountry'];
       if (cfCountry && typeof cfCountry === 'string' && cfCountry !== 'XX') {
         const countryName = getCountryNameFromCode(cfCountry);
-        return res.status(200).json({ country: countryName, source: 'cloudflare-header' });
+        return res.status(200).json({ country: countryName, countryCode: cfCountry.toUpperCase(), source: 'cloudflare-header' });
       }
 
-      return res.status(200).json({ country: 'Unknown', source: 'localhost', ip: clientIP });
+      return res.status(200).json({ country: 'Unknown', countryCode: null, source: 'localhost', ip: clientIP });
     }
 
     // Method 1: Check Cloudflare headers (if deployed on Vercel/Cloudflare)
     const cfCountry = req.headers['cf-ipcountry'];
     if (cfCountry && typeof cfCountry === 'string' && cfCountry !== 'XX') {
       const countryName = getCountryNameFromCode(cfCountry);
-      return res.status(200).json({ country: countryName, source: 'cloudflare-header' });
+      return res.status(200).json({ country: countryName, countryCode: cfCountry.toUpperCase(), source: 'cloudflare-header' });
     }
 
     // Method 2: Use ipapi.co free API (1000 requests/day, no key needed)
@@ -99,6 +99,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (data.country_name && data.country_name !== 'Unknown') {
           return res.status(200).json({
             country: data.country_name,
+            countryCode: data.country_code || null,
             source: 'ipapi.co',
             ip: clientIP
           });
@@ -113,7 +114,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 3000);
 
-      const response = await fetch(`http://ip-api.com/json/${clientIP}?fields=country`, {
+      const response = await fetch(`http://ip-api.com/json/${clientIP}?fields=country,countryCode`, {
         signal: controller.signal
       });
 
@@ -124,6 +125,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (data.country && data.country !== 'Unknown') {
           return res.status(200).json({
             country: data.country,
+            countryCode: data.countryCode || null,
             source: 'ip-api.com',
             ip: clientIP
           });
@@ -136,15 +138,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Fallback: Return Unknown
     return res.status(200).json({
       country: 'Unknown',
+      countryCode: null,
       source: 'fallback',
       ip: clientIP
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Country lookup error:', error);
     return res.status(500).json({
       country: 'Unknown',
-      error: error.message
+      countryCode: null,
+      error: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 }

@@ -111,7 +111,7 @@ const EnrolledCourses = () => {
         </div>
       ) : enrolledCourses.length === 0 ? (
         <div className="text-center py-8">
-          <p className="text-gray-500 mb-4">You haven't enrolled in any courses yet.</p>
+          <p className="text-gray-500 mb-4">You haven&apos;t enrolled in any courses yet.</p>
           <Link
             href="/courses"
             className="inline-block bg-primary-500 text-white px-6 py-2 rounded-md hover:bg-primary-600 transition-colors"

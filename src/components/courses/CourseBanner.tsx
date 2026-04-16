@@ -1,6 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { formatCurrency } from '@/utils/currency';
 
 interface Course {
   title: string;
@@ -61,7 +62,7 @@ const CourseBanner: React.FC<CourseBannerProps> = ({
                   Tuition fees will be discussed post enrollment
                 </p>
               ) : (
-                <p className="text-white font-medium">₹{course.price.toLocaleString()}</p>
+                <p className="text-white font-medium">{formatCurrency(course.price, { decimals: 0 })}</p>
               )}
             </div>
           </div>

@@ -42,7 +42,7 @@ const CompleteProfile: NextPage = () => {
           <div className="text-center mb-8">
             <h1 className="text-3xl font-extrabold text-gray-900">Welcome to ITwala Academy!</h1>
             <p className="mt-2 text-sm text-gray-600">
-              Let's complete your profile to get started
+              {"Let's complete your profile to get started"}
             </p>
           </div>
           

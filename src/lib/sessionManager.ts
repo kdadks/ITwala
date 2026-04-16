@@ -1,31 +1,19 @@
 // Central session management to prevent conflicts
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabaseClient';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
-// Singleton pattern to ensure only one client instance
-let clientInstance: any = null;
-
-export function getSupabaseClient() {
-  if (!clientInstance && typeof window !== 'undefined') {
-    clientInstance = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        auth: {
-          persistSession: true,
-          autoRefreshToken: true,
-          detectSessionInUrl: true,
-          flowType: 'pkce',
-          storage: window.localStorage,
-          storageKey: 'supabase.auth.token'
-        }
-      }
-    );
-  }
-  return clientInstance;
+/**
+ * Returns the shared Supabase client.
+ * Previously this file created a second client instance, which caused the
+ * very session conflicts it was trying to resolve.  Now it delegates to the
+ * single canonical client defined in supabaseClient.ts.
+ */
+export function getSupabaseClient(): SupabaseClient {
+  return supabase;
 }
 
 // Clear session conflicts
-export async function clearSessionConflicts() {
+export async function clearSessionConflicts(): Promise<void> {
   if (typeof window !== 'undefined') {
     // Clear localStorage
     const keysToRemove = [
@@ -49,14 +37,11 @@ export async function clearSessionConflicts() {
 
     // Clear sessionStorage as well
     sessionStorage.clear();
-
-    // Reset client instance
-    clientInstance = null;
   }
 }
 
 // Check for session conflicts
-export async function detectSessionConflicts() {
+export async function detectSessionConflicts(): Promise<boolean> {
   if (typeof window === 'undefined') return false;
   
   try {
@@ -69,10 +54,7 @@ export async function detectSessionConflicts() {
       return true;
     }
 
-    const client = getSupabaseClient();
-    if (!client) return false;
-
-    const { data: { session }, error } = await client.auth.getSession();
+    const { error } = await supabase.auth.getSession();
 
     if (error) {
       if (error.message.includes('409') || error.message.includes('conflict')) {
@@ -85,8 +67,8 @@ export async function detectSessionConflicts() {
     }
 
     return false;
-  } catch (error: any) {
-    console.error('Error detecting session conflicts:', error);
+  } catch (err: unknown) {
+    console.error('Error detecting session conflicts:', err);
     // If we can't check, assume there's a conflict to be safe
     return true;
   }
@@ -96,11 +78,8 @@ export async function detectSessionConflicts() {
 export async function refreshSession() {
   if (typeof window === 'undefined') return null;
   
-  const client = getSupabaseClient();
-  if (!client) return null;
-  
   try {
-    const { data, error } = await client.auth.refreshSession();
+    const { data, error } = await supabase.auth.refreshSession();
     
     if (error) {
       console.error('Session refresh error:', error);
@@ -110,8 +89,8 @@ export async function refreshSession() {
     }
     
     return data;
-  } catch (error) {
-    console.error('Session refresh exception:', error);
+  } catch (err: unknown) {
+    console.error('Session refresh exception:', err);
     await clearSessionConflicts();
     return null;
   }

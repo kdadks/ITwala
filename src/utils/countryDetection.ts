@@ -48,28 +48,52 @@ export function setCountryInCookie(countryCode: string) {
   document.cookie = `user_country=${countryCode}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`;
 }
 
+// EU country codes to map to the 'EU' grouping
+const EU_COUNTRY_CODES = ['DE', 'FR', 'IT', 'ES', 'NL', 'BE', 'AT', 'PT', 'GR', 'IE', 'FI', 'SE', 'DK', 'PL', 'CZ', 'RO', 'HU'];
+
+function normalizeCountryCode(code: string): string {
+  // Map EU member states to the shared 'EU' grouping used for pricing
+  const mapped = EU_COUNTRY_CODES.includes(code) ? 'EU' : code;
+  return SUPPORTED_COUNTRIES[mapped] ? mapped : DEFAULT_COUNTRY;
+}
+
 /**
- * Detect country from IP address (using a free API)
+ * Detect country from IP address.
+ *
+ * Production: goes through our server-side route which reads Cloudflare headers.
+ * Local dev: the server sees 127.0.0.1 so can't determine the real country.
+ *   In that case we fall back to calling ipapi.co directly from the browser,
+ *   which uses the user's real public IP.
  */
 export async function detectCountryFromIP(): Promise<string> {
   try {
-    const response = await fetch('https://ipapi.co/json/');
+    const response = await fetch('/api/analytics/get-country');
+    if (!response.ok) return DEFAULT_COUNTRY;
+
     const data = await response.json();
 
-    let countryCode = data.country_code || DEFAULT_COUNTRY;
-
-    // Map EU countries to EU
-    const euCountries = ['DE', 'FR', 'IT', 'ES', 'NL', 'BE', 'AT', 'PT', 'GR', 'IE', 'FI', 'SE', 'DK', 'PL', 'CZ', 'RO', 'HU'];
-    if (euCountries.includes(countryCode)) {
-      countryCode = 'EU';
+    // If the server couldn't determine the country (local dev / private IP),
+    // fall back to a direct browser-side lookup so the developer's real public
+    // IP (e.g. an Irish IP) is used instead of defaulting to IN.
+    if (!data.countryCode || data.source === 'localhost') {
+      try {
+        const ipRes = await fetch('https://ipapi.co/json/', {
+          signal: AbortSignal.timeout(3000),
+          headers: { 'User-Agent': 'ITWala-Academy/1.0' },
+        });
+        if (ipRes.ok) {
+          const ipData = await ipRes.json();
+          if (ipData.country_code) {
+            return normalizeCountryCode(ipData.country_code);
+          }
+        }
+      } catch {
+        // ipapi.co unreachable – fall through to IN default
+      }
+      return DEFAULT_COUNTRY;
     }
 
-    // Only return if it's a supported country
-    if (SUPPORTED_COUNTRIES[countryCode]) {
-      return countryCode;
-    }
-
-    return DEFAULT_COUNTRY;
+    return normalizeCountryCode(data.countryCode);
   } catch (error) {
     console.error('Error detecting country:', error);
     return DEFAULT_COUNTRY;

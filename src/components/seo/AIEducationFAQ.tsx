@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 
@@ -155,12 +156,12 @@ const AIEducationFAQ: React.FC = () => {
               <p className="text-gray-600 mb-6">
                 Still have questions about our AI education programs?
               </p>
-              <a
+              <Link
                 href="/contact"
                 className="inline-flex items-center bg-primary-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors"
               >
                 Contact Our AI Education Experts
-              </a>
+              </Link>
             </motion.div>
           </div>
         </div>

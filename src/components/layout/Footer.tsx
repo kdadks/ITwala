@@ -49,7 +49,7 @@ const Footer = () => {
               />
               <div>
                 <span className="text-xl font-bold text-white">ITwala</span>
-                <p className="text-sm text-white font-medium">IT- It's Simple</p>
+                <p className="text-sm text-white font-medium">IT- It&apos;s Simple</p>
               </div>
             </Link>
             

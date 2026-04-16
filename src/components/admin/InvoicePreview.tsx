@@ -1,8 +1,10 @@
 import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { InvoiceData } from './InvoiceGenerator';
-import { previewInvoicePDF } from '../../utils/pdfGenerator';
 import { formatAmount } from '../../utils/currency';
+
+// Lazy-load the heavy PDF module only when a preview is requested
+const loadPdfModule = () => import('../../utils/pdfGenerator');
 
 interface InvoicePreviewProps {
   data: InvoiceData;
@@ -26,6 +28,7 @@ const InvoicePreview: React.FC<InvoicePreviewProps> = ({
 
   const loadPreview = async () => {
     try {
+      const { previewInvoicePDF } = await loadPdfModule();
       const url = await previewInvoicePDF(data);
       setPdfUrl(url);
     } catch (error) {

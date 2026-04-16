@@ -128,7 +128,7 @@ const WhyChooseUs: React.FC = () => {
                 Your Success is Our Priority
               </h3>
               <p className="text-lg text-gray-700 mb-6">
-                At ITWala, we don't just deliver projects – we deliver outcomes. Our client-centric approach ensures that every solution we build directly contributes to your business objectives and long-term success.
+                      At ITWala, we don&apos;t just deliver projects – we deliver outcomes. Our client-centric approach ensures that every solution we build directly contributes to your business objectives and long-term success.
               </p>
               <div className="space-y-4">
                 <div className="flex items-start">

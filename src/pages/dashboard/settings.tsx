@@ -342,8 +342,8 @@ const Settings: NextPage = () => {
                               <option value="High School">High School</option>
                               <option value="Diploma">Diploma</option>
                               <option value="Associate Degree">Associate Degree</option>
-                              <option value="Bachelor's Degree">Bachelor's Degree</option>
-                              <option value="Master's Degree">Master's Degree</option>
+                              <option value="Bachelor's Degree">{"Bachelor's Degree"}</option>
+                              <option value="Master's Degree">{"Master's Degree"}</option>
                               <option value="Doctorate (PhD)">Doctorate (PhD)</option>
                               <option value="Professional Degree">Professional Degree</option>
                               <option value="Postdoctoral">Postdoctoral</option>
@@ -549,7 +549,7 @@ const Settings: NextPage = () => {
                             </div>
                             <div className="ml-3 text-sm">
                               <label htmlFor="emailCourseUpdates" className="font-medium text-gray-700">Course updates</label>
-                              <p className="text-gray-500">Get notified when courses you're enrolled in are updated.</p>
+                              <p className="text-gray-500">Get notified when courses you&apos;re enrolled in are updated.</p>
                             </div>
                           </div>
                           

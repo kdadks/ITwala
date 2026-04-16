@@ -5,7 +5,8 @@ import { motion } from 'framer-motion';
 import InvoiceForm from './InvoiceForm';
 import InvoicePreview from './InvoicePreview';
 import InvoiceHistory from './InvoiceHistory';
-import { generateInvoicePDF } from '../../utils/pdfGenerator';
+// Lazy-load the heavy PDF module only when a PDF is actually requested
+const loadPdfModule = () => import('../../utils/pdfGenerator');
 
 export interface InvoiceData {
   id?: string;
@@ -302,6 +303,7 @@ const InvoiceGenerator: React.FC = () => {
 
   const generatePDF = async (data: InvoiceData) => {
     try {
+      const { generateInvoicePDF } = await loadPdfModule();
       const pdfBlob = await generateInvoicePDF(data);
       
       // Create download link

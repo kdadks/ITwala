@@ -188,7 +188,7 @@ const GlossyNavbar = () => {
                         ITwala
                       </span>
                       <div className="text-xs md:text-sm font-semibold text-gray-600 mt-0.5 tracking-wide">
-                        IT- It's Simple
+                        IT- It&apos;s Simple
                       </div>
                     </motion.div>
 

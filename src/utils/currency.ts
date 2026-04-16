@@ -7,37 +7,41 @@ export const CURRENCY_SYMBOL = '₹';
 export const CURRENCY_CODE = 'INR';
 
 /**
- * Format a number as INR currency
- * @param amount - The amount to format
- * @param options - Formatting options
- * @returns Formatted currency string
+ * Format a number as a currency string.
+ * @param amount  - The amount to format (in full units, e.g. 2999 for ₹2,999)
+ * @param options - currency: ISO 4217 code (default 'INR'); decimals; symbol fallback
  */
 export const formatCurrency = (
   amount: number, 
   options: {
+    currency?: string;
     symbol?: string;
     decimals?: number;
     locale?: string;
   } = {}
 ): string => {
-  const {
-    symbol = CURRENCY_SYMBOL,
-    decimals = 2,
-    locale = 'en-IN'
-  } = options;
+  const currency = options.currency ?? CURRENCY_CODE;
+  const decimals = options.decimals ?? 2;
+
+  // Infer a sensible locale when not explicitly provided
+  const defaultLocale: Record<string, string> = {
+    INR: 'en-IN',
+    USD: 'en-US',
+    GBP: 'en-GB',
+    EUR: 'de-DE',
+  };
+  const locale = options.locale ?? (defaultLocale[currency] || 'en-IN');
 
   try {
-    // Use Intl.NumberFormat for proper localization
-    const formatter = new Intl.NumberFormat(locale, {
+    return new Intl.NumberFormat(locale, {
       style: 'currency',
-      currency: CURRENCY_CODE,
+      currency,
       minimumFractionDigits: decimals,
       maximumFractionDigits: decimals,
-    });
-    
-    return formatter.format(amount);
-  } catch (error) {
-    // Fallback to manual formatting if Intl is not supported
+    }).format(amount);
+  } catch {
+    // Fallback when Intl is unavailable or currency code is unrecognised
+    const symbol = options.symbol ?? CURRENCY_SYMBOL;
     return `${symbol}${amount.toFixed(decimals)}`;
   }
 };

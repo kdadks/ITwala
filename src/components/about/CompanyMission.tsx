@@ -50,7 +50,7 @@ const CompanyMission: React.FC = () => {
             Transforming IT Education & Business Solutions
           </h2>
           <p className="text-lg text-gray-600">
-            We're on a mission to make quality IT education accessible while delivering innovative business solutions
+            We&apos;re on a mission to make quality IT education accessible while delivering innovative business solutions
           </p>
         </motion.div>
 

@@ -1,5 +1,6 @@
 import { NextPage } from 'next';
 import Head from 'next/head';
+import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
@@ -258,12 +259,12 @@ const AdminLogin: NextPage = () => {
 
             {/* Back to Site Link */}
             <div className="text-center">
-              <a
+              <Link
                 href="/"
                 className="text-sm font-medium text-gray-600 hover:text-primary-600 transition-colors duration-200"
               >
                 ← Back to Main Site
-              </a>
+              </Link>
             </div>
           </form>
 

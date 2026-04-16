@@ -85,7 +85,7 @@ const CreateProfileForm: React.FC<CreateProfileFormProps> = ({ onSuccess }) => {
     <div className="bg-white p-6 rounded-lg shadow-lg">
       <h2 className="text-2xl font-bold text-gray-900 mb-6">Complete Your Profile</h2>
       <p className="text-gray-600 mb-6">
-        It looks like your profile wasn't created during registration. Please complete your profile below.
+        It looks like your profile wasn&apos;t created during registration. Please complete your profile below.
       </p>
       
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

@@ -34,6 +34,7 @@ const RevenuePage: NextPage = () => {
   useEffect(() => {
     fetchPayments();
     fetchStats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchPayments = async () => {

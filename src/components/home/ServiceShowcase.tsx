@@ -69,7 +69,7 @@ const ServiceShowcase = () => {
             Two Paths to IT Excellence
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Whether you're looking to advance your career or transform your business, we have the expertise to guide you to success.
+            Whether you&apos;re looking to advance your career or transform your business, we have the expertise to guide you to success.
           </p>
         </motion.div>
 
@@ -94,7 +94,7 @@ const ServiceShowcase = () => {
 
             <p className="text-gray-600 mb-8 text-lg leading-relaxed">
               Master in-demand technologies with our comprehensive courses designed by industry experts. 
-              From beginner to advanced, we'll guide you every step of the way.
+              From beginner to advanced, we&apos;ll guide you every step of the way.
             </p>
 
             <div className="space-y-6 mb-8">
@@ -212,8 +212,8 @@ const ServiceShowcase = () => {
           <div className="bg-gradient-to-r from-primary-600 to-secondary-600 rounded-3xl p-8 md:p-12 text-white">
             <h3 className="text-2xl md:text-3xl font-bold mb-4">Ready to Get Started?</h3>
             <p className="text-lg mb-8 opacity-90 max-w-2xl mx-auto">
-              Whether you're looking to advance your skills or transform your business, 
-              we're here to help you achieve your goals.
+              Whether you&apos;re looking to advance your skills or transform your business, 
+              we&apos;re here to help you achieve your goals.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/contact">

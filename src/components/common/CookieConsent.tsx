@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Check, Settings } from 'lucide-react';
 
@@ -94,7 +95,7 @@ const CookieConsent = () => {
                       </h3>
                       <p className="text-gray-600 text-sm md:text-base">
                         We use cookies to enhance your browsing experience, analyze site traffic, and personalize content.
-                        By clicking "Accept All", you consent to our use of cookies. You can also customize your preferences.
+                        By clicking &quot;Accept All&quot;, you consent to our use of cookies. You can also customize your preferences.
                       </p>
                     </div>
                     <button
@@ -130,9 +131,9 @@ const CookieConsent = () => {
 
                   <p className="mt-4 text-xs text-gray-500">
                     Learn more in our{' '}
-                    <a href="/privacy-policy" className="text-primary-600 hover:underline">
+                    <Link href="/privacy-policy" className="text-primary-600 hover:underline">
                       Privacy Policy
-                    </a>{' '}
+                    </Link>{' '}
                     and{' '}
                     <a href="/cookie-policy" className="text-primary-600 hover:underline">
                       Cookie Policy

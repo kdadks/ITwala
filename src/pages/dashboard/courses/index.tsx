@@ -209,7 +209,7 @@ const MyCoursesPage: NextPage = () => {
               </div>
             ) : (
               <div className="text-center py-12">
-                <h2 className="text-xl font-medium text-gray-900 mb-4">You haven't enrolled in any courses yet</h2>
+                <h2 className="text-xl font-medium text-gray-900 mb-4">{"You haven't enrolled in any courses yet"}</h2>
                 <p className="text-gray-600 mb-8">Browse our courses and start your learning journey today!</p>
                 <Link
                   href="/courses"

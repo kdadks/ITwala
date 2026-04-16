@@ -41,7 +41,7 @@ const TermsOfService: NextPage = () => {
                 <div className="bg-white rounded-2xl p-8 shadow-lg">
                   <h2 className="text-2xl font-bold text-primary-700 mb-6">1. Agreement to Terms</h2>
                   <p className="text-gray-700 mb-6">
-                    By accessing or using ITwala Academy's services, you agree to be bound by these Terms of Service. If you disagree with any part of these terms, you may not access our services.
+                    By accessing or using ITwala Academy&apos;s services, you agree to be bound by these Terms of Service. If you disagree with any part of these terms, you may not access our services.
                   </p>
 
                   <h2 className="text-2xl font-bold text-primary-700 mb-6">2. User Accounts</h2>

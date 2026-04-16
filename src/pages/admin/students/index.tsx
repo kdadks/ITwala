@@ -237,6 +237,7 @@ const StudentsPage: NextPage = () => {
     };
 
     checkAdmin();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, router]);
 
   const handleEnrollmentStatusChange = async (enrollmentId: string, newStatus: 'active' | 'completed' | 'paused') => {
@@ -525,8 +526,8 @@ const StudentsPage: NextPage = () => {
                         <option value="10th">10th</option>
                         <option value="12th">12th</option>
                         <option value="diploma">Diploma</option>
-                        <option value="bachelors">Bachelor's Degree</option>
-                        <option value="masters">Master's Degree</option>
+                        <option value="bachelors">{"Bachelor's Degree"}</option>
+                        <option value="masters">{"Master's Degree"}</option>
                         <option value="phd">Ph.D.</option>
                         <option value="other">Other</option>
                       </select>

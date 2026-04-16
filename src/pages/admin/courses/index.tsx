@@ -155,6 +155,7 @@ const AdminCourses: NextPage = () => {
     checkAdmin();
     fetchCourses();
     fetchCategories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, supabase]);
 
   const handleDeleteCourse = async (courseId: string) => {

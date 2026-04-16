@@ -41,7 +41,7 @@ const ConsultingCTA: React.FC = () => {
                     Ready to Transform Your Business?
                   </h2>
                   <p className="text-xl text-gray-100 mb-8">
-                    Let's discuss how our expert consulting services can help you achieve your digital transformation goals and drive sustainable growth.
+                    Let&apos;s discuss how our expert consulting services can help you achieve your digital transformation goals and drive sustainable growth.
                   </p>
                   
                   <div className="space-y-4 mb-8">
@@ -181,7 +181,7 @@ const ConsultingCTA: React.FC = () => {
 
           <div className="mt-12">
             <p className="text-lg text-gray-600 mb-6">
-              Still have questions? We're here to help.
+              Still have questions? We&apos;re here to help.
             </p>
             <Link href="/contact">
               <div className="inline-flex items-center justify-center px-8 py-4 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-full transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl">

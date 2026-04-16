@@ -15,7 +15,8 @@ import LoadingState from '../../components/common/LoadingState';
 import ErrorBoundary from '../../components/common/ErrorBoundary';
 import { getSiteSettings } from '@/utils/siteSettings';
 import { toast } from 'react-hot-toast';
-import { detectCountryFromIP, getCountryFromCookie, setCountryInCookie, getCountryInfo } from '@/utils/countryDetection';
+import { detectCountryFromIP, setCountryInCookie, getCountryInfo } from '@/utils/countryDetection';
+import { formatCurrency } from '@/utils/currency';
 
 const CoursePage: NextPage = () => {
   const router = useRouter();
@@ -109,18 +110,12 @@ const CoursePage: NextPage = () => {
   }, [slug]);
 
   useEffect(() => {
-    // Detect user's country on mount
+    // Always re-detect country from IP on mount to avoid stale cookies
+    // (e.g. a user who previously visited from a different country/VPN).
     const initializeCountry = async () => {
-      let country = getCountryFromCookie();
-
-      if (!country || country === 'IN') {
-        // Try to detect from IP
-        const detected = await detectCountryFromIP();
-        country = detected;
-        setCountryInCookie(detected);
-      }
-
-      setUserCountry(country);
+      const detected = await detectCountryFromIP();
+      setCountryInCookie(detected);
+      setUserCountry(detected);
     };
 
     initializeCountry();
@@ -343,10 +338,10 @@ const CoursePage: NextPage = () => {
                         </>
                       ) : (
                         <>
-                          ₹{course.price.toLocaleString()}
+                          {formatCurrency(course.price, { decimals: 0 })}
                           {course.originalPrice && (
                             <span className="text-xl text-primary-200 line-through ml-2">
-                              ₹{course.originalPrice.toLocaleString()}
+                              {formatCurrency(course.originalPrice, { decimals: 0 })}
                             </span>
                           )}
                         </>
@@ -382,7 +377,7 @@ const CoursePage: NextPage = () => {
                   <h2 className="text-2xl font-bold mb-4">Course Content</h2>
                   <div className="space-y-4">
                     <div>
-                      <h3 className="text-lg font-semibold mb-2">What You'll Learn</h3>
+                      <h3 className="text-lg font-semibold mb-2">{"What You'll Learn"}</h3>
                       <ul className="list-disc list-inside space-y-1">
                         {course.learningOutcomes.map((outcome, index) => (
                           <li key={`outcome-${index}`} className="text-gray-700">{outcome}</li>
@@ -471,10 +466,10 @@ const CoursePage: NextPage = () => {
                         </>
                       ) : (
                         <>
-                          ₹{course.price.toLocaleString()}
+                          {formatCurrency(course.price, { decimals: 0 })}
                           {course.originalPrice && (
                             <span className="text-lg text-gray-500 line-through ml-2">
-                              ₹{course.originalPrice.toLocaleString()}
+                              {formatCurrency(course.originalPrice, { decimals: 0 })}
                             </span>
                           )}
                         </>
@@ -538,7 +533,7 @@ const CoursePage: NextPage = () => {
             <section className="bg-gray-50 py-12">
               <div className="container mx-auto px-4">
                 <h2 className="text-2xl font-bold text-center mb-8">Related Courses</h2>
-                <RelatedCourses courses={relatedCourses} />
+                <RelatedCourses courses={relatedCourses} userCountry={userCountry} />
               </div>
             </section>
           )}

@@ -4,7 +4,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import RatingComponent from '../RatingComponent';
-import { getCountryFromCookie, detectCountryFromIP, getCoursePrice, setCountryInCookie } from '@/utils/countryDetection';
+import { detectCountryFromIP, getCoursePrice, setCountryInCookie } from '@/utils/countryDetection';
+import { formatCurrency } from '@/utils/currency';
 
 interface CoursePricing {
   price: number;
@@ -22,11 +23,8 @@ const RecommendedCourses = () => {
 
   useEffect(() => {
     const initCountry = async () => {
-      let country = getCountryFromCookie();
-      if (!country || country === 'IN') {
-        country = await detectCountryFromIP();
-        setCountryInCookie(country);
-      }
+      const country = await detectCountryFromIP();
+      setCountryInCookie(country);
       setUserCountry(country);
     };
     initCountry();
@@ -156,7 +154,7 @@ const RecommendedCourses = () => {
                           </div>
                         ) : (
                           <span className="text-primary-600 font-semibold">
-                            ₹{course.price.toLocaleString()}
+                            {formatCurrency(course.price, { decimals: 0 })}
                           </span>
                         )}
                       </div>

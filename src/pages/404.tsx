@@ -48,7 +48,7 @@ const Custom404: NextPage = () => {
             transition={{ delay: 0.6 }}
             className="text-lg text-gray-600 mb-8"
           >
-            Looks like you've followed a broken link or entered a URL that doesn't exist on this site.
+            Looks like you&apos;ve followed a broken link or entered a URL that doesn&apos;t exist on this site.
           </motion.p>
 
           {/* Action Buttons */}
@@ -112,7 +112,7 @@ const Custom404: NextPage = () => {
             className="mt-8 p-4 bg-blue-50 rounded-lg"
           >
             <p className="text-sm text-gray-600">
-              Still can't find what you're looking for?{' '}
+              Still can&apos;t find what you&apos;re looking for?{' '}
               <Link href="/contact" className="text-indigo-600 hover:text-indigo-800 font-medium">
                 Contact our support team
               </Link>

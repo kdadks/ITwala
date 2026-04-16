@@ -167,7 +167,7 @@ const About: NextPage = () => {
                   ITwala is a comprehensive technology company offering both world-class IT education and professional consulting services. Our Academy division provides high-quality, industry-relevant training to empower individuals and professionals, while our Consulting division delivers cutting-edge solutions to businesses of all sizes.
                 </p>
                 <p className="text-gray-700 mb-4">
-                  Through our Academy, we focus on hands-on experience and real-world applications to bridge the gap between education and employment. Our industry-expert instructors and practical learning approach ensure students gain the skills needed to succeed in today's competitive market.
+                  Through our Academy, we focus on hands-on experience and real-world applications to bridge the gap between education and employment. Our industry-expert instructors and practical learning approach ensure students gain the skills needed to succeed in today&apos;s competitive market.
                 </p>
                 <p className="text-gray-700">
                   Our Consulting division leverages over 10 years of industry experience to provide comprehensive IT solutions including product development, AI-powered solutions, digital transformation, technical consulting, and IT staffing services. This unique combination allows our students to gain invaluable hands-on experience in a thriving technology environment while enabling businesses to access top-tier consulting expertise.
