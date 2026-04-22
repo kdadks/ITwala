@@ -106,7 +106,7 @@ const TermsOfService: NextPage = () => {
                   <div className="bg-secondary-50 rounded-lg p-6 mb-6">
                     <p className="text-secondary-700">
                       For questions about these Terms:<br />
-                      Email: sales@it-wala.com<br />
+                      Email: support@it-wala.com<br />
                       Phone: +91 7982303199<br />
                       Address: ITwala Academy, Lucknow, Uttar Pradesh, India
                     </p>

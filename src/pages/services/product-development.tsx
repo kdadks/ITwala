@@ -130,127 +130,59 @@ const ProductDevelopment: NextPage = () => {
         </script>
       </Head>
 
-      <main className="pt-8">
-        {/* Compact Hero Section with Integrated Products */}
-        <section className="py-6 bg-gradient-to-br from-indigo-50 via-purple-50 to-indigo-100 relative overflow-hidden">
-          {/* Gradient overlay for depth */}
-          <div className="absolute inset-0 bg-gradient-to-t from-white/20 via-transparent to-indigo-50/30 pointer-events-none"></div>
-          {/* Background Pattern with subtle animation */}
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-10 left-10 w-20 h-20 bg-indigo-600 rounded-full blur-xl animate-pulse" style={{ animationDuration: '4s' }}></div>
-            <div className="absolute top-32 right-20 w-32 h-32 bg-purple-600 rounded-full blur-xl animate-pulse" style={{ animationDuration: '6s', animationDelay: '1s' }}></div>
-            <div className="absolute bottom-20 left-1/4 w-24 h-24 bg-indigo-500 rounded-full blur-xl animate-pulse" style={{ animationDuration: '5s', animationDelay: '2s' }}></div>
-          </div>
+      <main>
+        {/* Hero Section */}
+        <section className="relative overflow-hidden bg-white pt-8 pb-20">
+          <div className="absolute inset-0 mesh-gradient opacity-50 pointer-events-none" />
+          <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-transparent via-primary-500/40 to-transparent hidden lg:block" />
 
-          <div className="container mx-auto px-4 relative">
-            {/* Compact Main Hero Content */}
+          <div className="relative container mx-auto px-4">
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              className="max-w-6xl mx-auto text-center mb-4"
+              transition={{ duration: 0.55 }}
+              className="max-w-3xl"
             >
-              <div className="flex justify-center mb-3">
-                <motion.div
-                  initial={{ scale: 0, rotate: -180 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  transition={{ duration: 0.6, delay: 0.2, type: "spring", stiffness: 200 }}
-                >
-                  <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white w-12 h-12 rounded-xl flex items-center justify-center shadow-lg">
-                    <FaCode className="w-6 h-6" />
+              <div className="flex items-center gap-3 mb-7">
+                <div className="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center text-primary-500 shrink-0">
+                  <FaCode className="w-5 h-5" />
+                </div>
+                <div className="h-px w-10 bg-primary-500 shrink-0" />
+                <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-primary-500">Consulting Services</span>
+              </div>
+              <h1 className="font-serif text-[2.4rem] sm:text-[3rem] lg:text-[3.4rem] leading-[1.06] text-gray-900 mb-5">
+                Product Strategy &amp;{' '}
+                <span className="text-gradient">Development</span>
+              </h1>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-[3px] h-9 bg-accent-500 rounded-full shrink-0" />
+                <p className="text-[1.05rem] text-gray-600 font-medium leading-snug">
+                  End-to-end product development
+                  <span className="text-gray-400 font-normal"> · from concept to launch, scalable &amp; user-centric</span>
+                </p>
+              </div>
+              <div className="flex items-stretch divide-x divide-gray-200 mb-8">
+                {[{ value: '50+', label: 'Products Built' }, { value: '95%', label: 'Satisfaction' }, { value: '24/7', label: 'Support' }].map((stat) => (
+                  <div key={stat.label} className="px-6 first:pl-0">
+                    <div className="text-[1.6rem] font-bold text-gray-900 leading-none tracking-tight">{stat.value}</div>
+                    <div className="text-[11px] uppercase tracking-[0.13em] text-gray-400 mt-1.5">{stat.label}</div>
                   </div>
-                </motion.div>
+                ))}
               </div>
-              
-              <motion.h1 
-                className="text-3xl md:text-4xl font-bold text-gray-900 mb-3 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-              >
-                Product Strategy & Development
-              </motion.h1>
-              
-              <motion.p 
-                className="text-base md:text-lg text-gray-600 mb-4 max-w-3xl mx-auto leading-relaxed"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.6 }}
-              >
-                End-to-end product strategy & development services from concept to launch, building scalable and user-centric solutions.
-              </motion.p>              <div className="flex flex-col sm:flex-row justify-center gap-3 mb-6">
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.6, delay: 0.8 }}
-                >
-                  <Link href="/contact">
-                    <button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-2 px-5 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center">
-                      <FaRocket className="mr-2" />
-                      Start Your Project
-                    </button>
-                  </Link>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.6, delay: 1.0 }}
-                >
-                  <Link href="/consulting">
-                    <button className="border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white font-semibold py-2 px-5 rounded-full transition-all duration-300 flex items-center">
-                      <FaArrowLeft className="w-4 h-4 mr-2" />
-                      Back to Services
-                    </button>
-                  </Link>
-                </motion.div>
+              <div className="flex flex-wrap items-center gap-3">
+                <Link href="/contact">
+                  <span className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white h-12 px-7 rounded-lg font-semibold text-sm shadow-md shadow-primary-500/20 transition-all duration-200">
+                    <FaRocket className="w-3.5 h-3.5" />
+                    Start Your Project
+                  </span>
+                </Link>
+                <Link href="/consulting">
+                  <span className="inline-flex items-center gap-1.5 h-12 px-5 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 text-sm font-medium transition-all duration-200">
+                    <FaArrowLeft className="w-3 h-3" />
+                    Back to Services
+                  </span>
+                </Link>
               </div>
-
-              {/* Compact Stats */}
-              <motion.div 
-                className="flex justify-center space-x-8 mb-6"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 1.2 }}
-              >
-                <motion.div 
-                  className="text-center"
-                  whileHover={{ scale: 1.1 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <div className="text-xl font-bold text-indigo-600">50+</div>
-                  <div className="text-xs text-gray-600">Products</div>
-                </motion.div>
-                <motion.div 
-                  className="text-center"
-                  whileHover={{ scale: 1.1 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <div className="text-xl font-bold text-purple-600">95%</div>
-                  <div className="text-xs text-gray-600">Satisfaction</div>
-                </motion.div>
-                <motion.div 
-                  className="text-center"
-                  whileHover={{ scale: 1.1 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <div className="text-xl font-bold text-indigo-600">24/7</div>
-                  <div className="text-xs text-gray-600">Support</div>
-                </motion.div>
-              </motion.div>
-            </motion.div>
-
-            <motion.div
-              className="text-center mt-8"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 1.2 }}
-            >
-              <Link href="/portfolio">
-                <button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-3 px-8 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg">
-                  Product Portfolio
-                </button>
-              </Link>
             </motion.div>
           </div>
         </section>

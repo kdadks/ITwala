@@ -1,5 +1,4 @@
 import React from 'react';
-import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { formatCurrency } from '@/utils/currency';
 
@@ -24,63 +23,70 @@ const CourseBanner: React.FC<CourseBannerProps> = ({
   enrollmentsEnabled = true 
 }) => {
   return (
-    <div className="relative bg-gray-900 py-16">
-      {/* Background Image with Overlay */}
-      <div className="absolute inset-0 overflow-hidden">
-        <Image
-          src={course.image}
-          alt={course.title}
-          fill
-          className="object-cover opacity-20"
-          priority
-        />
-      </div>
+    <section className="relative overflow-hidden bg-white">
+      <div className="absolute inset-0 mesh-gradient opacity-50 pointer-events-none" />
+      <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-transparent via-primary-500/40 to-transparent hidden lg:block" />
 
-      <div className="relative container mx-auto px-4">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-12 lg:pt-32 lg:pb-14">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="max-w-4xl"
+          transition={{ duration: 0.55 }}
+          className="max-w-3xl"
         >
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            {course.title}
-          </h1>
-          <p className="text-xl text-gray-300 mb-8">
-            {course.description}
-          </p>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-            <div>
-              <p className="text-gray-400 text-sm">Level</p>
-              <p className="text-white font-medium">{course.level}</p>
-            </div>
-            <div>
-              <p className="text-gray-400 text-sm">Registration Fee</p>
-              {course.feesDiscussedPostEnrollment ? (
-                <p className="text-yellow-400 font-medium text-sm">
-                  Tuition fees will be discussed post enrollment
-                </p>
-              ) : (
-                <p className="text-white font-medium">{formatCurrency(course.price, { decimals: 0 })}</p>
-              )}
-            </div>
+          {/* Eyebrow */}
+          <div className="flex items-center gap-3 mb-7">
+            <div className="h-px w-10 bg-primary-500 shrink-0" />
+            <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-primary-500">
+              ITwala Academy · {course.level}
+            </span>
           </div>
 
-          <button
-            onClick={onEnroll}
-            className={`px-8 py-3 rounded-lg font-medium transition-colors duration-200 ${
-              enrollmentsEnabled 
-                ? 'bg-indigo-600 hover:bg-indigo-700 text-white' 
-                : 'bg-gray-400 cursor-not-allowed text-gray-100'
-            }`}
-            disabled={!enrollmentsEnabled}
-          >
-            {enrollmentsEnabled ? 'Enroll Now' : 'Enrollment Disabled'}
-          </button>
+          {/* Title */}
+          <h1 className="font-serif text-[2.2rem] sm:text-[2.8rem] lg:text-[3.4rem] leading-[1.08] text-gray-900 mb-5">
+            {course.title}
+          </h1>
+
+          {/* Accent bar + description */}
+          <div className="flex items-start gap-3 mb-6">
+            <div className="w-[3px] min-h-[2.25rem] bg-accent-500 rounded-full shrink-0 mt-1" />
+            <p className="text-[1.05rem] text-gray-600 leading-relaxed">
+              {course.description}
+            </p>
+          </div>
+
+          {/* Price + enroll */}
+          <div className="flex flex-wrap items-center gap-4">
+            <button
+              onClick={onEnroll}
+              disabled={!enrollmentsEnabled}
+              className={`inline-flex items-center gap-2 h-12 px-7 rounded-lg font-semibold text-sm shadow-md transition-all duration-200 ${
+                enrollmentsEnabled
+                  ? 'bg-primary-500 hover:bg-primary-600 text-white shadow-primary-500/20'
+                  : 'bg-gray-300 cursor-not-allowed text-gray-500'
+              }`}
+            >
+              {enrollmentsEnabled ? 'Enroll Now' : 'Enrollment Disabled'}
+            </button>
+
+            <div className="flex items-stretch divide-x divide-gray-200">
+              <div className="pr-5">
+                <p className="text-[10px] uppercase tracking-[0.15em] text-gray-400 mb-0.5">Registration Fee</p>
+                {course.feesDiscussedPostEnrollment ? (
+                  <p className="text-sm font-semibold text-accent-500">Discussed post enrollment</p>
+                ) : (
+                  <p className="text-[1.1rem] font-bold text-gray-900">{formatCurrency(course.price, { decimals: 0 })}</p>
+                )}
+              </div>
+              <div className="pl-5">
+                <p className="text-[10px] uppercase tracking-[0.15em] text-gray-400 mb-0.5">Level</p>
+                <p className="text-sm font-semibold text-gray-700">{course.level}</p>
+              </div>
+            </div>
+          </div>
         </motion.div>
       </div>
-    </div>
+    </section>
   );
 };
 

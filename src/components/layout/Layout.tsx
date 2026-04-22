@@ -45,12 +45,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   }
 
   return (
-    <div className="flex flex-col min-h-screen relative bg-gradient-to-br from-primary-700 via-primary-600 to-secondary-700">
-      {/* Abstract shapes background - matching hero section */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-1/2 -right-1/2 w-[1000px] h-[1000px] rounded-full bg-primary-900 opacity-20 blur-3xl"></div>
-        <div className="absolute -bottom-1/2 -left-1/2 w-[800px] h-[800px] rounded-full bg-secondary-800 opacity-10 blur-3xl"></div>
-      </div>
+    <div className="flex flex-col min-h-screen relative bg-bg">
 
       {!isAuthRoute && <GlossyNavbar />}
       <div className={`flex-grow ${isAuthRoute ? '' : 'pt-32'} relative z-10`}>{children}</div>

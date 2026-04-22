@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: ['class', '.dark-theme'],
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx}",
     "./src/components/**/*.{js,ts,jsx,tsx}",
@@ -9,68 +10,84 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        /* ── Semantic background tokens (CSS-variable-driven) ── */
+        bg: {
+          DEFAULT: 'var(--color-bg)',
+          inset:   'var(--color-bg-inset)',
+          overlay: 'var(--color-bg-overlay)',
+        },
+        /* ── Slate palette tokens ── */
+        slate: {
+          1: 'var(--slate-1)',
+          2: 'var(--slate-2)',
+          3: 'var(--slate-3)',
+        },
+        /* ── Primary: Steel Blue (doctorfolio primary oklch(0.55 0.12 210)) ── */
         primary: {
-          50: '#e8fbee',
-          100: '#c6f6d5',
-          200: '#9ae6b4',
-          300: '#68d391',
-          400: '#48bb78',
-          500: '#38a169', // Light green - new theme
-          600: '#2f855a',
-          700: '#276749',
-          800: '#22543d',
-          900: '#1c4532',
+          50:  '#eff6ff',
+          100: '#dbeafe',
+          200: '#bfdbfe',
+          300: '#93c5fd',
+          400: '#60a5fa',
+          500: '#2b74b3', // steel blue
+          600: '#1e5a90',
+          700: '#154270',
+          800: '#0e2d50',
+          900: '#071c33',
         },
+        /* ── Secondary: Light Blue (doctorfolio secondary oklch(0.85 0.08 220)) ── */
         secondary: {
-          50: '#f0fdf4',
-          100: '#dcfce7',
-          200: '#bbf7d0',
-          300: '#86efac',
-          400: '#4ade80',
-          500: '#22c55e', // Green accent
-          600: '#16a34a',
-          700: '#15803d',
-          800: '#166534',
-          900: '#14532d',
+          50:  '#f4f8fd',
+          100: '#e8f1fb',
+          200: '#ccdff5',
+          300: '#a4c7ec',
+          400: '#71a9dc',
+          500: '#4388c6',
+          600: '#2e6da8',
+          700: '#1e5388',
+          800: '#133b68',
+          900: '#0a2548',
         },
+        /* ── Accent: Warm Orange (doctorfolio accent oklch(0.68 0.18 25)) ── */
         accent: {
-          50: '#f0fdf4',
-          100: '#dcfce7',
-          200: '#bbf7d0',
-          300: '#86efac',
-          400: '#4ade80',
-          500: '#22c55e', // Green accent
-          600: '#16a34a',
-          700: '#15803d',
-          800: '#166534',
-          900: '#14532d',
+          50:  '#fff4f0',
+          100: '#ffe4d8',
+          200: '#ffc5a9',
+          300: '#ff9a6c',
+          400: '#f76a38',
+          500: '#dc6428', // warm orange
+          600: '#b34d1b',
+          700: '#8b3912',
+          800: '#67280b',
+          900: '#461a06',
         },
         success: {
-          500: '#2E7D32', // Forest green - growth and achievement
+          500: '#15803d',
         },
         warning: {
-          500: '#ED6C02', // Deep amber - attention and caution
+          500: '#d97706',
         },
         error: {
-          500: '#D32F2F', // Deep red - errors and important alerts
+          500: '#dc2626',
         },
+        /* ── Gray: Cool blue-grey slate (matches doctorfolio neutral tones) ── */
         gray: {
-          50: '#f9fafb',
-          100: '#f3f4f6',
-          200: '#e5e7eb',
-          300: '#d1d5db',
-          400: '#9ca3af',
-          500: '#6b7280',
-          600: '#4b5563',
-          700: '#374151',
-          800: '#1f2937',
-          900: '#111827',
+          50:  '#f8fafc',
+          100: '#f1f5f9',
+          200: '#e2e8f0',
+          300: '#cbd5e1',
+          400: '#94a3b8',
+          500: '#64748b',
+          600: '#475569',
+          700: '#334155',
+          800: '#1e293b',
+          900: '#0f172a',
         },
       },
       fontFamily: {
         sans: [
-          'var(--font-inter)',
-          '"Inter"',
+          'var(--font-sans)',
+          '"Space Grotesk"',
           'system-ui',
           '-apple-system',
           'BlinkMacSystemFont',
@@ -79,6 +96,13 @@ module.exports = {
           '"Helvetica Neue"',
           'Arial',
           'sans-serif',
+        ],
+        serif: [
+          'var(--font-serif)',
+          '"Playfair Display"',
+          'Georgia',
+          '"Times New Roman"',
+          'serif',
         ],
       },
       boxShadow: {

@@ -52,22 +52,28 @@ const AIEducationGuide: NextPage = () => {
 
       <main>
         {/* Hero Section */}
-        <section className="bg-gradient-to-r from-blue-600 to-purple-700 py-20 text-white">
-          <div className="container mx-auto px-4">
+        <section className="relative overflow-hidden bg-white">
+          <div className="absolute inset-0 mesh-gradient opacity-50 pointer-events-none" />
+          <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-transparent via-primary-500/40 to-transparent hidden lg:block" />
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-12 lg:pt-32 lg:pb-14">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="max-w-4xl mx-auto text-center"
+              className="max-w-3xl"
             >
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                Complete AI Education Guide for 2025
+              <div className="flex items-center gap-3 mb-7">
+                <div className="h-px w-10 bg-primary-500 shrink-0" />
+                <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-primary-500">AI Education · Complete Roadmap 2025</span>
+              </div>
+              <h1 className="font-serif text-[2.4rem] sm:text-[3rem] lg:text-[3.6rem] leading-[1.06] text-gray-900 mb-5">
+                Complete AI{' '}
+                <span className="text-gradient">Education Guide</span>
               </h1>
-              <p className="text-xl mb-8">
-                Master artificial intelligence and machine learning with our comprehensive education roadmap. 
-                Discover the best AI courses, career paths, and skills needed to succeed in the AI revolution.
+              <p className="text-[0.97rem] text-gray-500 leading-[1.85] max-w-[540px] mb-8">
+                Master artificial intelligence and machine learning with our comprehensive education roadmap. Discover the best AI courses, career paths, and skills to succeed in the AI revolution.
               </p>
-              <Link href="/courses" className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+              <Link href="/courses" className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white h-12 px-7 rounded-lg font-semibold text-sm shadow-md shadow-primary-500/20 transition-all duration-200">
                 Explore AI Courses
               </Link>
             </motion.div>

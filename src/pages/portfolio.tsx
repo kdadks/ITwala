@@ -517,81 +517,47 @@ const Portfolio: NextPage = () => {
         </script>
       </Head>
 
-      <main className="min-h-screen bg-gradient-to-br from-primary-700 via-primary-600 to-secondary-700">
-        {/* Hero Section - Aligned with Home Page */}
-        <section className="relative overflow-hidden text-white -mt-32 pt-40">
-          {/* Smooth gradient overlay that blends with navbar background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-primary-700/95 via-primary-600/95 to-secondary-700/95"></div>
-
-          {/* Floating elements - matching home page style */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="absolute inset-0"
-          >
-            <div className="absolute top-20 left-10 w-12 h-12 bg-white rounded-lg opacity-10 transform rotate-12"></div>
-            <div className="absolute bottom-20 right-10 w-16 h-16 bg-accent-200 rounded-full opacity-10"></div>
-            <div className="absolute top-1/3 right-1/4 w-8 h-8 bg-secondary-200 rounded-lg opacity-10 transform -rotate-12"></div>
-            <div className="absolute top-40 right-20 w-10 h-10 bg-white rounded-full opacity-10"></div>
-            <div className="absolute bottom-40 left-20 w-14 h-14 bg-accent-200 rounded-lg opacity-10 transform rotate-45"></div>
-          </motion.div>
-
-          <div className="container mx-auto px-4 py-4 md:py-8 relative z-10">
-            <div className="max-w-4xl mx-auto text-center mb-4 md:mb-6">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-              >
-                {/* Badge */}
-                <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full border border-white/20 shadow-lg mb-3">
-                  <Sparkles className="w-5 h-5 text-accent-200" />
-                  <span className="text-sm font-semibold text-white">Trusted by 50+ businesses worldwide</span>
-                </div>
-
-                {/* Main heading - matching home page size */}
-                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 md:mb-3 leading-tight text-white drop-shadow-lg">
-                  Our Success Stories
-                </h1>
-                
-                <p className="text-base sm:text-lg md:text-xl text-gray-100 mb-3 md:mb-4 max-w-2xl mx-auto px-2 drop-shadow">
-                  Transforming ideas into digital excellence. Explore our portfolio of innovative solutions that drive real business results.
+      <main className="min-h-screen">
+        {/* Hero Section */}
+        <section className="relative overflow-hidden bg-white">
+          <div className="absolute inset-0 mesh-gradient opacity-50 pointer-events-none" />
+          <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-transparent via-primary-500/40 to-transparent hidden lg:block" />
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-11 pb-12 lg:pt-12 lg:pb-14">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="max-w-3xl"
+            >
+              <div className="flex items-center gap-3 mb-7">
+                <div className="h-px w-10 bg-primary-500 shrink-0" />
+                <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-primary-500">Our Work · 50+ Projects Delivered</span>
+              </div>
+              <h1 className="font-serif text-[2.4rem] sm:text-[3rem] lg:text-[3.6rem] leading-[1.06] text-gray-900 mb-5">
+                Our Success{' '}
+                <span className="text-gradient">Stories</span>
+              </h1>
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-[3px] h-9 bg-accent-500 rounded-full shrink-0" />
+                <p className="text-[1.05rem] text-gray-600 font-medium leading-snug">
+                  Transforming ideas into digital excellence
+                  <span className="text-gray-400 font-normal"> · trusted by 50+ businesses worldwide</span>
                 </p>
-              </motion.div>
-
-              {/* Stats Grid - Aligned with home page card styling */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-4 md:mb-6"
-              >
+              </div>
+              <div className="flex items-stretch divide-x divide-gray-200">
                 {[
-                  { icon: TrendingUp, number: "10K+", label: "Active Users", numColor: "text-cyan-300", iconBg: "from-blue-500 to-cyan-500" },
-                  { icon: Award, number: "95%", label: "Client Satisfaction", numColor: "text-pink-300", iconBg: "from-purple-500 to-pink-500" },
-                  { icon: Sparkles, number: "50+", label: "Projects Delivered", numColor: "text-orange-300", iconBg: "from-orange-500 to-red-500" },
-                  { icon: Users, number: "7", label: "Industries Served", numColor: "text-emerald-300", iconBg: "from-green-500 to-emerald-500" }
-                ].map((stat, index) => {
-                  const Icon = stat.icon;
-                  return (
-                    <div key={stat.label} className="text-center">
-                      <div className="flex items-center justify-center mb-3">
-                        <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${stat.iconBg} p-0.5`}>
-                          <div className="w-full h-full bg-white rounded-lg flex items-center justify-center">
-                            <Icon className="w-5 h-5 text-gray-700" />
-                          </div>
-                        </div>
-                      </div>
-                      <div className={`text-2xl md:text-3xl font-bold mb-1 ${stat.numColor} drop-shadow-lg`}>
-                        {stat.number}
-                      </div>
-                      <div className="text-sm text-white font-medium drop-shadow">{stat.label}</div>
-                    </div>
-                  );
-                })}
-              </motion.div>
-            </div>
+                  { value: '10K+', label: 'Active Users' },
+                  { value: '95%', label: 'Client Satisfaction' },
+                  { value: '20+', label: 'Projects Delivered' },
+                  { value: '7', label: 'Industries Served' },
+                ].map((stat) => (
+                  <div key={stat.label} className="px-6 first:pl-0">
+                    <div className="text-[1.6rem] font-bold text-gray-900 leading-none tracking-tight">{stat.value}</div>
+                    <div className="text-[11px] uppercase tracking-[0.13em] text-gray-400 mt-1.5">{stat.label}</div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
           </div>
         </section>
 

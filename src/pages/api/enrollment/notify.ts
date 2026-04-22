@@ -46,8 +46,8 @@ export default async function handler(
 
     // Send email to admin
     await transporter.sendMail({
-      from: process.env.SMTP_FROM || 'sales@it-wala.com',
-      to: 'sales@it-wala.com',
+      from: process.env.SMTP_FROM || 'support@it-wala.com',
+      to: 'support@it-wala.com',
       subject: `New Course Enrollment: ${courseData.title}`,
       html: `
         <h2>New Course Enrollment</h2>
@@ -60,7 +60,7 @@ export default async function handler(
 
     // Send confirmation email to student
     await transporter.sendMail({
-      from: process.env.SMTP_FROM || 'sales@it-wala.com',
+      from: process.env.SMTP_FROM || 'support@it-wala.com',
       to: email,
       subject: `Enrollment Confirmation: ${courseData.title}`,
       html: `
@@ -69,7 +69,7 @@ export default async function handler(
         <p>Thank you for enrolling in <strong>${courseData.title}</strong>.</p>
         <p>${courseData.description}</p>
         <p>Our team will contact you shortly with further details about the course schedule and payment options.</p>
-        <p>If you have any questions, please contact us at sales@it-wala.com or call +91 7982303199.</p>
+        <p>If you have any questions, please contact us at support@it-wala.com or call +91 7982303199.</p>
         <p>Best regards,<br>ITwala Academy Team</p>
       `,
     });

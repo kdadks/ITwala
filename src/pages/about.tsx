@@ -15,32 +15,39 @@ const About: NextPage = () => {
       </Head>
 
       <main>
-        <section className="py-12 md:py-20 bg-gradient-to-br from-primary-700 via-primary-600 to-secondary-700 text-white">
-          <div className="container mx-auto px-4">
+        <section className="relative overflow-hidden bg-white">
+          <div className="absolute inset-0 mesh-gradient opacity-50 pointer-events-none" />
+          <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-transparent via-primary-500/40 to-transparent hidden lg:block" />
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-11 pb-12 lg:pt-12 lg:pb-14">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="max-w-4xl mx-auto text-center"
+              className="max-w-3xl"
             >
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 drop-shadow-lg">About ITwala Academy & Consulting</h1>
-              <p className="text-xl text-gray-100 mb-8 drop-shadow">
-                Empowering businesses and individuals through comprehensive IT education and expert consulting services.
-              </p>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="flex justify-center"
-              >
-                <a href="#our-story" className="inline-flex items-center justify-center px-8 py-3 bg-primary-600 text-white font-semibold rounded-full hover:bg-primary-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+              <div className="flex items-center gap-3 mb-7">
+                <div className="h-px w-10 bg-primary-500 shrink-0" />
+                <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-primary-500">Our Story · Mission &amp; Values</span>
+              </div>
+              <h1 className="font-serif text-[2.4rem] sm:text-[3rem] lg:text-[3.6rem] leading-[1.06] text-gray-900 mb-5">
+                About ITwala{' '}
+                <span className="text-gradient">Academy &amp; Consulting</span>
+              </h1>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-[3px] h-9 bg-accent-500 rounded-full shrink-0" />
+                <p className="text-[1.05rem] text-gray-600 font-medium leading-snug">
+                  Empowering businesses and individuals
+                  <span className="text-gray-400 font-normal"> · comprehensive IT education &amp; consulting</span>
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <a href="#our-story" className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white h-12 px-7 rounded-lg font-semibold text-sm shadow-md shadow-primary-500/20 transition-all duration-200">
                   Our Story
-                  <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </a>
-              </motion.div>
+              </div>
             </motion.div>
           </div>
         </section>
@@ -274,7 +281,7 @@ const About: NextPage = () => {
                 <h3 className="text-xl font-semibold text-gray-900 mb-4">Get In Touch</h3>
                 <div className="space-y-2">
                   <p className="text-gray-600">
-                    <span className="font-medium">Email:</span> sales@it-wala.com
+                    <span className="font-medium">Email:</span> support@it-wala.com
                   </p>
                   <p className="text-gray-600">
                     <span className="font-medium">Phone:</span> +91 7982303199

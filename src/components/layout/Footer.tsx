@@ -62,11 +62,11 @@ const Footer = () => {
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
             <div className="flex items-center gap-4 text-sm">
               <a
-                href="mailto:sales@it-wala.com"
+                href="mailto:support@it-wala.com"
                 className="flex items-center space-x-2 text-white hover:text-white transition-colors duration-200"
               >
                 <FaEnvelope className="w-4 h-4" />
-                <span>sales@it-wala.com</span>
+                <span>support@it-wala.com</span>
               </a>
 
               <a

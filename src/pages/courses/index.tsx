@@ -308,21 +308,30 @@ const CoursesPage: NextPage = () => {
       </Head>
 
       <main>
-        <section className="bg-gradient-to-br from-primary-700 via-primary-600 to-secondary-700 py-12 md:py-24">
-          <div className="container mx-auto px-4">
+        <section className="relative overflow-hidden bg-white">
+          <div className="absolute inset-0 mesh-gradient opacity-50 pointer-events-none" />
+          <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-transparent via-primary-500/40 to-transparent hidden lg:block" />
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-11 pb-8 lg:pt-12 lg:pb-10">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="max-w-4xl mx-auto text-center"
+              className="max-w-3xl mb-8"
             >
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 md:mb-6 px-2">AI Courses & Machine Learning Training</h1>
-              <p className="text-lg sm:text-xl text-primary-100 mb-6 md:mb-8 px-2">
+              <div className="flex items-center gap-3 mb-7">
+                <div className="h-px w-10 bg-primary-500 shrink-0" />
+                <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-primary-500">AI &amp; Machine Learning · Expert-Led Training</span>
+              </div>
+              <h1 className="font-serif text-[2.4rem] sm:text-[3rem] lg:text-[3.6rem] leading-[1.06] text-gray-900 mb-5">
+                AI Courses &amp;{' '}
+                <span className="text-gradient">ML Training</span>
+              </h1>
+              <p className="text-[0.97rem] text-gray-500 leading-[1.85] max-w-[540px]">
                 Master artificial intelligence and machine learning with expert-led courses, hands-on projects, and industry-recognized certifications.
               </p>
             </motion.div>
 
-            <div className="max-w-2xl mx-auto relative">
+            <div className="max-w-2xl relative">
               <input
                 type="text"
                 placeholder="Search AI courses, machine learning, data science..."
@@ -330,7 +339,7 @@ const CoursesPage: NextPage = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => searchQuery.length >= 2 && setShowSuggestions(true)}
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                className="w-full py-3 px-4 sm:px-6 rounded-full bg-white shadow-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-400 text-sm sm:text-base"
+              className="w-full py-3 px-4 sm:px-6 rounded-full bg-white shadow-md border border-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-400 text-sm sm:text-base"
               />
 
               {/* Type-ahead suggestions dropdown */}

@@ -2,7 +2,7 @@ import { NextPage } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { FaGraduationCap, FaArrowLeft, FaCheckCircle } from 'react-icons/fa';
+import { FaGraduationCap, FaArrowLeft, FaCheckCircle, FaRocket } from 'react-icons/fa';
 
 const TrainingDevelopment: NextPage = () => {
   return (
@@ -12,31 +12,50 @@ const TrainingDevelopment: NextPage = () => {
         <meta name="description" content="Comprehensive training programs and skill development services to empower your team with cutting-edge technology expertise." />
       </Head>
 
-      <main className="pt-16">
+      <main>
         {/* Hero Section */}
-        <section className="py-20 bg-gradient-to-br from-orange-50 to-orange-100">
-          <div className="container mx-auto px-4">
+        <section className="relative overflow-hidden bg-white pt-8 pb-20">
+          <div className="absolute inset-0 mesh-gradient opacity-50 pointer-events-none" />
+          <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-transparent via-primary-500/40 to-transparent hidden lg:block" />
+          <div className="relative container mx-auto px-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="max-w-4xl mx-auto text-center"
+              className="max-w-3xl"
             >
-              <div className="flex justify-center mb-6">
-                <div className="bg-orange-100 text-orange-600 w-20 h-20 rounded-2xl flex items-center justify-center">
-                  <FaGraduationCap className="w-10 h-10" />
+              <div className="flex items-center gap-3 mb-7">
+                <div className="w-10 h-10 rounded-xl bg-accent-50 flex items-center justify-center text-accent-500 shrink-0">
+                  <FaGraduationCap className="w-5 h-5" />
                 </div>
+                <div className="h-px w-10 bg-primary-500 shrink-0" />
+                <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-primary-500">Consulting Services</span>
               </div>
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Training & Development</h1>
-              <p className="text-xl text-gray-600 mb-8">
-                Through our ITwala Academy, we provide Comprehensive training programs and skill development services to empower your team with cutting-edge technology expertise.
-              </p>
-              <Link href="/consulting">
-                <div className="inline-flex items-center text-primary-600 hover:text-primary-700 font-semibold">
-                  <FaArrowLeft className="w-4 h-4 mr-2" />
-                  Back to All Services
-                </div>
-              </Link>
+              <h1 className="font-serif text-[2.4rem] sm:text-[3rem] lg:text-[3.4rem] leading-[1.06] text-gray-900 mb-5">
+                Training &amp;{' '}
+                <span className="text-gradient">Development</span>
+              </h1>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-[3px] h-9 bg-accent-500 rounded-full shrink-0" />
+                <p className="text-[1.05rem] text-gray-600 font-medium leading-snug">
+                  Through ITwala Academy
+                  <span className="text-gray-400 font-normal"> · comprehensive team training &amp; skill development</span>
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <Link href="/contact">
+                  <span className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white h-12 px-7 rounded-lg font-semibold text-sm shadow-md shadow-primary-500/20 transition-all duration-200">
+                    <FaRocket className="w-3.5 h-3.5" />
+                    Start Your Project
+                  </span>
+                </Link>
+                <Link href="/consulting">
+                  <span className="inline-flex items-center gap-1.5 h-12 px-5 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 text-sm font-medium transition-all duration-200">
+                    <FaArrowLeft className="w-3 h-3" />
+                    Back to Services
+                  </span>
+                </Link>
+              </div>
             </motion.div>
           </div>
         </section>

@@ -22,11 +22,11 @@ const ContactInfo = () => {
             <div className="ml-4">
               <h3 className="text-lg font-medium text-gray-900">Email</h3>
               <p className="mt-1 text-gray-600">
-                <a href="mailto:sales@it-wala.com" className="hover:text-primary-600">
-                  sales@it-wala.com, support@it-wala.com
+                <a href="mailto:support@it-wala.com" className="hover:text-primary-600">
+                  support@it-wala.com
                 </a>
               </p>
-              <p className="mt-1 text-sm text-gray-500">For general inquiries and sales</p>
+              <p className="mt-1 text-sm text-gray-500">For general inquiries and support</p>
             </div>
           </div>
           

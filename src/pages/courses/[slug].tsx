@@ -312,59 +312,77 @@ const CoursePage: NextPage = () => {
 
         <main>
           {/* Course Banner */}
-          <section className="bg-gradient-to-br from-primary-700 via-primary-600 to-secondary-700 py-16">
-            <div className="container mx-auto px-4">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-                <div>
-                  <h1 className="text-4xl font-bold text-white mb-4">{course.title}</h1>
-                  <p className="text-xl text-primary-100 mb-6">{course.description}</p>
-                  <div className="flex items-center space-x-4 text-primary-100">
-                    <span>⭐ {course.rating || 0}/5</span>
-                    <span>📅 {course.duration}</span>
+          <section className="relative overflow-hidden bg-white">
+            <div className="absolute inset-0 mesh-gradient opacity-50 pointer-events-none" />
+            <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-transparent via-primary-500/40 to-transparent hidden lg:block" />
+            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-5 lg:pt-16 lg:pb-6">
+              <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-8 items-start">
+                {/* Left: course info */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.55 }}
+                  className="max-w-2xl"
+                >
+                  <div className="flex items-center gap-3 mb-7">
+                    <div className="h-px w-10 bg-primary-500 shrink-0" />
+                    <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-primary-500">
+                      ITwala Academy · {course.level}
+                    </span>
                   </div>
-                </div>
-                <div className="text-center lg:text-right">
-                  <div className="mb-4">
-                    <div className="text-sm text-primary-200 mb-1">Registration Fee</div>
-                    <div className="text-4xl font-bold text-white mb-2">
-                      {pricing ? (
-                        <>
-                          {pricing.symbol}{(pricing.price / 100).toLocaleString()}
-                          {pricing.originalPrice && (
-                            <span className="text-xl text-primary-200 line-through ml-2">
-                              {pricing.symbol}{(pricing.originalPrice / 100).toLocaleString()}
-                            </span>
-                          )}
-                        </>
-                      ) : (
-                        <>
-                          {formatCurrency(course.price, { decimals: 0 })}
-                          {course.originalPrice && (
-                            <span className="text-xl text-primary-200 line-through ml-2">
-                              {formatCurrency(course.originalPrice, { decimals: 0 })}
-                            </span>
-                          )}
-                        </>
+                  <h1 className="font-serif text-[2.2rem] sm:text-[2.8rem] lg:text-[3.2rem] leading-[1.08] text-gray-900 mb-5">
+                    {course.title}
+                  </h1>
+                  <div className="flex items-start gap-3 mb-5">
+                    <div className="w-[3px] min-h-[2.25rem] bg-accent-500 rounded-full shrink-0 mt-1" />
+                    <p className="text-[1.05rem] text-gray-600 leading-relaxed">{course.description}</p>
+                  </div>
+                  <div className="flex items-center gap-4 text-sm text-gray-500">
+                    {course.rating ? <span>⭐ {course.rating}/5</span> : null}
+                    {course.duration ? <span>📅 {course.duration}</span> : null}
+                  </div>
+                </motion.div>
+
+                {/* Right: pricing + enroll */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.55, delay: 0.1 }}
+                  className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 min-w-[220px] lg:mt-16"
+                >
+                  <p className="text-[10px] uppercase tracking-[0.15em] text-gray-400 mb-1">Registration Fee</p>
+                  {course.feesDiscussedPostEnrollment ? (
+                    <p className="text-sm font-semibold text-accent-500 mb-4">Discussed post enrollment</p>
+                  ) : (
+                    <div className="mb-4">
+                      <span className="text-[2rem] font-bold text-gray-900 leading-none">
+                        {pricing ? (
+                          <>{pricing.symbol}{(pricing.price / 100).toLocaleString()}</>
+                        ) : (
+                          formatCurrency(course.price, { decimals: 0 })
+                        )}
+                      </span>
+                      {(pricing?.originalPrice || course.originalPrice) && (
+                        <span className="text-sm text-gray-400 line-through ml-2">
+                          {pricing?.originalPrice
+                            ? `${pricing.symbol}${(pricing.originalPrice / 100).toLocaleString()}`
+                            : formatCurrency(course.originalPrice!, { decimals: 0 })}
+                        </span>
                       )}
                     </div>
-                    {course.feesDiscussedPostEnrollment && (
-                      <div className="text-sm text-yellow-300 bg-yellow-900/20 px-3 py-2 rounded-lg border border-yellow-400/30">
-                        Tuition fees will be discussed post enrollment
-                      </div>
-                    )}
-                  </div>
+                  )}
                   <button
                     onClick={handleEnrollClick}
                     disabled={!enrollmentsEnabled}
-                    className={`px-8 py-3 rounded-md font-semibold transition-colors ${
+                    className={`w-full h-11 rounded-lg font-semibold text-sm transition-all duration-200 ${
                       enrollmentsEnabled
-                        ? 'bg-white text-primary-600 hover:bg-gray-100'
-                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        ? 'bg-primary-500 hover:bg-primary-600 text-white shadow-md shadow-primary-500/20'
+                        : 'bg-gray-200 text-gray-500 cursor-not-allowed'
                     }`}
                   >
                     {enrollmentsEnabled ? 'Enroll Now' : 'Enrollment Disabled'}
                   </button>
-                </div>
+                </motion.div>
               </div>
             </div>
           </section>

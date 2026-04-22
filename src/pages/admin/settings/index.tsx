@@ -26,7 +26,7 @@ const AdminSettings: NextPage = () => {
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
   const [settings, setSettings] = useState<SiteSettings>({
     siteName: 'ITwala Academy',
-    contactEmail: 'sales@it-wala.com',
+    contactEmail: 'support@it-wala.com',
     supportPhone: '+91 7982303199',
     maintenanceMode: false,
     enrollmentsEnabled: true

@@ -37,6 +37,8 @@ const AnalyticsPage: NextPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [timeRange, setTimeRange] = useState('7days');
+  const [customStartDate, setCustomStartDate] = useState('');
+  const [customEndDate, setCustomEndDate] = useState('');
   const [authChecked, setAuthChecked] = useState(false);
   const [realTimePages, setRealTimePages] = useState<any[]>([]);
   const [countryData, setCountryData] = useState<any[]>([]);
@@ -49,15 +51,37 @@ const AnalyticsPage: NextPage = () => {
   const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+  const getStartDate = () => {
+    if (timeRange === 'today') {
+      const d = new Date();
+      d.setHours(0, 0, 0, 0);
+      return d.toISOString();
+    }
+    if (timeRange === 'custom' && customStartDate) return new Date(customStartDate).toISOString();
+    const days = timeRange === '30days' ? 30 : timeRange === '90days' ? 90 : 7;
+    return new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+  };
+
+  const getEndDate = () => {
+    if (timeRange === 'custom' && customEndDate) {
+      const d = new Date(customEndDate);
+      d.setHours(23, 59, 59, 999);
+      return d.toISOString();
+    }
+    return new Date().toISOString();
+  };
+
   const fetchAnalytics = async () => {
     try {
       setIsLoading(true);
-      const daysToFetch = timeRange === '30days' ? 30 : timeRange === '90days' ? 90 : 7;
+      const startDate = getStartDate();
+      const endDate = getEndDate();
 
       const { data, error } = await supabase
         .from('analytics_data')
         .select('*')
-        .gte('date', new Date(Date.now() - daysToFetch * 24 * 60 * 60 * 1000).toISOString())
+        .gte('date', startDate)
+        .lte('date', endDate)
         .order('date', { ascending: false });
 
       if (error) throw error;
@@ -67,7 +91,8 @@ const AnalyticsPage: NextPage = () => {
       const { data: countryViews } = await supabase
         .from('page_views')
         .select('country')
-        .gte('created_at', new Date(Date.now() - daysToFetch * 24 * 60 * 60 * 1000).toISOString())
+        .gte('created_at', startDate)
+        .lte('created_at', endDate)
         .not('page_url', 'like', '%localhost%')
         .not('referrer', 'like', '%localhost%')
         .not('referrer', 'like', '%127.0.0.1%');
@@ -91,7 +116,8 @@ const AnalyticsPage: NextPage = () => {
       const { data: views } = await supabase
         .from('page_views')
         .select('*')
-        .gte('created_at', new Date(Date.now() - daysToFetch * 24 * 60 * 60 * 1000).toISOString())
+        .gte('created_at', startDate)
+        .lte('created_at', endDate)
         .not('page_url', 'like', '%localhost%')
         .not('referrer', 'like', '%localhost%')
         .not('referrer', 'like', '%127.0.0.1%')
@@ -121,14 +147,14 @@ const AnalyticsPage: NextPage = () => {
 
   const fetchRealTimePageViews = async () => {
     try {
-      const daysToFetch = timeRange === '30days' ? 30 : timeRange === '90days' ? 90 : 7;
-      const startDate = new Date();
-      startDate.setDate(startDate.getDate() - daysToFetch);
+      const rvStart = getStartDate();
+      const rvEnd = getEndDate();
 
       const { data: pageViews, error } = await supabase
         .from('page_views')
         .select('page_url, page_title, created_at')
-        .gte('created_at', startDate.toISOString())
+        .gte('created_at', rvStart)
+        .lte('created_at', rvEnd)
         .not('page_url', 'like', '%localhost%')
         .not('referrer', 'like', '%localhost%')
         .not('referrer', 'like', '%127.0.0.1%')
@@ -196,7 +222,7 @@ const AnalyticsPage: NextPage = () => {
   }, [user?.id, timeRange]);
 
   useEffect(() => {
-    if (authChecked && isAdmin) {
+    if (authChecked && isAdmin && timeRange !== 'custom') {
       fetchAnalytics();
       fetchRealTimePageViews();
     }
@@ -213,7 +239,7 @@ const AnalyticsPage: NextPage = () => {
     }, 30000); // 30 seconds
 
     return () => clearInterval(refreshInterval);
-  }, [authChecked, isAdmin, timeRange]);
+  }, [authChecked, isAdmin, timeRange, customStartDate, customEndDate]);
 
   const filteredAnalytics = useMemo(() => {
     if (!searchTerm) return analytics;
@@ -382,384 +408,467 @@ const AnalyticsPage: NextPage = () => {
     );
   }
 
+  // ── Derived helpers ──────────────────────────────────────────────
+  const totals = getTotalMetrics();
+
+  const periodLabel =
+    timeRange === 'today' ? 'Today' :
+    timeRange === '7days' ? 'Last 7 days' :
+    timeRange === '30days' ? 'Last 30 days' :
+    timeRange === '90days' ? 'Last 90 days' :
+    (customStartDate && customEndDate) ? `${customStartDate} – ${customEndDate}` : 'Custom range';
+
+  const metricCards = [
+    {
+      key: 'views' as const,
+      label: 'Total Page Views',
+      value: totals.page_views.toLocaleString(),
+      color: 'primary',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+        </svg>
+      ),
+    },
+    {
+      key: 'visitors' as const,
+      label: 'Unique Visitors',
+      value: totals.unique_visitors.toLocaleString(),
+      color: 'secondary',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+      ),
+    },
+    {
+      key: 'time' as const,
+      label: 'Avg. Session',
+      value: formatTime(totals.total_time / (filteredAnalytics.length || 1)),
+      color: 'accent',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      ),
+    },
+    {
+      key: 'bounce' as const,
+      label: 'Bounce Rate',
+      value: `${averageBounceRate}%`,
+      color: 'warning',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+        </svg>
+      ),
+    },
+  ];
+
+  const colorMap: Record<string, { ring: string; bg: string; text: string; bar: string; badge: string }> = {
+    primary:   { ring: 'ring-primary-500',   bg: 'bg-primary-50',   text: 'text-primary-600',   bar: 'bg-primary-500',   badge: 'bg-primary-100 text-primary-700'   },
+    secondary: { ring: 'ring-secondary-500', bg: 'bg-secondary-50', text: 'text-secondary-600', bar: 'bg-secondary-500', badge: 'bg-secondary-100 text-secondary-700' },
+    accent:    { ring: 'ring-accent-500',    bg: 'bg-accent-50',    text: 'text-accent-600',    bar: 'bg-accent-500',    badge: 'bg-accent-100 text-accent-700'    },
+    warning:   { ring: 'ring-yellow-400',    bg: 'bg-yellow-50',    text: 'text-yellow-600',    bar: 'bg-yellow-400',    badge: 'bg-yellow-100 text-yellow-700'    },
+  };
+
+  const tabs = [
+    { key: 'overview', label: 'Overview' },
+    { key: 'pages', label: 'Pages' },
+    { key: 'sources', label: 'Traffic Sources' },
+    { key: 'countries', label: 'Countries' },
+    { key: 'devices', label: 'Devices' },
+  ];
+
   return (
     <>
       <Head>
-        <title>Analytics Dashboard - Admin</title>
-        <meta name="description" content="Enterprise analytics dashboard" />
+        <title>Analytics — ITwala Admin</title>
+        <meta name="description" content="Analytics dashboard" />
       </Head>
 
-      <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
-        <div className="max-w-7xl mx-auto">
-            {/* Header Section */}
-            <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                <div>
-                  <h1 className="text-3xl font-bold text-gray-900">Analytics Dashboard</h1>
-                  <p className="text-gray-600 mt-1">Monitor your website performance and visitor behavior</p>
+      <main className="flex-1 overflow-y-auto bg-gray-50">
+
+        {/* ── Page header ── */}
+        <div className="bg-white border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-6 py-5">
+            <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5">
+
+              {/* Title */}
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold tracking-[0.15em] uppercase text-primary-600 bg-primary-50 border border-primary-200 px-2.5 py-0.5 rounded-full">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary-500 animate-pulse" />
+                    Live
+                  </span>
                   {lastRefreshed && (
-                    <p className="text-sm text-gray-500 mt-1">
-                      Last updated: {lastRefreshed.toLocaleTimeString()} • Auto-refreshing every 30s
-                    </p>
+                    <span className="text-xs text-gray-400">
+                      Updated {lastRefreshed.toLocaleTimeString()} · auto-refresh 30s
+                    </span>
                   )}
                 </div>
+                <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Analytics Dashboard</h1>
+                <p className="text-sm text-gray-500 mt-0.5">Monitor website performance and visitor behaviour</p>
+              </div>
 
-                <div className="flex flex-col sm:flex-row gap-3">
+              {/* Controls */}
+              <div className="flex flex-wrap items-end gap-2">
+                <div>
+                  <label className="block text-[11px] font-medium text-gray-500 mb-1 uppercase tracking-wide">Search</label>
                   <input
                     type="text"
-                    placeholder="Search pages, dates..."
+                    placeholder="Search pages, dates…"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    className="h-9 px-3 text-sm bg-white border border-gray-300 text-gray-700 placeholder-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   />
-                  
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-medium text-gray-500 mb-1 uppercase tracking-wide">Period</label>
                   <select
                     value={timeRange}
                     onChange={(e) => setTimeRange(e.target.value)}
-                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    className="h-9 px-3 text-sm bg-white border border-gray-300 text-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   >
+                    <option value="today">Today</option>
                     <option value="7days">Last 7 Days</option>
                     <option value="30days">Last 30 Days</option>
                     <option value="90days">Last 90 Days</option>
+                    <option value="custom">Custom Range</option>
                   </select>
+                </div>
 
+                {timeRange === 'custom' && (
+                  <>
+                    <div>
+                      <label className="block text-[11px] font-medium text-gray-500 mb-1 uppercase tracking-wide">From</label>
+                      <input
+                        type="date"
+                        value={customStartDate}
+                        onChange={(e) => setCustomStartDate(e.target.value)}
+                        className="h-9 px-3 text-sm bg-white border border-gray-300 text-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-medium text-gray-500 mb-1 uppercase tracking-wide">To</label>
+                      <input
+                        type="date"
+                        value={customEndDate}
+                        onChange={(e) => setCustomEndDate(e.target.value)}
+                        className="h-9 px-3 text-sm bg-white border border-gray-300 text-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-medium text-gray-500 mb-1 uppercase tracking-wide opacity-0 select-none">·</label>
+                      <button
+                        onClick={() => { fetchAnalytics(); fetchRealTimePageViews(); }}
+                        disabled={!customStartDate || !customEndDate}
+                        className="h-9 px-4 text-sm font-medium bg-primary-600 hover:bg-primary-700 text-white rounded-lg disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                      >
+                        Apply
+                      </button>
+                    </div>
+                  </>
+                )}
+
+                <div>
+                  <label className="block text-[11px] font-medium text-gray-500 mb-1 uppercase tracking-wide opacity-0 select-none">·</label>
                   <button
                     onClick={handleManualRefresh}
                     disabled={isRefreshing}
-                    className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 focus:ring-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                    className="h-9 px-4 text-sm font-medium bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 rounded-lg disabled:opacity-40 flex items-center gap-2 transition-colors"
                   >
-                    {isRefreshing ? (
-                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
-                    ) : (
-                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                      </svg>
-                    )}
+                    <svg className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
                     Refresh
                   </button>
+                </div>
 
+                <div>
+                  <label className="block text-[11px] font-medium text-gray-500 mb-1 uppercase tracking-wide opacity-0 select-none">·</label>
                   <button
                     onClick={exportToExcel}
                     disabled={exportLoading}
-                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                    className="h-9 px-4 text-sm font-medium bg-primary-600 hover:bg-primary-700 text-white rounded-lg disabled:opacity-40 flex items-center gap-2 transition-colors shadow-sm"
                   >
-                    {exportLoading ? (
-                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
-                    ) : (
-                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                    )}
-                    Export Data
+                    {exportLoading
+                      ? <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      : <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                    }
+                    Export CSV
                   </button>
                 </div>
               </div>
             </div>
+          </div>
+        </div>
 
-            {isLoading ? (
-              <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-500 border-t-transparent"></div>
-              </div>
-            ) : (
-              <div className="space-y-6">
-                {/* Tab Navigation */}
-                <div className="bg-white rounded-lg shadow-sm">
-                  <div className="border-b border-gray-200">
-                    <nav className="-mb-px flex space-x-8 px-6">
-                      {[
-                        { key: 'overview', label: 'Overview', icon: '📊' },
-                        { key: 'pages', label: 'Pages', icon: '📄' },
-                        { key: 'sources', label: 'Traffic Sources', icon: '🌐' },
-                        { key: 'countries', label: 'Countries', icon: '🌍' },
-                        { key: 'devices', label: 'Devices', icon: '📱' }
-                      ].map((tab) => (
-                        <button
-                          key={tab.key}
-                          onClick={() => setActiveTab(tab.key as any)}
-                          className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 ${
-                            activeTab === tab.key
-                              ? 'border-primary-500 text-primary-600'
-                              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                          }`}
-                        >
-                          <span>{tab.icon}</span>
-                          <span>{tab.label}</span>
-                        </button>
-                      ))}
-                    </nav>
-                  </div>
-                </div>
-
-                {/* Key Metrics Cards - Always Visible */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  <div 
-                    className={`bg-white rounded-lg shadow-sm p-6 cursor-pointer transition-all hover:shadow-md ${selectedMetric === 'views' ? 'ring-2 ring-primary-500' : ''}`}
-                    onClick={() => setSelectedMetric('views')}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-500">Total Page Views</p>
-                        <p className="mt-2 text-3xl font-bold text-gray-900">{getTotalMetrics().page_views.toLocaleString()}</p>
-                        <p className="mt-2 text-sm text-green-600">
-                          +{Math.round(Math.random() * 20)}% from last period
-                        </p>
-                      </div>
-                      <div className="p-3 bg-blue-100 rounded-full">
-                        <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div 
-                    className={`bg-white rounded-lg shadow-sm p-6 cursor-pointer transition-all hover:shadow-md ${selectedMetric === 'visitors' ? 'ring-2 ring-primary-500' : ''}`}
-                    onClick={() => setSelectedMetric('visitors')}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-500">Unique Visitors</p>
-                        <p className="mt-2 text-3xl font-bold text-gray-900">{getTotalMetrics().unique_visitors.toLocaleString()}</p>
-                        <p className="mt-2 text-sm text-green-600">
-                          +{Math.round(Math.random() * 15)}% from last period
-                        </p>
-                      </div>
-                      <div className="p-3 bg-green-100 rounded-full">
-                        <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div 
-                    className={`bg-white rounded-lg shadow-sm p-6 cursor-pointer transition-all hover:shadow-md ${selectedMetric === 'time' ? 'ring-2 ring-primary-500' : ''}`}
-                    onClick={() => setSelectedMetric('time')}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-500">Avg. Session Duration</p>
-                        <p className="mt-2 text-3xl font-bold text-gray-900">{formatTime(getTotalMetrics().total_time / filteredAnalytics.length || 0)}</p>
-                        <p className="mt-2 text-sm text-red-600">
-                          -{Math.round(Math.random() * 10)}% from last period
-                        </p>
-                      </div>
-                      <div className="p-3 bg-purple-100 rounded-full">
-                        <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div 
-                    className={`bg-white rounded-lg shadow-sm p-6 cursor-pointer transition-all hover:shadow-md ${selectedMetric === 'bounce' ? 'ring-2 ring-primary-500' : ''}`}
-                    onClick={() => setSelectedMetric('bounce')}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-500">Bounce Rate</p>
-                        <p className="mt-2 text-3xl font-bold text-gray-900">{averageBounceRate}%</p>
-                        <p className="mt-2 text-sm text-green-600">
-                          -{Math.round(Math.random() * 5)}% from last period
-                        </p>
-                      </div>
-                      <div className="p-3 bg-orange-100 rounded-full">
-                        <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Tab Content */}
-                {activeTab === 'overview' && (
-                  <div className="space-y-6">
-                    {/* Main Chart */}
-                    <div className="bg-white rounded-lg shadow-sm p-6">
-                      <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-lg font-semibold">
-                          {selectedMetric === 'views' && 'Page Views Trend'}
-                          {selectedMetric === 'visitors' && 'Unique Visitors Trend'}
-                          {selectedMetric === 'time' && 'Average Session Duration'}
-                          {selectedMetric === 'bounce' && 'Bounce Rate Trend'}
-                        </h3>
-                        <div className="flex items-center space-x-4 text-sm">
-                          <span className="flex items-center">
-                            <span className="w-3 h-3 bg-primary-500 rounded-full mr-2"></span>
-                            Current Period
-                          </span>
+        <div className="max-w-7xl mx-auto px-6 py-6 space-y-5">
+          {isLoading ? (
+            <div className="flex justify-center items-center h-64">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
+            </div>
+          ) : (
+            <>
+              {/* ── KPI Cards ── */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                {metricCards.map((card) => {
+                  const c = colorMap[card.color];
+                  const isActive = selectedMetric === card.key;
+                  return (
+                    <button
+                      key={card.key}
+                      onClick={() => setSelectedMetric(card.key)}
+                      className={`text-left bg-white border rounded-xl p-5 transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none ${
+                        isActive ? `border-primary-400 ring-1 ${c.ring}` : 'border-gray-100 hover:border-gray-200'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between mb-4">
+                        <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${c.bg} ${c.text}`}>
+                          {card.icon}
                         </div>
-                      </div>
-                      
-                      {/* Custom Chart - Fixed height and spacing */}
-                      <div className="h-80 relative mb-4">
-                        {filteredAnalytics.length > 0 ? (
-                          <div className="h-full flex flex-col pb-8">
-                            {/* Y-axis */}
-                            <div className="absolute left-0 top-0 h-64 w-12 flex flex-col justify-between text-xs text-gray-500 pointer-events-none">
-                              {(() => {
-                                const data = getMetricData();
-                                const maxValue = Math.max(...data);
-                                const steps = 5;
-                                return Array.from({ length: steps }).map((_, i) => (
-                                  <span key={i} className="text-right">
-                                    {Math.round(maxValue * (1 - i / (steps - 1)))}
-                                  </span>
-                                ));
-                              })()}
-                            </div>
-                            
-                            {/* Chart area */}
-                            <div className="h-64 ml-16 relative">
-                              <svg className="w-full h-full" viewBox={`0 0 ${filteredAnalytics.length * 50} 280`} preserveAspectRatio="none">
-                                {/* Grid lines */}
-                                {Array.from({ length: 5 }).map((_, i) => (
-                                  <line
-                                    key={i}
-                                    x1="0"
-                                    y1={i * 48}
-                                    x2={filteredAnalytics.length * 50}
-                                    y2={i * 48}
-                                    stroke="#e5e7eb"
-                                    strokeWidth="1"
-                                  />
-                                ))}
-                                
-                                {/* Data line */}
-                                <polyline
-                                  fill="none"
-                                  stroke="#3b82f6"
-                                  strokeWidth="2"
-                                  points={filteredAnalytics.slice().reverse().map((_, index) => {
-                                    const data = getMetricData();
-                                    const maxValue = Math.max(...data);
-                                    const value = data[data.length - 1 - index];
-                                    const x = index * 50 + 25;
-                                    // 220px for graph, 40px for bottom labels, 20px top margin
-                                    const y = maxValue > 0 ? 20 + 220 - (value / maxValue) * 220 : 240;
-                                    return `${x},${y}`;
-                                  }).join(' ')}
-                                />
-                                
-                                {/* Data points */}
-                                {filteredAnalytics.slice().reverse().map((day, index) => {
-                                  const data = getMetricData();
-                                  const maxValue = Math.max(...data);
-                                  const value = data[data.length - 1 - index];
-                                  const x = index * 50 + 25;
-                                  const y = maxValue > 0 ? 20 + 220 - (value / maxValue) * 220 : 240;
-                                  
-                                  return (
-                                    <g key={day.id}>
-                                      <circle
-                                        cx={x}
-                                        cy={y}
-                                        r="4"
-                                        fill="#3b82f6"
-                                        className="hover:r-6 transition-all cursor-pointer"
-                                      />
-                                      <title>
-                                        {new Date(day.date).toLocaleDateString()}: {value}
-                                      </title>
-                                    </g>
-                                  );
-                                })}
-                                {/* X-axis labels inside SVG */}
-                                {filteredAnalytics.slice().reverse().filter((_, i) => i % Math.ceil(filteredAnalytics.length / 7) === 0).map((day, index) => {
-                                  const x = index * 50 + 25;
-                                  return (
-                                    <text
-                                      key={day.id}
-                                      x={x}
-                                      y={270}
-                                      textAnchor="middle"
-                                      fontSize="12"
-                                      fill="#6b7280"
-                                    >
-                                      {new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                                    </text>
-                                  );
-                                })}
-                              </svg>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="flex items-center justify-center h-full text-gray-500">
-                            <div className="text-center">
-                              <div className="text-4xl mb-2">📊</div>
-                              <p className="font-medium">No data available</p>
-                              <p className="text-sm">Data will appear as visitors use your site</p>
-                            </div>
-                          </div>
+                        {isActive && (
+                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full tracking-wide ${c.badge}`}>
+                            ACTIVE
+                          </span>
                         )}
                       </div>
+                      <div className="text-2xl font-bold text-gray-900 mb-1 tabular-nums">{card.value}</div>
+                      <div className="text-xs text-gray-500 uppercase tracking-[0.12em] font-medium">{card.label}</div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* ── Tab Container ── */}
+              <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                {/* Tab bar */}
+                <div className="flex overflow-x-auto border-b border-gray-200">
+                  {tabs.map((tab) => (
+                    <button
+                      key={tab.key}
+                      onClick={() => setActiveTab(tab.key as any)}
+                      className={`px-5 py-3.5 text-sm font-medium whitespace-nowrap transition-colors border-b-2 -mb-px ${
+                        activeTab === tab.key
+                          ? 'border-primary-500 text-primary-600'
+                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      }`}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* ─── Overview Tab ─── */}
+                {activeTab === 'overview' && (
+                  <div className="p-6 space-y-6">
+
+                    {/* Trend Chart */}
+                    <div>
+                      <div className="flex items-center justify-between mb-3">
+                        <div>
+                          <h3 className="text-sm font-semibold text-gray-900">
+                            {selectedMetric === 'views' && 'Page Views Trend'}
+                            {selectedMetric === 'visitors' && 'Unique Visitors Trend'}
+                            {selectedMetric === 'time' && 'Avg. Session Duration'}
+                            {selectedMetric === 'bounce' && 'Bounce Rate Trend'}
+                          </h3>
+                          <p className="text-xs text-gray-400 mt-0.5">{periodLabel}</p>
+                        </div>
+                        <span className="flex items-center gap-1.5 text-xs text-gray-500">
+                          <span className="w-2.5 h-2.5 rounded-full bg-primary-500" />
+                          Current period
+                        </span>
+                      </div>
+
+                      {filteredAnalytics.length > 0 ? (
+                        <div className="flex gap-3">
+                          {/* Y-axis labels */}
+                          <div className="flex flex-col justify-between text-[10px] text-gray-400 pb-6 shrink-0 w-9 text-right">
+                            {(() => {
+                              const data = getMetricData();
+                              const maxValue = Math.max(...data, 1);
+                              return Array.from({ length: 5 }).map((_, i) => (
+                                <span key={i}>{Math.round(maxValue * (1 - i / 4))}</span>
+                              ));
+                            })()}
+                          </div>
+                          {/* Chart */}
+                          <div className="flex-1 min-w-0">
+                            <svg
+                              className="w-full"
+                              height="180"
+                              viewBox="0 0 800 160"
+                              preserveAspectRatio="none"
+                            >
+                              <defs>
+                                <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                                  <stop offset="0%" stopColor="#2b74b3" stopOpacity="0.18" />
+                                  <stop offset="100%" stopColor="#2b74b3" stopOpacity="0" />
+                                </linearGradient>
+                              </defs>
+                              {/* Grid lines */}
+                              {Array.from({ length: 5 }).map((_, i) => (
+                                <line key={i} x1="0" y1={i * 32} x2="800" y2={i * 32} stroke="#e2e8f0" strokeWidth="1" />
+                              ))}
+                              {/* Area fill */}
+                              {filteredAnalytics.length > 1 && (() => {
+                                const data = getMetricData();
+                                const maxValue = Math.max(...data, 1);
+                                const n = filteredAnalytics.length;
+                                const pts = filteredAnalytics.slice().reverse().map((_, idx) => {
+                                  const value = data[data.length - 1 - idx];
+                                  const x = (idx / (n - 1)) * 760 + 20;
+                                  const y = 8 + 128 - (value / maxValue) * 128;
+                                  return `${x},${y}`;
+                                });
+                                return (
+                                  <polygon
+                                    fill="url(#chartGrad)"
+                                    points={`${pts.join(' ')} 780,136 20,136`}
+                                  />
+                                );
+                              })()}
+                              {/* Line */}
+                              <polyline
+                                fill="none"
+                                stroke="#2b74b3"
+                                strokeWidth="2.5"
+                                strokeLinejoin="round"
+                                strokeLinecap="round"
+                                points={filteredAnalytics.slice().reverse().map((_, idx) => {
+                                  const data = getMetricData();
+                                  const maxValue = Math.max(...data, 1);
+                                  const n = filteredAnalytics.length;
+                                  const value = data[data.length - 1 - idx];
+                                  const x = n <= 1 ? 400 : (idx / (n - 1)) * 760 + 20;
+                                  const y = 8 + 128 - (value / maxValue) * 128;
+                                  return `${x},${y}`;
+                                }).join(' ')}
+                              />
+                              {/* Dots */}
+                              {filteredAnalytics.slice().reverse().map((day, idx) => {
+                                const data = getMetricData();
+                                const maxValue = Math.max(...data, 1);
+                                const n = filteredAnalytics.length;
+                                const value = data[data.length - 1 - idx];
+                                const x = n <= 1 ? 400 : (idx / (n - 1)) * 760 + 20;
+                                const y = 8 + 128 - (value / maxValue) * 128;
+                                return (
+                                  <g key={day.id}>
+                                    <circle cx={x} cy={y} r="4" fill="white" stroke="#2b74b3" strokeWidth="2" />
+                                    <title>{new Date(day.date).toLocaleDateString()}: {value}</title>
+                                  </g>
+                                );
+                              })}
+                            </svg>
+                            {/* X-axis labels */}
+                            <div className="flex justify-between text-[10px] text-gray-400 mt-1 px-0.5">
+                              {filteredAnalytics.slice().reverse()
+                                .filter((_, i, arr) => arr.length <= 10 || i % Math.ceil(arr.length / 10) === 0)
+                                .map((day) => (
+                                  <span key={day.id}>
+                                    {new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                  </span>
+                                ))}
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-center h-48">
+                          <div className="text-center">
+                            <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center mx-auto mb-3">
+                              <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                              </svg>
+                            </div>
+                            <p className="text-sm font-medium text-gray-600">No data yet</p>
+                            <p className="text-xs text-gray-400 mt-1">Data will appear as visitors use your site</p>
+                          </div>
+                        </div>
+                      )}
                     </div>
 
-                    {/* Quick Insights Grid */}
-                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                      {/* Quick Stats */}
-                      <div className="bg-white rounded-lg shadow-sm p-6">
-                        <h3 className="text-lg font-semibold mb-4">Quick Stats</h3>
+                    {/* Insight panels */}
+                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                      <div className="bg-gray-50 border border-gray-100 rounded-xl p-4">
+                        <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-[0.12em] mb-3">Quick Stats</h4>
                         <div className="space-y-3">
-                          <div className="flex justify-between">
-                            <span className="text-sm text-gray-500">Top Page</span>
-                            <span className="text-sm font-medium">{realTimePages[0]?.title || 'N/A'}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-sm text-gray-500">Top Country</span>
-                            <span className="text-sm font-medium">{countryData[0]?.country || 'N/A'}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-sm text-gray-500">Total Sessions</span>
-                            <span className="text-sm font-medium">{getTotalMetrics().unique_visitors}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Mini Page Views */}
-                      <div className="bg-white rounded-lg shadow-sm p-6">
-                        <h3 className="text-lg font-semibold mb-4">Top Pages</h3>
-                        <div className="space-y-2">
-                          {realTimePages.slice(0, 3).map((page: any, index: number) => (
-                            <div key={index} className="flex justify-between text-sm">
-                              <span className="truncate">{page.title}</span>
-                              <span className="font-medium">{page.count}</span>
+                          {[
+                            { label: 'Top Page', value: realTimePages[0]?.title || '—' },
+                            { label: 'Top Country', value: countryData[0]?.country || '—' },
+                            { label: 'Total Sessions', value: totals.unique_visitors.toLocaleString() },
+                          ].map((item) => (
+                            <div key={item.label} className="flex items-center justify-between">
+                              <span className="text-xs text-gray-500">{item.label}</span>
+                              <span className="text-xs font-semibold text-gray-700 truncate ml-3 max-w-[120px] text-right">{item.value}</span>
                             </div>
                           ))}
                         </div>
                       </div>
 
-                      {/* Mini Countries */}
-                      <div className="bg-white rounded-lg shadow-sm p-6">
-                        <h3 className="text-lg font-semibold mb-4">Countries</h3>
-                        <div className="space-y-2">
-                          {countryData.slice(0, 3).map((country: any, index: number) => (
-                            <div key={index} className="flex justify-between text-sm">
-                              <span>{country.country}</span>
-                              <span className="font-medium">{country.count}</span>
-                            </div>
-                          ))}
+                      <div className="bg-gray-50 border border-gray-100 rounded-xl p-4">
+                        <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-[0.12em] mb-3">Top Pages</h4>
+                        <div className="space-y-2.5">
+                          {realTimePages.slice(0, 3).map((page: any, i: number) => {
+                            const max = realTimePages[0]?.count || 1;
+                            return (
+                              <div key={i}>
+                                <div className="flex justify-between text-xs mb-1">
+                                  <span className="text-gray-700 truncate max-w-[130px]">{page.title}</span>
+                                  <span className="text-gray-500 font-medium ml-2">{page.count}</span>
+                                </div>
+                                <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
+                                  <div className="h-full bg-primary-500 rounded-full" style={{ width: `${(page.count / max) * 100}%` }} />
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
 
-                      {/* Mini Devices */}
-                      <div className="bg-white rounded-lg shadow-sm p-6">
-                        <h3 className="text-lg font-semibold mb-4">Devices</h3>
-                        <div className="space-y-2">
+                      <div className="bg-gray-50 border border-gray-100 rounded-xl p-4">
+                        <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-[0.12em] mb-3">Countries</h4>
+                        <div className="space-y-2.5">
+                          {countryData.slice(0, 3).map((c: any, i: number) => {
+                            const max = countryData[0]?.count || 1;
+                            return (
+                              <div key={i}>
+                                <div className="flex justify-between text-xs mb-1">
+                                  <span className="text-gray-700">{c.country}</span>
+                                  <span className="text-gray-500 font-medium">{c.count}</span>
+                                </div>
+                                <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
+                                  <div className="h-full bg-secondary-500 rounded-full" style={{ width: `${(c.count / max) * 100}%` }} />
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      <div className="bg-gray-50 border border-gray-100 rounded-xl p-4">
+                        <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-[0.12em] mb-3">Devices</h4>
+                        <div className="space-y-2.5">
                           {(() => {
-                            const deviceCounts: { [key: string]: number } = {};
-                            filteredAnalytics.forEach(day => {
-                              day.devices?.forEach((device: any) => {
-                                deviceCounts[device.device] = (deviceCounts[device.device] || 0) + device.count;
-                              });
-                            });
-                            return Object.entries(deviceCounts).slice(0, 3).map(([device, count]) => (
-                              <div key={device} className="flex justify-between text-sm">
-                                <span className="capitalize">{device}</span>
-                                <span className="font-medium">{count}</span>
+                            const dc: { [k: string]: number } = {};
+                            filteredAnalytics.forEach(day => day.devices?.forEach((d: any) => { dc[d.device] = (dc[d.device] || 0) + d.count; }));
+                            const entries = Object.entries(dc).sort(([,a],[,b]) => b - a).slice(0, 3);
+                            const max = entries[0]?.[1] || 1;
+                            return entries.map(([device, count]) => (
+                              <div key={device}>
+                                <div className="flex justify-between text-xs mb-1">
+                                  <span className="text-gray-700 capitalize">{device}</span>
+                                  <span className="text-gray-500 font-medium">{count}</span>
+                                </div>
+                                <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
+                                  <div className="h-full bg-accent-500 rounded-full" style={{ width: `${(count / max) * 100}%` }} />
+                                </div>
                               </div>
                             ));
                           })()}
@@ -769,36 +878,44 @@ const AnalyticsPage: NextPage = () => {
                   </div>
                 )}
 
-                {/* Pages Tab */}
+                {/* ─── Pages Tab ─── */}
                 {activeTab === 'pages' && (
-                  <div className="bg-white rounded-lg shadow-sm p-6">
-                    <h3 className="text-lg font-semibold mb-4">Page Performance Details</h3>
+                  <div className="p-6">
+                    <h3 className="text-sm font-semibold text-gray-900 mb-4">Page Performance</h3>
                     <div className="overflow-x-auto">
-                      <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                          <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Page Title</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">URL</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Views</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Avg. Time</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b border-gray-200">
+                            <th className="text-left py-3 px-4 text-[11px] font-semibold text-gray-500 uppercase tracking-[0.1em]">Page</th>
+                            <th className="text-left py-3 px-4 text-[11px] font-semibold text-gray-500 uppercase tracking-[0.1em]">URL</th>
+                            <th className="text-right py-3 px-4 text-[11px] font-semibold text-gray-500 uppercase tracking-[0.1em]">Views</th>
+                            <th className="text-right py-3 px-4 text-[11px] font-semibold text-gray-500 uppercase tracking-[0.1em]">Avg. Time</th>
+                            <th className="py-3 px-4" />
                           </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
+                        <tbody className="divide-y divide-gray-100">
                           {realTimePages.map((page, index) => {
                             const avgTime = Math.round(Math.random() * 300) + 60;
+                            const maxViews = realTimePages[0]?.count || 1;
                             return (
-                              <tr key={index} className="hover:bg-gray-50">
-                                <td className="px-6 py-4 text-sm font-medium text-gray-900">{page.title}</td>
-                                <td className="px-6 py-4 text-sm text-gray-900 truncate max-w-xs">{page.url}</td>
-                                <td className="px-6 py-4 text-sm text-gray-900">{page.count}</td>
-                                <td className="px-6 py-4 text-sm text-gray-900">{formatTime(avgTime / 60)}</td>
-                                <td className="px-6 py-4 text-sm text-gray-900">
+                              <tr key={index} className="hover:bg-gray-50 transition-colors">
+                                <td className="py-3.5 px-4 font-medium text-gray-800">{page.title}</td>
+                                <td className="py-3.5 px-4 text-gray-400 max-w-xs truncate font-mono text-xs">{page.url}</td>
+                                <td className="py-3.5 px-4 text-right">
+                                  <div className="flex items-center justify-end gap-2">
+                                    <div className="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                      <div className="h-full bg-primary-500 rounded-full" style={{ width: `${(page.count / maxViews) * 100}%` }} />
+                                    </div>
+                                    <span className="text-gray-800 font-semibold tabular-nums w-10 text-right">{page.count}</span>
+                                  </div>
+                                </td>
+                                <td className="py-3.5 px-4 text-right text-gray-500">{formatTime(avgTime / 60)}</td>
+                                <td className="py-3.5 px-4 text-right">
                                   <button
                                     onClick={() => setSelectedPage(page.url)}
-                                    className="text-primary-600 hover:text-primary-700 font-medium"
+                                    className="text-xs text-primary-600 hover:text-primary-700 font-medium transition-colors"
                                   >
-                                    View Details
+                                    Details →
                                   </button>
                                 </td>
                               </tr>
@@ -810,21 +927,21 @@ const AnalyticsPage: NextPage = () => {
                   </div>
                 )}
 
-                {/* Traffic Sources Tab */}
+                {/* ─── Traffic Sources Tab ─── */}
                 {activeTab === 'sources' && (
-                  <div className="bg-white rounded-lg shadow-sm p-6">
-                    <h3 className="text-lg font-semibold mb-4">Traffic Sources Breakdown</h3>
+                  <div className="p-6">
+                    <h3 className="text-sm font-semibold text-gray-900 mb-4">Traffic Sources</h3>
                     <div className="overflow-x-auto">
-                      <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                          <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Source</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Visits</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Percentage</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b border-gray-200">
+                            <th className="text-left py-3 px-4 text-[11px] font-semibold text-gray-500 uppercase tracking-[0.1em]">Source</th>
+                            <th className="text-right py-3 px-4 text-[11px] font-semibold text-gray-500 uppercase tracking-[0.1em]">Visits</th>
+                            <th className="text-right py-3 px-4 text-[11px] font-semibold text-gray-500 uppercase tracking-[0.1em]">Share</th>
+                            <th className="py-3 px-4 text-[11px] font-semibold text-gray-500 uppercase tracking-[0.1em]">Type</th>
                           </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
+                        <tbody className="divide-y divide-gray-100">
                           {(() => {
                             const sources: { [key: string]: number } = {};
                             filteredAnalytics.forEach(day => {
@@ -834,33 +951,36 @@ const AnalyticsPage: NextPage = () => {
                               });
                             });
                             const totalSources = Object.values(sources).reduce((a, b) => a + b, 0);
+                            const maxCount = Math.max(...Object.values(sources), 1);
                             return Object.entries(sources)
                               .sort(([,a], [,b]) => b - a)
                               .map(([source, count]) => {
-                                const percentage = totalSources > 0 ? ((count / totalSources) * 100).toFixed(1) : '0';
-                                const type = source === 'Direct' ? 'Direct' :
-                                           source.toLowerCase().includes('google') ? 'Search Engine' :
-                                           source.toLowerCase().includes('facebook') || 
-                                           source.toLowerCase().includes('linkedin') ||
-                                           source.toLowerCase().includes('twitter') ? 'Social Media' : 'Referral';
+                                const pct = totalSources > 0 ? ((count / totalSources) * 100).toFixed(1) : '0';
+                                const type = source === 'Direct' ? 'Direct'
+                                  : source.toLowerCase().includes('google') ? 'Search'
+                                  : ['facebook','linkedin','twitter','instagram'].some(s => source.toLowerCase().includes(s)) ? 'Social'
+                                  : 'Referral';
+                                const typeBadge: Record<string, string> = {
+                                  Direct:   'bg-gray-100 text-gray-600',
+                                  Search:   'bg-primary-50 text-primary-700',
+                                  Social:   'bg-pink-50 text-pink-700',
+                                  Referral: 'bg-secondary-50 text-secondary-700',
+                                };
                                 return (
-                                  <tr key={source} className="hover:bg-gray-50">
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                      <div className="flex items-center">
-                                        <span className="mr-3">
-                                          {source === 'Direct' ? '🔗' : 
-                                           source.toLowerCase().includes('google') ? '🔍' :
-                                           source.toLowerCase().includes('facebook') ? '📘' :
-                                           source.toLowerCase().includes('linkedin') ? '💼' :
-                                           source.toLowerCase().includes('twitter') ? '🐦' : 
-                                           source.toLowerCase().includes('instagram') ? '📷' : '🌐'}
-                                        </span>
-                                        {source}
+                                  <tr key={source} className="hover:bg-gray-50 transition-colors">
+                                    <td className="py-3.5 px-4 font-medium text-gray-800">{source}</td>
+                                    <td className="py-3.5 px-4 text-right">
+                                      <div className="flex items-center justify-end gap-2">
+                                        <div className="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                          <div className="h-full bg-primary-500 rounded-full" style={{ width: `${(count / maxCount) * 100}%` }} />
+                                        </div>
+                                        <span className="text-gray-800 font-semibold tabular-nums w-8 text-right">{count}</span>
                                       </div>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{count}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{percentage}%</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{type}</td>
+                                    <td className="py-3.5 px-4 text-right text-gray-500 tabular-nums">{pct}%</td>
+                                    <td className="py-3.5 px-4">
+                                      <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${typeBadge[type]}`}>{type}</span>
+                                    </td>
                                   </tr>
                                 );
                               });
@@ -871,38 +991,44 @@ const AnalyticsPage: NextPage = () => {
                   </div>
                 )}
 
-                {/* Countries Tab */}
+                {/* ─── Countries Tab ─── */}
                 {activeTab === 'countries' && (
-                  <div className="bg-white rounded-lg shadow-sm p-6">
-                    <h3 className="text-lg font-semibold mb-4">Visitors by Country</h3>
+                  <div className="p-6">
+                    <h3 className="text-sm font-semibold text-gray-900 mb-4">Visitors by Country</h3>
                     <div className="overflow-x-auto">
-                      <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                          <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Country</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Visits</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Percentage</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pages/Visit</th>
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b border-gray-200">
+                            <th className="text-left py-3 px-4 text-[11px] font-semibold text-gray-500 uppercase tracking-[0.1em]">#</th>
+                            <th className="text-left py-3 px-4 text-[11px] font-semibold text-gray-500 uppercase tracking-[0.1em]">Country</th>
+                            <th className="text-right py-3 px-4 text-[11px] font-semibold text-gray-500 uppercase tracking-[0.1em]">Visits</th>
+                            <th className="py-3 px-4 text-[11px] font-semibold text-gray-500 uppercase tracking-[0.1em] w-36">Share</th>
                           </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
+                        <tbody className="divide-y divide-gray-100">
                           {countryData.map((country, index) => {
-                            const totalCountries = countryData.reduce((sum, c) => sum + c.count, 0);
-                            const percentage = totalCountries > 0 ? ((country.count / totalCountries) * 100).toFixed(1) : '0';
-                            const avgPages = Math.round(Math.random() * 3) + 1;
+                            const total = countryData.reduce((s, c) => s + c.count, 0);
+                            const pct = total > 0 ? ((country.count / total) * 100).toFixed(1) : '0';
                             return (
-                              <tr key={index} className="hover:bg-gray-50">
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                  <div className="flex items-center">
-                                    <span className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center mr-3 text-xs font-semibold text-primary-600">
+                              <tr key={index} className="hover:bg-gray-50 transition-colors">
+                                <td className="py-3.5 px-4 text-gray-400 font-mono text-xs">{String(index + 1).padStart(2, '0')}</td>
+                                <td className="py-3.5 px-4">
+                                  <div className="flex items-center gap-3">
+                                    <span className="w-7 h-7 bg-primary-50 border border-primary-100 rounded-md flex items-center justify-center text-[10px] font-bold text-primary-600">
                                       {country.country.substring(0, 2).toUpperCase()}
                                     </span>
-                                    {country.country}
+                                    <span className="font-medium text-gray-800">{country.country}</span>
                                   </div>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{country.count}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{percentage}%</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{avgPages}</td>
+                                <td className="py-3.5 px-4 text-right text-gray-800 font-semibold tabular-nums">{country.count.toLocaleString()}</td>
+                                <td className="py-3.5 px-4">
+                                  <div className="flex items-center gap-2">
+                                    <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                      <div className="h-full bg-secondary-500 rounded-full" style={{ width: `${pct}%` }} />
+                                    </div>
+                                    <span className="text-xs text-gray-500 tabular-nums w-10 text-right">{pct}%</span>
+                                  </div>
+                                </td>
                               </tr>
                             );
                           })}
@@ -912,187 +1038,173 @@ const AnalyticsPage: NextPage = () => {
                   </div>
                 )}
 
-                {/* Devices Tab */}
+                {/* ─── Devices Tab ─── */}
                 {activeTab === 'devices' && (
-                  <div className="bg-white rounded-lg shadow-sm p-6">
-                    <h3 className="text-lg font-semibold mb-4">Device and Browser Analytics</h3>
+                  <div className="p-6">
+                    <h3 className="text-sm font-semibold text-gray-900 mb-4">Device & Browser Analytics</h3>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                       <div>
-                        <h4 className="font-medium mb-3">Device Types</h4>
-                        <div className="overflow-x-auto">
-                          <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gray-50">
-                              <tr>
-                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Device</th>
-                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Count</th>
-                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">%</th>
-                              </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
-                              {(() => {
-                                const deviceCounts: { [key: string]: number } = {};
-                                filteredAnalytics.forEach(day => {
-                                  day.devices?.forEach((device: any) => {
-                                    deviceCounts[device.device] = (deviceCounts[device.device] || 0) + device.count;
-                                  });
-                                });
-                                const totalDevices = Object.values(deviceCounts).reduce((a, b) => a + b, 0);
-                                return Object.entries(deviceCounts).map(([device, count]) => (
-                                  <tr key={device} className="hover:bg-gray-50">
-                                    <td className="px-4 py-2 text-sm font-medium text-gray-900 capitalize">{device}</td>
-                                    <td className="px-4 py-2 text-sm text-gray-900">{count}</td>
-                                    <td className="px-4 py-2 text-sm text-gray-900">{totalDevices > 0 ? ((count / totalDevices) * 100).toFixed(1) : 0}%</td>
-                                  </tr>
-                                ));
-                              })()}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <h4 className="font-medium mb-3">Top Browsers</h4>
-                        <div className="overflow-x-auto">
-                          <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gray-50">
-                              <tr>
-                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Browser</th>
-                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Users</th>
-                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">%</th>
-                              </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
-                              {(() => {
-                                const browserCounts: { [key: string]: number } = {};
-                                pageViews.forEach(view => {
-                                  const browser = view.browser || 'Unknown';
-                                  browserCounts[browser] = (browserCounts[browser] || 0) + 1;
-                                });
-                                const totalBrowsers = Object.values(browserCounts).reduce((a, b) => a + b, 0);
-                                return Object.entries(browserCounts)
-                                  .sort(([,a], [,b]) => b - a)
-                                  .slice(0, 10)
-                                  .map(([browser, count]) => (
-                                    <tr key={browser} className="hover:bg-gray-50">
-                                      <td className="px-4 py-2 text-sm font-medium text-gray-900">{browser}</td>
-                                      <td className="px-4 py-2 text-sm text-gray-900">{count}</td>
-                                      <td className="px-4 py-2 text-sm text-gray-900">{totalBrowsers > 0 ? ((count / totalBrowsers) * 100).toFixed(1) : 0}%</td>
-                                    </tr>
-                                  ));
-                              })()}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Page Detail Modal */}
-                {selectedPage && (
-                  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-auto">
-                      <div className="p-6 border-b border-gray-200">
-                        <div className="flex items-center justify-between">
-                          <h3 className="text-xl font-semibold">Page Analytics: {selectedPage}</h3>
-                          <button
-                            onClick={() => setSelectedPage(null)}
-                            className="text-gray-400 hover:text-gray-500"
-                          >
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                          </button>
-                        </div>
-                      </div>
-                      <div className="p-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div>
-                            <h4 className="font-semibold mb-3">Page Performance</h4>
-                            <div className="space-y-3">
-                              <div className="bg-gray-50 p-3 rounded">
-                                <p className="text-sm text-gray-500">Total Views</p>
-                                <p className="text-2xl font-bold">
-                                  {pageViews.filter(v => v.page_url === selectedPage).length}
-                                </p>
-                              </div>
-                              <div className="bg-gray-50 p-3 rounded">
-                                <p className="text-sm text-gray-500">Avg. Time on Page</p>
-                                <p className="text-2xl font-bold">
-                                  {formatTime(
-                                    pageViews
-                                      .filter(v => v.page_url === selectedPage)
-                                      .reduce((acc, v) => acc + (v.duration_seconds || 0), 0) / 
-                                    pageViews.filter(v => v.page_url === selectedPage).length / 60 || 0
-                                  )}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div>
-                            <h4 className="font-semibold mb-3">Traffic Breakdown</h4>
-                            <div className="space-y-2">
-                              <h5 className="text-sm font-medium text-gray-500">By Country</h5>
-                              {(() => {
-                                const countries: { [key: string]: number } = {};
-                                pageViews
-                                  .filter(v => v.page_url === selectedPage)
-                                  .forEach(v => {
-                                    const country = v.country || 'Unknown';
-                                    countries[country] = (countries[country] || 0) + 1;
-                                  });
-                                return Object.entries(countries)
-                                  .sort(([,a], [,b]) => b - a)
-                                  .slice(0, 5)
-                                  .map(([country, count]) => (
-                                    <div key={country} className="flex justify-between items-center py-1">
-                                      <span className="text-sm">{country}</span>
-                                      <span className="text-sm font-medium">{count}</span>
+                        <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-[0.1em] mb-3">Device Types</h4>
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="border-b border-gray-200">
+                              <th className="text-left py-2 px-3 text-[11px] text-gray-500 uppercase tracking-[0.1em]">Device</th>
+                              <th className="text-right py-2 px-3 text-[11px] text-gray-500 uppercase tracking-[0.1em]">Count</th>
+                              <th className="py-2 px-3 text-[11px] text-gray-500 uppercase tracking-[0.1em] w-24">Share</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-100">
+                            {(() => {
+                              const dc: { [k: string]: number } = {};
+                              filteredAnalytics.forEach(day => day.devices?.forEach((d: any) => { dc[d.device] = (dc[d.device] || 0) + d.count; }));
+                              const total = Object.values(dc).reduce((a, b) => a + b, 0);
+                              return Object.entries(dc).map(([device, count]) => (
+                                <tr key={device} className="hover:bg-gray-50">
+                                  <td className="py-3 px-3 font-medium text-gray-800 capitalize">{device}</td>
+                                  <td className="py-3 px-3 text-right text-gray-600 tabular-nums">{count}</td>
+                                  <td className="py-3 px-3">
+                                    <div className="flex items-center gap-2">
+                                      <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                        <div className="h-full bg-accent-500 rounded-full" style={{ width: `${total > 0 ? (count/total*100) : 0}%` }} />
+                                      </div>
+                                      <span className="text-xs text-gray-400 w-8 text-right">{total > 0 ? (count/total*100).toFixed(0) : 0}%</span>
                                     </div>
-                                  ));
-                              })()}
-                              
-                              <h5 className="text-sm font-medium text-gray-500 mt-4">By Device</h5>
-                              {(() => {
-                                const devices: { [key: string]: number } = {};
-                                pageViews
-                                  .filter(v => v.page_url === selectedPage)
-                                  .forEach(v => {
-                                    const device = v.device_type || 'Unknown';
-                                    devices[device] = (devices[device] || 0) + 1;
-                                  });
-                                return Object.entries(devices).map(([device, count]) => (
-                                  <div key={device} className="flex justify-between items-center py-1">
-                                    <span className="text-sm capitalize">{device}</span>
-                                    <span className="text-sm font-medium">{count}</span>
-                                  </div>
-                                ));
-                              })()}
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="mt-6">
-                          <h4 className="font-semibold mb-3">Recent Visits</h4>
-                          <div className="space-y-2 max-h-48 overflow-y-auto">
-                            {pageViews
-                              .filter(v => v.page_url === selectedPage)
-                              .slice(0, 10)
-                              .map(view => (
-                                <div key={view.id} className="text-sm text-gray-600 py-1">
-                                  {new Date(view.created_at).toLocaleString()} • {view.country} • {view.device_type} • {view.browser}
-                                </div>
-                              ))}
-                          </div>
-                        </div>
+                                  </td>
+                                </tr>
+                              ));
+                            })()}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      <div>
+                        <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-[0.1em] mb-3">Top Browsers</h4>
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="border-b border-gray-200">
+                              <th className="text-left py-2 px-3 text-[11px] text-gray-500 uppercase tracking-[0.1em]">Browser</th>
+                              <th className="text-right py-2 px-3 text-[11px] text-gray-500 uppercase tracking-[0.1em]">Users</th>
+                              <th className="py-2 px-3 text-[11px] text-gray-500 uppercase tracking-[0.1em] w-24">Share</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-100">
+                            {(() => {
+                              const bc: { [k: string]: number } = {};
+                              pageViews.forEach(v => { const b = v.browser || 'Unknown'; bc[b] = (bc[b] || 0) + 1; });
+                              const total = Object.values(bc).reduce((a, b) => a + b, 0);
+                              return Object.entries(bc).sort(([,a],[,b]) => b - a).slice(0, 10).map(([browser, count]) => (
+                                <tr key={browser} className="hover:bg-gray-50">
+                                  <td className="py-3 px-3 font-medium text-gray-800">{browser}</td>
+                                  <td className="py-3 px-3 text-right text-gray-600 tabular-nums">{count}</td>
+                                  <td className="py-3 px-3">
+                                    <div className="flex items-center gap-2">
+                                      <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                        <div className="h-full bg-primary-500 rounded-full" style={{ width: `${total > 0 ? (count/total*100) : 0}%` }} />
+                                      </div>
+                                      <span className="text-xs text-gray-400 w-8 text-right">{total > 0 ? (count/total*100).toFixed(0) : 0}%</span>
+                                    </div>
+                                  </td>
+                                </tr>
+                              ));
+                            })()}
+                          </tbody>
+                        </table>
                       </div>
                     </div>
                   </div>
                 )}
               </div>
-            )}
+            </>
+          )}
+        </div>
+
+        {/* ── Page Detail Modal ── */}
+        {selectedPage && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white border border-gray-200 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-auto">
+              <div className="flex items-center justify-between p-6 border-b border-gray-200">
+                <div>
+                  <h3 className="text-base font-semibold text-gray-900">Page Analytics</h3>
+                  <p className="text-xs text-gray-400 mt-0.5 font-mono truncate max-w-lg">{selectedPage}</p>
+                </div>
+                <button
+                  onClick={() => setSelectedPage(null)}
+                  className="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 hover:text-gray-700 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-[0.1em] mb-3">Performance</h4>
+                    <div className="space-y-3">
+                      {[
+                        { label: 'Total Views', value: pageViews.filter(v => v.page_url === selectedPage).length },
+                        {
+                          label: 'Avg. Time on Page',
+                          value: formatTime(
+                            pageViews.filter(v => v.page_url === selectedPage).reduce((acc, v) => acc + (v.duration_seconds || 0), 0) /
+                            (pageViews.filter(v => v.page_url === selectedPage).length || 1) / 60
+                          ),
+                        },
+                      ].map((item) => (
+                        <div key={item.label} className="bg-gray-50 border border-gray-100 rounded-xl p-4">
+                          <p className="text-xs text-gray-500 mb-1">{item.label}</p>
+                          <p className="text-2xl font-bold text-gray-900">{item.value}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-[0.1em] mb-3">Traffic Breakdown</h4>
+                    <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 space-y-1.5 mb-3">
+                      <p className="text-xs font-medium text-gray-500 mb-2">By Country</p>
+                      {(() => {
+                        const countries: { [k: string]: number } = {};
+                        pageViews.filter(v => v.page_url === selectedPage).forEach(v => { const c = v.country || 'Unknown'; countries[c] = (countries[c] || 0) + 1; });
+                        return Object.entries(countries).sort(([,a],[,b]) => b - a).slice(0, 5).map(([country, count]) => (
+                          <div key={country} className="flex justify-between text-xs">
+                            <span className="text-gray-600">{country}</span>
+                            <span className="text-gray-500 font-medium">{count}</span>
+                          </div>
+                        ));
+                      })()}
+                    </div>
+                    <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 space-y-1.5">
+                      <p className="text-xs font-medium text-gray-500 mb-2">By Device</p>
+                      {(() => {
+                        const devices: { [k: string]: number } = {};
+                        pageViews.filter(v => v.page_url === selectedPage).forEach(v => { const d = v.device_type || 'Unknown'; devices[d] = (devices[d] || 0) + 1; });
+                        return Object.entries(devices).map(([device, count]) => (
+                          <div key={device} className="flex justify-between text-xs">
+                            <span className="text-gray-600 capitalize">{device}</span>
+                            <span className="text-gray-500 font-medium">{count}</span>
+                          </div>
+                        ));
+                      })()}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6">
+                  <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-[0.1em] mb-3">Recent Visits</h4>
+                  <div className="bg-gray-50 border border-gray-100 rounded-xl divide-y divide-gray-200 max-h-48 overflow-y-auto">
+                    {pageViews.filter(v => v.page_url === selectedPage).slice(0, 10).map(view => (
+                      <div key={view.id} className="px-4 py-2.5 text-xs text-gray-500">
+                        <span className="text-gray-700">{new Date(view.created_at).toLocaleString()}</span>
+                        {' · '}{view.country}{' · '}<span className="capitalize">{view.device_type}</span>{' · '}{view.browser}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
+        )}
       </main>
     </>
   );

@@ -428,13 +428,13 @@ const GlossyNavbar = () => {
                       whileHover={{
                         scale: 1.05,
                         y: -2,
-                        boxShadow: "0 8px 24px rgba(34, 197, 94, 0.4)"
+                        boxShadow: "0 8px 24px rgba(43, 116, 179, 0.4)"
                       }}
                       whileTap={{ scale: 0.95 }}
                       className="relative px-6 py-2.5 text-sm font-semibold text-white cursor-pointer group overflow-hidden rounded-full"
                       style={{
-                        background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
-                        boxShadow: '0 6px 20px rgba(16, 185, 129, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
+                        background: 'linear-gradient(135deg, #2b74b3 0%, #1e5a90 50%, #154270 100%)',
+                        boxShadow: '0 6px 20px rgba(43, 116, 179, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
                       }}
                     >
                       <span className="relative z-10 flex items-center space-x-2">
@@ -464,7 +464,7 @@ const GlossyNavbar = () => {
 
                       {/* Outer glow pulse */}
                       <motion.div
-                        className="absolute inset-0 rounded-full bg-emerald-400 opacity-30 blur-md -z-10"
+                        className="absolute inset-0 rounded-full bg-blue-400 opacity-30 blur-md -z-10"
                         animate={{
                           scale: [1, 1.15, 1],
                           opacity: [0.3, 0.5, 0.3]
@@ -639,7 +639,7 @@ const GlossyNavbar = () => {
                         transition={{ delay: navItems.length * 0.1, duration: 0.3 }}
                         className="w-full px-4 py-3 text-center text-base font-medium text-white rounded-xl transition-all duration-300 relative overflow-hidden group"
                         style={{
-                          background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
+                          background: 'linear-gradient(135deg, #2b74b3 0%, #1e5a90 50%, #154270 100%)',
                         }}
                         onClick={() => setIsMenuOpen(false)}
                       >

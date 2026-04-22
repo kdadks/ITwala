@@ -2,7 +2,7 @@ import { NextPage } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { FaCogs, FaArrowLeft, FaCheckCircle } from 'react-icons/fa';
+import { FaCogs, FaArrowLeft, FaCheckCircle, FaRocket } from 'react-icons/fa';
 
 const TechnicalConsulting: NextPage = () => {
   return (
@@ -12,31 +12,50 @@ const TechnicalConsulting: NextPage = () => {
         <meta name="description" content="Expert technical guidance and architecture consulting to optimize your technology stack and development processes." />
       </Head>
 
-      <main className="pt-16">
+      <main>
         {/* Hero Section */}
-        <section className="py-20 bg-gradient-to-br from-blue-50 to-blue-100">
-          <div className="container mx-auto px-4">
+        <section className="relative overflow-hidden bg-white pt-8 pb-20">
+          <div className="absolute inset-0 mesh-gradient opacity-50 pointer-events-none" />
+          <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-transparent via-primary-500/40 to-transparent hidden lg:block" />
+          <div className="relative container mx-auto px-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="max-w-4xl mx-auto text-center"
+              className="max-w-3xl"
             >
-              <div className="flex justify-center mb-6">
-                <div className="bg-blue-100 text-blue-600 w-20 h-20 rounded-2xl flex items-center justify-center">
-                  <FaCogs className="w-10 h-10" />
+              <div className="flex items-center gap-3 mb-7">
+                <div className="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center text-primary-500 shrink-0">
+                  <FaCogs className="w-5 h-5" />
                 </div>
+                <div className="h-px w-10 bg-primary-500 shrink-0" />
+                <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-primary-500">Consulting Services</span>
               </div>
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Technical Consulting</h1>
-              <p className="text-xl text-gray-600 mb-8">
-                Expert technical guidance and architecture consulting to optimize your technology stack and development processes.
-              </p>
-              <Link href="/consulting">
-                <div className="inline-flex items-center text-primary-600 hover:text-primary-700 font-semibold">
-                  <FaArrowLeft className="w-4 h-4 mr-2" />
-                  Back to All Services
-                </div>
-              </Link>
+              <h1 className="font-serif text-[2.4rem] sm:text-[3rem] lg:text-[3.4rem] leading-[1.06] text-gray-900 mb-5">
+                Technical{' '}
+                <span className="text-gradient">Consulting</span>
+              </h1>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-[3px] h-9 bg-accent-500 rounded-full shrink-0" />
+                <p className="text-[1.05rem] text-gray-600 font-medium leading-snug">
+                  Expert technical guidance
+                  <span className="text-gray-400 font-normal"> · architecture consulting &amp; stack optimization</span>
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <Link href="/contact">
+                  <span className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white h-12 px-7 rounded-lg font-semibold text-sm shadow-md shadow-primary-500/20 transition-all duration-200">
+                    <FaRocket className="w-3.5 h-3.5" />
+                    Start Your Project
+                  </span>
+                </Link>
+                <Link href="/consulting">
+                  <span className="inline-flex items-center gap-1.5 h-12 px-5 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 text-sm font-medium transition-all duration-200">
+                    <FaArrowLeft className="w-3 h-3" />
+                    Back to Services
+                  </span>
+                </Link>
+              </div>
             </motion.div>
           </div>
         </section>

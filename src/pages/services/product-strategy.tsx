@@ -12,30 +12,41 @@ const ProductStrategy: NextPage = () => {
         <meta name="description" content="Strategic planning and roadmap development to align your product vision with market demands and business objectives." />
       </Head>
 
-      <main className="pt-16">
+      <main>
         {/* Hero Section */}
-        <section className="py-20 bg-gradient-to-br from-yellow-50 to-yellow-100">
-          <div className="container mx-auto px-4">
+        <section className="relative overflow-hidden bg-white py-20">
+          <div className="absolute inset-0 mesh-gradient opacity-50 pointer-events-none" />
+          <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-transparent via-primary-500/40 to-transparent hidden lg:block" />
+          <div className="relative container mx-auto px-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="max-w-4xl mx-auto text-center"
+              className="max-w-3xl"
             >
-              <div className="flex justify-center mb-6">
-                <div className="bg-yellow-100 text-yellow-600 w-20 h-20 rounded-2xl flex items-center justify-center">
-                  <FaLightbulb className="w-10 h-10" />
+              <div className="flex items-center gap-3 mb-7">
+                <div className="w-10 h-10 rounded-xl bg-accent-50 flex items-center justify-center text-accent-500 shrink-0">
+                  <FaLightbulb className="w-5 h-5" />
                 </div>
+                <div className="h-px w-10 bg-primary-500 shrink-0" />
+                <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-primary-500">Consulting Services</span>
               </div>
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Product Strategy</h1>
-              <p className="text-xl text-gray-600 mb-8">
-                Strategic planning and roadmap development to align your product vision with market demands and business objectives.
-              </p>
+              <h1 className="font-serif text-[2.4rem] sm:text-[3rem] lg:text-[3.4rem] leading-[1.06] text-gray-900 mb-5">
+                Product{' '}
+                <span className="text-gradient">Strategy</span>
+              </h1>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-[3px] h-9 bg-accent-500 rounded-full shrink-0" />
+                <p className="text-[1.05rem] text-gray-600 font-medium leading-snug">
+                  Strategic planning &amp; roadmap development
+                  <span className="text-gray-400 font-normal"> · align vision with market demands</span>
+                </p>
+              </div>
               <Link href="/consulting">
-                <div className="inline-flex items-center text-primary-600 hover:text-primary-700 font-semibold">
-                  <FaArrowLeft className="w-4 h-4 mr-2" />
+                <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary-500 hover:text-primary-600 transition-colors">
+                  <FaArrowLeft className="w-3 h-3" />
                   Back to All Services
-                </div>
+                </span>
               </Link>
             </motion.div>
           </div>

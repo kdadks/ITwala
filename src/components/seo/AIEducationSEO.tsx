@@ -120,7 +120,7 @@ const AIEducationSEO: React.FC<AIEducationSEOProps> = ({
       "@type": "ContactPoint",
       "telephone": "+91-7982303199",
       "contactType": "customer service",
-      "email": "sales@it-wala.com"
+      "email": "support@it-wala.com"
     }
   };
 

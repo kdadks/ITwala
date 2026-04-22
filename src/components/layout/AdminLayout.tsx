@@ -70,7 +70,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   // Loading state
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="flex items-center justify-center min-h-screen bg-bg-inset">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading admin panel...</p>
@@ -82,8 +82,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   // Access denied state
   if (!isAdmin) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <div className="text-center max-w-2xl p-8 bg-white rounded-lg shadow-lg">
+      <div className="flex items-center justify-center min-h-screen bg-bg-inset">
+        <div className="text-center max-w-2xl p-8 bg-bg-overlay rounded-lg shadow-lg">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h2>
           <p className="text-gray-600 mb-4">You do not have permission to access the admin panel.</p>
           {error && (
@@ -104,7 +104,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
 
   // Admin layout
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-bg">
       <AdminHeader />
       <div className="flex">
         <AdminSidebar />

@@ -9,16 +9,23 @@ import Layout from '../components/layout/Layout';
 import AdminLayout from '../components/layout/AdminLayout';
 import AnalyticsTracker from '../components/common/AnalyticsTracker';
 import { AuthErrorBoundary } from '../components/common/AuthErrorBoundary';
-import { Inter } from 'next/font/google';
+import { Space_Grotesk, Playfair_Display } from 'next/font/google';
 import { detectSessionConflicts, clearSessionConflicts } from '../lib/sessionManager';
 
-const inter = Inter({
+const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700'],
   display: 'swap',
   preload: true,
-  fallback: ['system-ui', 'arial'],
-  variable: '--font-inter',
+  variable: '--font-sans',
+});
+
+const playfairDisplay = Playfair_Display({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  display: 'swap',
+  preload: true,
+  variable: '--font-serif',
 });
 
 export default function App({ Component, pageProps, router }: AppProps) {
@@ -82,7 +89,7 @@ export default function App({ Component, pageProps, router }: AppProps) {
     // Admin login page - render without AdminLayout
     if (isAdminLoginRoute) {
       return (
-        <div className={`${inter.variable} ${inter.className}`}>
+        <div className={`${spaceGrotesk.variable} ${playfairDisplay.variable} ${spaceGrotesk.className}`}>
           <AuthErrorBoundary>
             <SessionContextProvider
               supabaseClient={supabaseClient}
@@ -98,7 +105,7 @@ export default function App({ Component, pageProps, router }: AppProps) {
 
     // Other admin pages - render with AdminLayout
     return (
-      <div className={`${inter.variable} ${inter.className}`}>
+      <div className={`${spaceGrotesk.variable} ${playfairDisplay.variable} ${spaceGrotesk.className}`}>
         <AuthErrorBoundary>
           <SessionContextProvider
             supabaseClient={supabaseClient}
@@ -116,7 +123,7 @@ export default function App({ Component, pageProps, router }: AppProps) {
 
   // Render public app
   return (
-    <div className={`${inter.variable} ${inter.className}`}>
+    <div className={`${spaceGrotesk.variable} ${playfairDisplay.variable} ${spaceGrotesk.className}`}>
       <AuthErrorBoundary>
         <SessionContextProvider
           supabaseClient={supabaseClient}

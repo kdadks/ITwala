@@ -2,9 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Slate palette & semantic background tokens ─── */
+:root {
+  /* Slate palette — light values (Radix UI) */
+  --slate-1: #fbfcfd;
+  --slate-2: #f8f9fa;
+  --slate-3: #f1f3f5;
+
+  /* Semantic background tokens — light mode (default) */
+  --color-bg:         #ffffff;
+  --color-bg-inset:   var(--slate-2);
+  --color-bg-overlay: #ffffff;
+}
+
+.dark-theme {
+  /* Slate palette — dark values (Radix UI) */
+  --slate-1: #111113;
+  --slate-2: #18191b;
+  --slate-3: #212225;
+
+  /* Semantic background tokens — dark mode */
+  --color-bg:         var(--slate-1);
+  --color-bg-inset:   #000000;
+  --color-bg-overlay: var(--slate-3);
+}
+/* ─────────────────────────────────────────────────── */
+
 html,
 body {
-  @apply antialiased text-primary-900 bg-primary-50;
+  @apply antialiased text-primary-900;
+  background-color: var(--color-bg);
   scroll-behavior: smooth;
 }
 
@@ -24,11 +51,11 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-secondary-300 rounded-full transition-colors duration-200;
+  @apply bg-primary-300 rounded-full transition-colors duration-200;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-secondary-400;
+  @apply bg-primary-400;
 }
 
 /* Additional common styles */
@@ -324,4 +351,20 @@ select {
   .safe-area-inset-right {
     padding-right: max(1rem, env(safe-area-inset-right));
   }
+}
+
+/* ─── Doctorfolio visual utilities ─── */
+.mesh-gradient {
+  background:
+    radial-gradient(at 20% 30%, oklch(0.85 0.08 220 / 0.3) 0px, transparent 50%),
+    radial-gradient(at 80% 20%, oklch(0.55 0.12 210 / 0.2) 0px, transparent 50%),
+    radial-gradient(at 40% 70%, oklch(0.68 0.18 25  / 0.15) 0px, transparent 50%),
+    radial-gradient(at 90% 80%, oklch(0.85 0.08 220 / 0.25) 0px, transparent 50%);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, oklch(0.55 0.12 210), oklch(0.68 0.18 25));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }

@@ -33,7 +33,7 @@ export async function setupSiteSettings() {
         .from('site_settings')
         .insert([{
           site_name: 'ITwala Academy',
-          contact_email: 'sales@it-wala.com',
+          contact_email: 'support@it-wala.com',
           support_phone: '+91 7982303199',
           maintenance_mode: false,
           enrollments_enabled: true

@@ -91,7 +91,7 @@ const PrivacyPolicy: NextPage = () => {
                   </p>
                   <div className="bg-secondary-50 rounded-lg p-6 mb-6">
                     <p className="text-secondary-700">
-                      Email: sales@it-wala.com<br />
+                      Email: support@it-wala.com<br />
                       Phone: +91 7982303199<br />
                       Address: ITwala Academy, Lucknow, Uttar Pradesh, India
                     </p>

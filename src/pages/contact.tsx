@@ -62,7 +62,6 @@ const Contact: NextPage = () => {
         },
         body: JSON.stringify({
           ...data,
-          toEmail: 'sales@it-wala.com',
           // Only send courseName or consultingType based on service
           courseName: data.service === 'Academy' ? data.courseName : undefined,
           consultingType: data.service === 'Consulting' ? data.consultingType : undefined,
@@ -92,18 +91,31 @@ const Contact: NextPage = () => {
       </Head>
 
       <main>
-        <section className="bg-gradient-to-br from-primary-700 via-primary-600 to-secondary-700 py-16 md:py-24">
-          <div className="container mx-auto px-4">
+        <section className="relative overflow-hidden bg-white">
+          <div className="absolute inset-0 mesh-gradient opacity-50 pointer-events-none" />
+          <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-transparent via-primary-500/40 to-transparent hidden lg:block" />
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-11 pb-12 lg:pt-12 lg:pb-14">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="max-w-4xl mx-auto text-center"
+              className="max-w-3xl"
             >
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">Contact Us</h1>
-              <p className="text-xl text-primary-100 mb-8">
-                Have questions about our courses or need more information? Get in touch with our team.
-              </p>
+              <div className="flex items-center gap-3 mb-7">
+                <div className="h-px w-10 bg-primary-500 shrink-0" />
+                <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-primary-500">Get In Touch · Support &amp; Enquiries</span>
+              </div>
+              <h1 className="font-serif text-[2.4rem] sm:text-[3rem] lg:text-[3.6rem] leading-[1.06] text-gray-900 mb-5">
+                Contact{' '}
+                <span className="text-gradient">Our Team</span>
+              </h1>
+              <div className="flex items-center gap-3">
+                <div className="w-[3px] h-9 bg-accent-500 rounded-full shrink-0" />
+                <p className="text-[1.05rem] text-gray-600 font-medium leading-snug">
+                  Have questions about our courses?
+                  <span className="text-gray-400 font-normal"> · Our experts are ready to help</span>
+                </p>
+              </div>
             </motion.div>
           </div>
         </section>
