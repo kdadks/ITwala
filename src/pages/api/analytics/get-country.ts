@@ -34,12 +34,17 @@ function getCountryNameFromCode(code: string): string {
 
 function getClientIP(req: NextApiRequest): string | null {
   // Check various headers that might contain the client IP
+  const cfConnectingIP = req.headers['cf-connecting-ip']; // Cloudflare
+  const netlifyIP = req.headers['x-nf-client-connection-ip']; // Netlify
   const forwarded = req.headers['x-forwarded-for'];
   const realIP = req.headers['x-real-ip'];
-  const cfConnectingIP = req.headers['cf-connecting-ip']; // Cloudflare
 
   if (typeof cfConnectingIP === 'string') {
     return cfConnectingIP;
+  }
+
+  if (typeof netlifyIP === 'string') {
+    return netlifyIP;
   }
 
   if (typeof forwarded === 'string') {
@@ -114,7 +119,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 3000);
 
-      const response = await fetch(`http://ip-api.com/json/${clientIP}?fields=country,countryCode`, {
+      const response = await fetch(`https://ip-api.com/json/${clientIP}?fields=country,countryCode`, {
         signal: controller.signal
       });
 

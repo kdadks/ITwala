@@ -381,11 +381,15 @@ const AnalyticsTracker: React.FC = () => {
   const router = useRouter();
   const user = useUser();
   const [userCountry, setUserCountry] = useState<string>('Unknown');
+  const [countryResolved, setCountryResolved] = useState<boolean>(false);
   const [lastTrackedPage, setLastTrackedPage] = useState<string>('');
 
   // Fetch country on component mount
   useEffect(() => {
-    getCountryFromIP().then(country => setUserCountry(country));
+    getCountryFromIP().then(country => {
+      setUserCountry(country);
+      setCountryResolved(true);
+    });
   }, []);
 
   useEffect(() => {
@@ -396,6 +400,11 @@ const AnalyticsTracker: React.FC = () => {
         // Skip tracking on localhost
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
           console.log('📊 Analytics tracking skipped - localhost');
+          return;
+        }
+
+        // Wait until country has been resolved to avoid storing 'Unknown'
+        if (!countryResolved) {
           return;
         }
 
@@ -583,7 +592,7 @@ const AnalyticsTracker: React.FC = () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
       handleBeforeUnload();
     };
-  }, [router.asPath, supabase, user?.id, userCountry]);
+  }, [router.asPath, supabase, user?.id, userCountry, countryResolved]);
 
   return null;
 };
