@@ -15,7 +15,8 @@ import {
   BarChart3,
   Settings,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  Video,
 } from 'lucide-react';
 
 interface MenuItem {
@@ -83,6 +84,12 @@ const AdminSidebar = () => {
       items: [
         { href: '/admin/revenue', label: 'Revenue', icon: <DollarSign className="w-4 h-4" /> },
         { href: '/admin/invoices', label: 'Invoices', icon: <FileSpreadsheet className="w-4 h-4" /> }
+      ]
+    },
+    {
+      title: 'Special Events',
+      items: [
+        { href: '/admin/webinars', label: 'Webinars', icon: <Video className="w-4 h-4" /> }
       ]
     },
     {
