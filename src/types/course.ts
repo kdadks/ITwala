@@ -65,4 +65,10 @@ export interface Course {
     answer: string;
   }>;
   feesDiscussedPostEnrollment?: boolean;
+  pricing?: {
+    price: number;
+    originalPrice?: number;
+    currency: string;
+    symbol: string;
+  };
 }

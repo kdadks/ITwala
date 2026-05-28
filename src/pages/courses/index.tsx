@@ -1,14 +1,13 @@
 import { NextPage } from 'next';
 import Head from 'next/head';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import CourseFilter from '@/components/courses/CourseFilter';
 import CourseGrid from '../../components/courses/CourseGrid';
 import BacklinkingHub from '@/components/seo/BacklinkingHub';
 import { motion } from 'framer-motion';
 import { Course } from '@/types/course';
-import { detectCountryFromIP, getCoursePrice, setCountryInCookie } from '@/utils/countryDetection';
-import { formatCurrency } from '@/utils/currency';
+import { detectCountryFromIP, getCountryFromCookie, setCountryInCookie } from '@/utils/countryDetection';
 
 interface CoursePricing {
   price: number;
@@ -27,92 +26,94 @@ const CoursesPage: NextPage = () => {
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>('');
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(false);
+  const [offset, setOffset] = useState(0);
+
+  // Categories/levels fetched once from /api/courses/meta — never re-derived from results
   const [categories, setCategories] = useState<string[]>([]);
   const [levels, setLevels] = useState<string[]>([]);
+
   const [suggestions, setSuggestions] = useState<Course[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [userCountry, setUserCountry] = useState<string>('IN');
-  const [coursePricing, setCoursePricing] = useState<Record<string, CoursePricing>>({});
+  const [userCountry, setUserCountry] = useState<string>(() =>
+    typeof window !== 'undefined' ? getCountryFromCookie() : 'IN'
+  );
   const [suggestionPricing, setSuggestionPricing] = useState<Record<string, CoursePricing>>({});
 
-  // Detect user country — always re-detect from IP to avoid stale cookies
+  // Re-detect country from IP in background
   useEffect(() => {
-    const initCountry = async () => {
-      const country = await detectCountryFromIP();
+    detectCountryFromIP().then(country => {
       setCountryInCookie(country);
-      setUserCountry(country);
-    };
-    initCountry();
+      setUserCountry(prev => prev !== country ? country : prev);
+    });
   }, []);
 
-  // Fetch courses from API
-  const fetchCourses = async () => {
+  // Fetch categories/levels once on mount — long-lived, separate from course results
+  useEffect(() => {
+    fetch('/api/courses/meta')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data) {
+          setCategories(data.categories || []);
+          setLevels(data.levels || []);
+        }
+      })
+      .catch(() => {/* non-critical — filters still render without meta */});
+  }, []);
+
+  const buildParams = useCallback((extraOffset = 0) => {
+    const params = new URLSearchParams();
+    if (selectedCategory !== 'all') params.append('category', selectedCategory);
+    if (selectedLevel !== 'all') params.append('level', selectedLevel);
+    if (priceRange[0] > 0) params.append('minPrice', priceRange[0].toString());
+    if (priceRange[1] < 50000) params.append('maxPrice', priceRange[1].toString());
+    if (debouncedSearchQuery) params.append('search', debouncedSearchQuery);
+    params.append('sortBy', sortBy);
+    params.append('country', userCountry);
+    if (extraOffset > 0) params.append('offset', extraOffset.toString());
+    return params;
+  }, [selectedCategory, selectedLevel, priceRange, debouncedSearchQuery, sortBy, userCountry]);
+
+  const fetchCourses = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
+      setOffset(0);
 
-      const params = new URLSearchParams();
-      if (selectedCategory !== 'all') params.append('category', selectedCategory);
-      if (selectedLevel !== 'all') params.append('level', selectedLevel);
-      if (priceRange[0] > 0) params.append('minPrice', priceRange[0].toString());
-      if (priceRange[1] < 50000) params.append('maxPrice', priceRange[1].toString());
-      if (debouncedSearchQuery) params.append('search', debouncedSearchQuery);
-      params.append('sortBy', sortBy);
-
-      console.log('🔍 fetchCourses called with:', {
-        selectedCategory,
-        selectedLevel,
-        debouncedSearchQuery,
-        sortBy,
-        url: `/api/courses?${params.toString()}`
-      });
-
-      const response = await fetch(`/api/courses?${params.toString()}`);
-
-      if (!response.ok) {
-        throw new Error('Failed to load courses');
-      }
+      const response = await fetch(`/api/courses?${buildParams(0).toString()}`);
+      if (!response.ok) throw new Error('Failed to load courses');
 
       const data = await response.json();
-      console.log('📦 API response:', {
-        coursesCount: data.courses?.length || 0,
-        courses: data.courses?.map(c => ({ id: c.id, title: c.title, category: c.category })) || []
-      });
       setCourses(data.courses || []);
-
-      // Fetch pricing for each course
-      const pricingPromises = (data.courses || []).map(async (course: Course) => {
-        const pricing = await getCoursePrice(course.id, userCountry);
-        return { courseId: course.id, pricing };
-      });
-
-      const pricingResults = await Promise.all(pricingPromises);
-      const pricingMap: Record<string, CoursePricing> = {};
-      pricingResults.forEach(({ courseId, pricing }) => {
-        pricingMap[courseId] = pricing;
-      });
-      setCoursePricing(pricingMap);
-
-      // Extract unique categories and levels for filters
-      if (data.courses && data.courses.length > 0) {
-        const uniqueCategories = Array.from(new Set(data.courses.map((course: Course) => course.category))) as string[];
-        const uniqueLevels = Array.from(new Set(data.courses.map((course: Course) => {
-          return course.level.split(' to ').map(l => l.trim());
-        }).flat())) as string[];
-
-        setCategories(uniqueCategories);
-        setLevels(uniqueLevels);
-      }
+      setHasMore(data.hasMore ?? false);
     } catch (err) {
-      console.error('Error fetching courses:', err);
       setError(err instanceof Error ? err.message : 'Failed to load courses');
     } finally {
       setLoading(false);
     }
+  }, [buildParams]);
+
+  const loadMore = async () => {
+    const nextOffset = offset + 24;
+    try {
+      setLoadingMore(true);
+      const response = await fetch(`/api/courses?${buildParams(nextOffset).toString()}`);
+      if (!response.ok) throw new Error('Failed to load courses');
+
+      const data = await response.json();
+      setCourses(prev => [...prev, ...(data.courses || [])]);
+      setHasMore(data.hasMore ?? false);
+      setOffset(nextOffset);
+    } catch (err) {
+      console.error('Load more error:', err);
+    } finally {
+      setLoadingMore(false);
+    }
   };
 
-  // Fetch suggestions for type-ahead (immediate, no debounce)
+  // Type-ahead suggestions — debounced at 350ms (was 200ms)
   useEffect(() => {
     const fetchSuggestions = async () => {
       if (searchQuery.trim().length < 2) {
@@ -123,22 +124,18 @@ const CoursesPage: NextPage = () => {
       }
 
       try {
-        const response = await fetch(`/api/courses?search=${encodeURIComponent(searchQuery)}&limit=5`);
+        const response = await fetch(
+          `/api/courses?search=${encodeURIComponent(searchQuery)}&limit=5&country=${userCountry}`
+        );
         if (response.ok) {
           const data = await response.json();
-          setSuggestions(data.courses || []);
+          const fetched: Course[] = data.courses || [];
+          setSuggestions(fetched);
           setShowSuggestions(true);
 
-          // Fetch pricing for suggestions
-          const pricingPromises = (data.courses || []).map(async (course: Course) => {
-            const pricing = await getCoursePrice(course.id, userCountry);
-            return { courseId: course.id, pricing };
-          });
-
-          const pricingResults = await Promise.all(pricingPromises);
           const pricingMap: Record<string, CoursePricing> = {};
-          pricingResults.forEach(({ courseId, pricing }) => {
-            pricingMap[courseId] = pricing;
+          fetched.forEach(c => {
+            if (c.pricing) pricingMap[c.id] = c.pricing as CoursePricing;
           });
           setSuggestionPricing(pricingMap);
         }
@@ -147,99 +144,50 @@ const CoursesPage: NextPage = () => {
       }
     };
 
-    const timer = setTimeout(() => {
-      if (userCountry) {
-        fetchSuggestions();
-      }
-    }, 200); // Quick response for suggestions
-
+    const timer = setTimeout(fetchSuggestions, 350);
     return () => clearTimeout(timer);
   }, [searchQuery, userCountry]);
 
-  // Debounce search query for main results
+  // Debounce main search query
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchQuery(searchQuery);
-    }, 500); // Wait 500ms after user stops typing
-
+    }, 500);
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // Sync URL params with filters - only run once when router is ready
+  // Sync URL params with filters — only once when router is ready
   useEffect(() => {
-    if (router.isReady) {
-      console.log('🔄 URL params sync:', {
-        routerQuery: router.query,
-        currentStates: { selectedCategory, selectedLevel, searchQuery }
-      });
+    if (!router.isReady) return;
 
-      let hasChanges = false;
-
-      if (typeof router.query.search === 'string' && router.query.search !== searchQuery) {
-        setSearchQuery(router.query.search);
-        setDebouncedSearchQuery(router.query.search);
-        hasChanges = true;
-      }
-      if (typeof router.query.category === 'string' && router.query.category !== selectedCategory) {
-        console.log('📝 Setting category from URL:', router.query.category);
-        setSelectedCategory(router.query.category);
-        hasChanges = true;
-      }
-      if (typeof router.query.level === 'string' && router.query.level !== selectedLevel) {
-        setSelectedLevel(router.query.level);
-        hasChanges = true;
-      }
-
-      if (hasChanges) {
-        console.log('✅ URL params applied, filters will update');
-      }
+    let hasChanges = false;
+    if (typeof router.query.search === 'string' && router.query.search !== searchQuery) {
+      setSearchQuery(router.query.search);
+      setDebouncedSearchQuery(router.query.search);
+      hasChanges = true;
     }
-  }, [router.isReady, router.query.search, router.query.category, router.query.level]);
+    if (typeof router.query.category === 'string' && router.query.category !== selectedCategory) {
+      setSelectedCategory(router.query.category);
+      hasChanges = true;
+    }
+    if (typeof router.query.level === 'string' && router.query.level !== selectedLevel) {
+      setSelectedLevel(router.query.level);
+      hasChanges = true;
+    }
+    if (!hasChanges) {
+      // No URL params — safe to trigger first fetch
+      fetchCourses();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router.isReady]);
 
-  // Fetch courses when filters change (use debouncedSearchQuery instead of searchQuery)
+  // Re-fetch when filters change
   useEffect(() => {
     if (router.isReady && userCountry) {
       fetchCourses();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCategory, selectedLevel, priceRange, sortBy, debouncedSearchQuery, router.isReady, userCountry]);
-
-  // Initial load to get all courses for filter options only
-  useEffect(() => {
-    const fetchAllCoursesForFilters = async () => {
-      try {
-        const response = await fetch('/api/courses');
-        if (response.ok) {
-          const data = await response.json();
-          if (data.courses && data.courses.length > 0) {
-            const uniqueCategories = Array.from(new Set(data.courses.map((course: Course) => course.category))) as string[];
-            const uniqueLevels = Array.from(new Set(data.courses.map((course: Course) => {
-              return course.level.split(' to ').map(l => l.trim());
-            }).flat())) as string[];
-
-            setCategories(uniqueCategories);
-            setLevels(uniqueLevels);
-
-            console.log('📦 Initial load - filter options loaded:', {
-              uniqueCategories,
-              uniqueLevels,
-              selectedCategory,
-              hasUrlCategory: !!router.query.category
-            });
-          }
-        }
-      } catch (err) {
-        console.error('Error fetching filter options:', err);
-      }
-    };
-
-    // Only run this on initial load when router is ready and we don't have categories yet
-    if (router.isReady && categories.length === 0) {
-      console.log('🎯 Fetching filter options...');
-      fetchAllCoursesForFilters();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router.isReady, categories.length]);
+  }, [selectedCategory, selectedLevel, priceRange, sortBy, debouncedSearchQuery, userCountry]);
 
   if (loading) {
     return (
@@ -265,8 +213,7 @@ const CoursesPage: NextPage = () => {
         <meta name="twitter:description" content="Comprehensive AI and machine learning courses with expert instructors, hands-on projects, and industry certifications." />
         <meta name="twitter:image" content="https://academy.it-wala.com/images/IT - WALA_logo (1).png" />
         <link rel="canonical" href="https://academy.it-wala.com/courses" />
-        
-        {/* Schema for Courses Page */}
+
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
@@ -339,10 +286,9 @@ const CoursesPage: NextPage = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => searchQuery.length >= 2 && setShowSuggestions(true)}
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-              className="w-full py-3 px-4 sm:px-6 rounded-full bg-white shadow-md border border-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-400 text-sm sm:text-base"
+                className="w-full py-3 px-4 sm:px-6 rounded-full bg-white shadow-md border border-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-400 text-sm sm:text-base"
               />
 
-              {/* Type-ahead suggestions dropdown */}
               {showSuggestions && suggestions.length > 0 && (
                 <div className="absolute z-50 w-full mt-2 bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-200">
                   <div className="py-2">
@@ -373,17 +319,11 @@ const CoursesPage: NextPage = () => {
                             )}
                           </div>
                         </div>
-                        {course.price !== undefined && !course.feesDiscussedPostEnrollment && (
+                        {!course.feesDiscussedPostEnrollment && suggestionPricing[course.id] && (
                           <div className="flex-shrink-0">
-                            {suggestionPricing[course.id] ? (
-                              <span className="text-sm font-semibold text-primary-600">
-                                {suggestionPricing[course.id].symbol}{(suggestionPricing[course.id].price / 100).toLocaleString()}
-                              </span>
-                            ) : (
-                              <span className="text-sm font-semibold text-primary-600">
-                                {formatCurrency(course.price, { decimals: 0 })}
-                              </span>
-                            )}
+                            <span className="text-sm font-semibold text-primary-600">
+                              {suggestionPricing[course.id].symbol}{(suggestionPricing[course.id].price / 100).toLocaleString()}
+                            </span>
                           </div>
                         )}
                       </button>
@@ -391,9 +331,7 @@ const CoursesPage: NextPage = () => {
                   </div>
                   {suggestions.length === 5 && (
                     <div className="px-4 py-2 bg-gray-50 border-t border-gray-200">
-                      <p className="text-xs text-gray-600 text-center">
-                        Press Enter to see all results
-                      </p>
+                      <p className="text-xs text-gray-600 text-center">Press Enter to see all results</p>
                     </div>
                   )}
                 </div>
@@ -431,7 +369,7 @@ const CoursesPage: NextPage = () => {
                   sortBy={sortBy}
                   setSortBy={setSortBy}
                 />
-                
+
                 <div className="lg:col-span-3">
                   <div className="bg-white rounded-lg shadow-md p-4 mb-6">
                     <div className="flex flex-col sm:flex-row justify-between items-center">
@@ -459,14 +397,27 @@ const CoursesPage: NextPage = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   {courses.length === 0 ? (
                     <div className="text-center py-12">
                       <p className="text-gray-500 text-lg">No courses found matching your criteria.</p>
                       <p className="text-gray-400 mt-2">Try adjusting your filters or search terms.</p>
                     </div>
                   ) : (
-                    <CourseGrid courses={courses} coursePricing={coursePricing} />
+                    <>
+                      <CourseGrid courses={courses} />
+                      {hasMore && (
+                        <div className="mt-8 text-center">
+                          <button
+                            onClick={loadMore}
+                            disabled={loadingMore}
+                            className="px-8 py-3 bg-primary-600 text-white rounded-full font-medium hover:bg-primary-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                          >
+                            {loadingMore ? 'Loading...' : 'Load More Courses'}
+                          </button>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               </div>
@@ -474,7 +425,6 @@ const CoursesPage: NextPage = () => {
           </div>
         </section>
 
-        {/* Internal Linking Hub */}
         <BacklinkingHub currentPage="course" currentCategory={selectedCategory} />
       </main>
     </>
