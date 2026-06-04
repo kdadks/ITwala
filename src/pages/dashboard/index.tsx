@@ -12,6 +12,7 @@ import RecommendedCourses from '@/components/dashboard/RecommendedCourses';
 import Achievements from '@/components/dashboard/Achievements';
 import RecentActivity from '@/components/dashboard/RecentActivity';
 import AttendanceCard from '@/components/dashboard/AttendanceCard';
+import MyCertificates from '@/components/dashboard/MyCertificates';
 
 const Dashboard: NextPage = () => {
   const router = useRouter();
@@ -87,13 +88,21 @@ const Dashboard: NextPage = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4, duration: 0.5 }}
               >
-                <Achievements />
+                <MyCertificates />
               </motion.div>
 
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 0.5 }}
+              >
+                <Achievements />
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6, duration: 0.5 }}
               >
                 <RecommendedCourses />
               </motion.div>

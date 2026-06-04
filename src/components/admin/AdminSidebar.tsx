@@ -17,6 +17,7 @@ import {
   ChevronDown,
   ChevronRight,
   Video,
+  Award,
 } from 'lucide-react';
 
 interface MenuItem {
@@ -76,7 +77,8 @@ const AdminSidebar = () => {
       title: 'Academic Tracking',
       items: [
         { href: '/admin/progress', label: 'Progress', icon: <ClipboardList className="w-4 h-4" /> },
-        { href: '/admin/attendance', label: 'Attendance', icon: <Calendar className="w-4 h-4" /> }
+        { href: '/admin/attendance', label: 'Attendance', icon: <Calendar className="w-4 h-4" /> },
+        { href: '/admin/certificates', label: 'Certificates', icon: <Award className="w-4 h-4" /> }
       ]
     },
     {
