@@ -298,6 +298,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Send confirmation email (non-fatal)
     try {
+      console.log('Sending webinar registration confirmation email...');
+      
+      // Validate SMTP configuration
+      if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS || !process.env.SMTP_FROM) {
+        console.error('❌ SMTP configuration is incomplete. Missing required environment variables:');
+        console.error('SMTP_HOST:', process.env.SMTP_HOST ? '✓ Set' : '✗ Missing');
+        console.error('SMTP_USER:', process.env.SMTP_USER ? '✓ Set' : '✗ Missing');
+        console.error('SMTP_PASS:', process.env.SMTP_PASS ? '✓ Set' : '✗ Missing');
+        console.error('SMTP_FROM:', process.env.SMTP_FROM ? '✓ Set' : '✗ Missing');
+        throw new Error('SMTP configuration is incomplete');
+      }
+      
+      console.log('SMTP Config:', {
+        host: process.env.SMTP_HOST,
+        port: process.env.SMTP_PORT,
+        secure: process.env.SMTP_SECURE,
+        user: process.env.SMTP_USER,
+        from: process.env.SMTP_FROM,
+      });
+
       const transporter = createTransport({
         host: process.env.SMTP_HOST,
         port: parseInt(process.env.SMTP_PORT ?? '465'),
@@ -358,6 +378,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
       }
 
+      console.log('Sending email to:', email.trim().toLowerCase());
+      
       await transporter.sendMail({
         from: process.env.SMTP_FROM,
         to: email.trim().toLowerCase(),
@@ -370,12 +392,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         attachments,
       });
 
+      console.log('✅ Webinar registration email sent successfully');
+
       await supabaseAdmin!
         .from('webinar_registrations')
         .update({ confirmation_sent: true })
         .eq('id', registration.id);
-    } catch {
+    } catch (emailError: any) {
+      console.error('❌ Email notification error:', emailError);
+      
+      // More detailed error logging
+      if (emailError.code === 'EAUTH') {
+        console.error('Authentication error - check SMTP_USER and SMTP_PASS');
+      } else if (emailError.code === 'ESOCKET') {
+        console.error('Socket error - check SMTP host and port');
+      } else if (emailError.code === 'EENVELOPE') {
+        console.error('Envelope error - check from/to email addresses');
+      } else if (emailError.code === 'ECONNECTION') {
+        console.error('Connection error - check SMTP_HOST and network connectivity');
+      }
+      
       // Email failure is non-fatal — registration is already saved
+      // But we log it so admins can diagnose the issue
     }
 
     return res.status(201).json({ message: 'Registration successful' });

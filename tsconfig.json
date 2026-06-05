@@ -17,10 +17,10 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "target": "ES2017",
-    "baseUrl": ".",
     "paths": {
+      "*": ["./*"],
       "@/*": [
-        "src/*"
+        "./src/*"
       ]
     }
   },
