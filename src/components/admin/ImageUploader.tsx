@@ -26,6 +26,7 @@ export function ImageUploader({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [localPreview, setLocalPreview] = useState<string>('');
   const [uploading, setUploading] = useState(false);
+  const [unsavedUpload, setUnsavedUpload] = useState(false);
 
   const previewSrc = localPreview || normalizePreviewSrc(value);
 
@@ -39,6 +40,7 @@ export function ImageUploader({
 
   function handleClear() {
     setLocalPreview('');
+    setUnsavedUpload(false);
     onChange('');
     if (fileInputRef.current) fileInputRef.current.value = '';
   }
@@ -105,7 +107,9 @@ export function ImageUploader({
       }
 
       const { path } = (await response.json()) as { path: string };
+      setLocalPreview(''); // Use the real stored URL for preview, not the data URL
       onChange(path);
+      setUnsavedUpload(true);
     } catch (err) {
       console.error('[ImageUploader] upload error:', err);
       toast.error(err instanceof Error ? err.message : 'Upload failed');
@@ -191,6 +195,13 @@ export function ImageUploader({
         </div>
       )}
 
+      {/* Unsaved upload warning */}
+      {unsavedUpload && (
+        <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
+          Image uploaded — click <strong>Save Changes</strong> to save it to the record.
+        </p>
+      )}
+
       {/* Manual URL / path input */}
       <div className="space-y-1">
         <label className="block text-xs text-gray-500 font-medium">
@@ -201,6 +212,7 @@ export function ImageUploader({
           value={value}
           onChange={(e) => {
             setLocalPreview('');
+            setUnsavedUpload(false);
             onChange(e.target.value);
           }}
           placeholder={placeholder}

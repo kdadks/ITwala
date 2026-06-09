@@ -1,7 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { writeFile, mkdir } from 'fs/promises';
-import path from 'path';
 import { requireAdmin } from '@/lib/adminAuth';
+import { supabaseAdmin } from '@/lib/supabaseClient';
+
+// Base64 adds ~33% overhead; allow up to ~7 MB of body for a 5 MB image.
+export const config = {
+  api: { bodyParser: { sizeLimit: '7mb' } },
+};
+
+const BUCKET = 'webinar-images';
 
 const ALLOWED_TYPES: Record<string, string> = {
   'image/jpeg': 'jpg',
@@ -13,9 +19,7 @@ const ALLOWED_TYPES: Record<string, string> = {
 const MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
 
 function sanitizeFilename(name: string, ext: string): string {
-  // Strip extension from provided name
   const withoutExt = name.replace(/\.[^.]+$/, '');
-  // Lowercase, replace non-alphanumeric with dash, collapse multiple dashes
   const slug = withoutExt
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
@@ -30,6 +34,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
     return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  if (!supabaseAdmin) {
+    return res.status(500).json({ error: 'Storage not configured' });
   }
 
   const admin = await requireAdmin(req, res);
@@ -68,15 +76,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const filename = sanitizeFilename(name, ext);
-  const dir = path.join(process.cwd(), 'public', 'images', 'events');
 
-  try {
-    await mkdir(dir, { recursive: true });
-    await writeFile(path.join(dir, filename), buffer);
-  } catch (err) {
-    console.error('[upload] filesystem error:', err);
-    return res.status(500).json({ error: 'Failed to save file' });
+  const { error: uploadError } = await supabaseAdmin.storage
+    .from(BUCKET)
+    .upload(filename, buffer, { contentType: type, upsert: false });
+
+  if (uploadError) {
+    console.error('[upload] Supabase Storage error:', uploadError);
+    return res.status(500).json({ error: uploadError.message || 'Failed to upload file' });
   }
 
-  return res.status(200).json({ path: `/images/events/${filename}` });
+  const { data: publicUrlData } = supabaseAdmin.storage
+    .from(BUCKET)
+    .getPublicUrl(filename);
+
+  return res.status(200).json({ path: publicUrlData.publicUrl });
 }
