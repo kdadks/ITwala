@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Course } from '@/types/course';
 import { formatCurrency } from '@/utils/currency';
+import { detectCountryFromIP, getCountryFromCookie, setCountryInCookie } from '@/utils/countryDetection';
 
 const FeaturedCourses = () => {
   const sliderRef = useRef<HTMLDivElement>(null);
@@ -12,12 +13,23 @@ const FeaturedCourses = () => {
   const [scrollLeft, setScrollLeft] = useState(0);
   const [featuredCourses, setFeaturedCourses] = useState<Course[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [userCountry, setUserCountry] = useState<string>(() =>
+    typeof window !== 'undefined' ? getCountryFromCookie() : 'IN'
+  );
+
+  // Detect country from IP, then re-fetch courses with the correct country
+  useEffect(() => {
+    detectCountryFromIP().then(country => {
+      setCountryInCookie(country);
+      setUserCountry(prev => (prev !== country ? country : prev));
+    });
+  }, []);
 
   useEffect(() => {
     const fetchFeaturedCourses = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch('/api/courses?limit=10');
+        const response = await fetch(`/api/courses?limit=10&country=${userCountry}`);
 
         if (!response.ok) {
           throw new Error('Failed to fetch courses');
@@ -48,7 +60,7 @@ const FeaturedCourses = () => {
     };
 
     fetchFeaturedCourses();
-  }, []);
+  }, [userCountry]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
@@ -163,8 +175,23 @@ const FeaturedCourses = () => {
                           </div>
                           <span className="text-xs text-gray-500 ml-1">({course.reviews?.length || 0})</span>
                         </div>
-                        <div className="flex justify-end">
-                          <span className="text-lg font-bold text-primary-600">{formatCurrency(course.price, { decimals: 0 })}</span>
+                        <div className="flex justify-end items-center gap-2">
+                          {course.pricing ? (
+                            <>
+                              {course.pricing.originalPrice && (
+                                <span className="text-sm text-gray-400 line-through">
+                                  {course.pricing.symbol}{(course.pricing.originalPrice / 100).toLocaleString()}
+                                </span>
+                              )}
+                              <span className="text-lg font-bold text-primary-600">
+                                {course.pricing.symbol}{(course.pricing.price / 100).toLocaleString()}
+                              </span>
+                            </>
+                          ) : (
+                            <span className="text-lg font-bold text-primary-600">
+                              {formatCurrency(course.price, { decimals: 0 })}
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>

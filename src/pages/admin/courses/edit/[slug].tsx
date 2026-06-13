@@ -5,6 +5,7 @@ import { useUser, useSupabaseClient } from '@supabase/auth-helpers-react';
 import { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import CoursePricingManager from '@/components/admin/CoursePricingManager';
+import CourseImageUpload from '@/components/admin/CourseImageUpload';
 
 interface CourseFormData {
   title: string;
@@ -492,20 +493,25 @@ const EditCourse: NextPage = () => {
                     </div>
 
                     <div className="sm:col-span-4">
-                      <label htmlFor="image" className="block text-sm font-medium text-gray-700">
-                        Course Image URL
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Course Image
                       </label>
-                      <div className="mt-1">
-                        <input
-                          type="text"
-                          name="image"
-                          id="image"
-                          value={formData.image}
-                          onChange={handleChange}
-                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
-                          placeholder="/images/Tech Professional at Work.jpeg"
-                        />
-                      </div>
+                      <CourseImageUpload
+                        courseId={courseId}
+                        currentImage={formData.image}
+                        onImageChange={async (url) => {
+                          setFormData(prev => ({ ...prev, image: url }));
+                          try {
+                            await fetch(`/api/admin/courses/${courseId}`, {
+                              method: 'PATCH',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ image: url }),
+                            });
+                          } catch {
+                            // image url is saved in formData and will persist on next Save
+                          }
+                        }}
+                      />
                     </div>
 
                     <div className="sm:col-span-2">

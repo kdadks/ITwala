@@ -7,7 +7,7 @@ import CourseGrid from '../../components/courses/CourseGrid';
 import BacklinkingHub from '@/components/seo/BacklinkingHub';
 import { motion } from 'framer-motion';
 import { Course } from '@/types/course';
-import { detectCountryFromIP, getCountryFromCookie, setCountryInCookie } from '@/utils/countryDetection';
+import { detectCountryFromIP, getCountryFromCookie, setCountryInCookie, SUPPORTED_COUNTRIES } from '@/utils/countryDetection';
 
 interface CoursePricing {
   price: number;
@@ -368,6 +368,7 @@ const CoursesPage: NextPage = () => {
                   setPriceRange={setPriceRange}
                   sortBy={sortBy}
                   setSortBy={setSortBy}
+                  currencySymbol={SUPPORTED_COUNTRIES[userCountry]?.symbol ?? '₹'}
                 />
 
                 <div className="lg:col-span-3">

@@ -13,6 +13,7 @@ interface CourseFilterProps {
   setPriceRange: Dispatch<SetStateAction<[number, number]>>;
   sortBy: string;
   setSortBy: Dispatch<SetStateAction<string>>;
+  currencySymbol?: string;
 }
 
 const CourseFilter: React.FC<CourseFilterProps> = ({
@@ -25,7 +26,8 @@ const CourseFilter: React.FC<CourseFilterProps> = ({
   priceRange,
   setPriceRange,
   sortBy,
-  setSortBy
+  setSortBy,
+  currencySymbol = '₹',
 }) => {
   // Local state for price inputs
   const [minInput, setMinInput] = useState(priceRange[0].toString());
@@ -102,7 +104,7 @@ const CourseFilter: React.FC<CourseFilterProps> = ({
 
       {/* Price Range Filter */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-3">Registration Fee Range (₹)</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-3">Registration Fee Range ({currencySymbol})</h3>
         <div className="flex items-center gap-2">
           <input
             type="number"
