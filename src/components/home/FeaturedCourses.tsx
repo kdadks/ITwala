@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Course } from '@/types/course';
 import { formatCurrency } from '@/utils/currency';
-import { detectCountryFromIP, getCountryFromCookie, setCountryInCookie } from '@/utils/countryDetection';
+import { getCountryFromCookie } from '@/utils/countryDetection';
 
 const FeaturedCourses = () => {
   const sliderRef = useRef<HTMLDivElement>(null);
@@ -17,13 +17,7 @@ const FeaturedCourses = () => {
     typeof window !== 'undefined' ? getCountryFromCookie() : 'IN'
   );
 
-  // Detect country from IP, then re-fetch courses with the correct country
-  useEffect(() => {
-    detectCountryFromIP().then(country => {
-      setCountryInCookie(country);
-      setUserCountry(prev => (prev !== country ? country : prev));
-    });
-  }, []);
+  // Country is set by middleware on every request — cookie is already correct on mount.
 
   useEffect(() => {
     const fetchFeaturedCourses = async () => {

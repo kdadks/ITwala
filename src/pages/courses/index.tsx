@@ -7,7 +7,7 @@ import CourseGrid from '../../components/courses/CourseGrid';
 import BacklinkingHub from '@/components/seo/BacklinkingHub';
 import { motion } from 'framer-motion';
 import { Course } from '@/types/course';
-import { detectCountryFromIP, getCountryFromCookie, setCountryInCookie, SUPPORTED_COUNTRIES } from '@/utils/countryDetection';
+import { getCountryFromCookie, SUPPORTED_COUNTRIES } from '@/utils/countryDetection';
 
 interface CoursePricing {
   price: number;
@@ -42,13 +42,7 @@ const CoursesPage: NextPage = () => {
   );
   const [suggestionPricing, setSuggestionPricing] = useState<Record<string, CoursePricing>>({});
 
-  // Re-detect country from IP in background
-  useEffect(() => {
-    detectCountryFromIP().then(country => {
-      setCountryInCookie(country);
-      setUserCountry(prev => prev !== country ? country : prev);
-    });
-  }, []);
+  // Country is set by middleware on every request — no client-side detection needed.
 
   // Fetch categories/levels once on mount — long-lived, separate from course results
   useEffect(() => {

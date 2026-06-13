@@ -15,7 +15,7 @@ import LoadingState from '../../components/common/LoadingState';
 import ErrorBoundary from '../../components/common/ErrorBoundary';
 import { getSiteSettings } from '@/utils/siteSettings';
 import { toast } from 'react-hot-toast';
-import { detectCountryFromIP, setCountryInCookie, getCountryInfo } from '@/utils/countryDetection';
+import { getCountryFromCookie } from '@/utils/countryDetection';
 import { formatCurrency } from '@/utils/currency';
 
 const CoursePage: NextPage = () => {
@@ -38,7 +38,9 @@ const CoursePage: NextPage = () => {
   const [modulesLoading, setModulesLoading] = useState(false);
   const [faqsLoading, setFaqsLoading] = useState(false);
   const [reviewsLoading, setReviewsLoading] = useState(false);
-  const [userCountry, setUserCountry] = useState<string>('IN');
+  const [userCountry] = useState<string>(() =>
+    typeof window !== 'undefined' ? getCountryFromCookie() : 'IN'
+  );
   const [pricing, setPricing] = useState<{
     price: number;
     originalPrice?: number;
@@ -88,16 +90,6 @@ const CoursePage: NextPage = () => {
 
         const courseData = await courseResponse.json();
         setCourse(courseData.course);
-
-        // Fetch related courses (same category, excluding current course)
-        if (courseData.course) {
-          const relatedResponse = await fetch(`/api/courses?category=${courseData.course.category}&limit=3`);
-          if (relatedResponse.ok) {
-            const relatedData = await relatedResponse.json();
-            const filtered = relatedData.courses.filter((c: Course) => c.id !== courseData.course.id).slice(0, 3);
-            setRelatedCourses(filtered);
-          }
-        }
       } catch (err) {
         console.error('Error fetching course:', err);
         setError(err instanceof Error ? err.message : 'Failed to load course');
@@ -109,17 +101,30 @@ const CoursePage: NextPage = () => {
     fetchCourse();
   }, [slug]);
 
+  // Separate effect: re-fetch related courses whenever the country changes
+  // so the embedded course.pricing reflects the correct currency.
   useEffect(() => {
-    // Always re-detect country from IP on mount to avoid stale cookies
-    // (e.g. a user who previously visited from a different country/VPN).
-    const initializeCountry = async () => {
-      const detected = await detectCountryFromIP();
-      setCountryInCookie(detected);
-      setUserCountry(detected);
+    if (!course) return;
+    const fetchRelated = async () => {
+      try {
+        const relatedResponse = await fetch(
+          `/api/courses?category=${encodeURIComponent(course.category)}&limit=4&country=${userCountry}`
+        );
+        if (relatedResponse.ok) {
+          const relatedData = await relatedResponse.json();
+          const filtered = (relatedData.courses as Course[])
+            .filter(c => c.id !== course.id)
+            .slice(0, 3);
+          setRelatedCourses(filtered);
+        }
+      } catch (err) {
+        console.error('Error fetching related courses:', err);
+      }
     };
+    fetchRelated();
+  }, [course, userCountry]);
 
-    initializeCountry();
-  }, []);
+  // Country is set by middleware on every request — cookie is already correct on mount.
 
   useEffect(() => {
     if (!course) return;
@@ -551,7 +556,7 @@ const CoursePage: NextPage = () => {
             <section className="bg-gray-50 py-12">
               <div className="container mx-auto px-4">
                 <h2 className="text-2xl font-bold text-center mb-8">Related Courses</h2>
-                <RelatedCourses courses={relatedCourses} userCountry={userCountry} />
+                <RelatedCourses courses={relatedCourses} />
               </div>
             </section>
           )}
