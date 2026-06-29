@@ -238,7 +238,7 @@ const StudentsPage: NextPage = () => {
 
     checkAdmin();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, router]);
+  }, [user]);
 
   const handleEnrollmentStatusChange = async (enrollmentId: string, newStatus: 'active' | 'completed' | 'paused') => {
     try {

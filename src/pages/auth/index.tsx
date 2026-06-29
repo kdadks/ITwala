@@ -72,7 +72,7 @@ const AuthPage: NextPage = () => {
     };
 
     checkAuth();
-  }, [user, router, supabaseClient]);
+  }, [user]);
 
   // Login handler
   const onLoginSubmit = async (data: LoginFormData) => {

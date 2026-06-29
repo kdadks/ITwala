@@ -47,7 +47,7 @@ const AdminLogin: NextPage = () => {
     };
 
     checkAdminStatus();
-  }, [user, supabaseClient, router]);
+  }, [user]);
 
   const onSubmit = async (data: AdminLoginFormData) => {
     setIsLoading(true);

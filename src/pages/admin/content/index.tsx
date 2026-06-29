@@ -62,7 +62,7 @@ const ContentManagementPage: NextPage = () => {
 
     fetchContent();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, isAdmin, authLoading, router]);
+  }, [user, isAdmin, authLoading]);
 
   const handleSave = async () => {
     try {

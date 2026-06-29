@@ -704,6 +704,7 @@ const Portfolio: NextPage = () => {
                                       alt={`${project.title} logo`}
                                       width={48}
                                       height={48}
+                                      style={{ width: 'auto', height: 'auto', maxWidth: '48px', maxHeight: '48px' }}
                                       className="object-contain"
                                       loading={index < 3 ? "eager" : "lazy"}
                                       priority={index < 3}

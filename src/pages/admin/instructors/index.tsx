@@ -10,14 +10,7 @@ interface Instructor {
   full_name: string;
   email: string;
   bio: string;
-  specialization: string;
   avatar_url: string;
-  courses: {
-    id: string;
-    title: string;
-  }[];
-  students_count: number;
-  rating: number;
 }
 
 const InstructorsPage: NextPage = () => {
@@ -29,7 +22,6 @@ const InstructorsPage: NextPage = () => {
     full_name: '',
     email: '',
     bio: '',
-    specialization: '',
     avatar_url: ''
   });
 
@@ -42,30 +34,12 @@ const InstructorsPage: NextPage = () => {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select(`
-          id,
-          full_name,
-          email,
-          bio,
-          specialization,
-          avatar_url,
-          courses:courses(id, title),
-          students_count:enrollments(count),
-          rating:reviews(rating)
-        `)
+        .select('id, full_name, email, bio, avatar_url')
         .eq('role', 'instructor');
 
       if (error) throw error;
 
-      const formattedInstructors = data?.map(instructor => ({
-        ...instructor,
-        students_count: instructor.students_count?.[0]?.count || 0,
-        rating: instructor.rating 
-          ? Number((instructor.rating.reduce((acc: number, r: any) => acc + r.rating, 0) / instructor.rating.length).toFixed(1))
-          : 0
-      }));
-
-      setInstructors(formattedInstructors);
+      setInstructors(data || []);
     } catch (error) {
       console.error('Error fetching instructors:', error);
       toast.error('Failed to load instructors');
@@ -94,8 +68,7 @@ const InstructorsPage: NextPage = () => {
       const { error: profileError } = await supabase
         .from('profiles')
         .update({
-          bio: newInstructor.bio,
-          specialization: newInstructor.specialization
+          bio: newInstructor.bio
         })
         .eq('id', userData.user?.id);
 
@@ -103,6 +76,12 @@ const InstructorsPage: NextPage = () => {
 
       toast.success('Instructor added successfully');
       setShowAddModal(false);
+      setNewInstructor({
+        full_name: '',
+        email: '',
+        bio: '',
+        avatar_url: ''
+      });
       fetchInstructors();
     } catch (error) {
       console.error('Error adding instructor:', error);
@@ -139,10 +118,7 @@ const InstructorsPage: NextPage = () => {
                     <thead className="bg-gray-50">
                       <tr>
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Instructor</th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Specialization</th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Courses</th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Students</th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rating</th>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bio</th>
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                       </tr>
                     </thead>
@@ -166,19 +142,10 @@ const InstructorsPage: NextPage = () => {
                               </div>
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900">{instructor.specialization}</div>
-                          </td>
                           <td className="px-6 py-4">
-                            <div className="text-sm text-gray-900">
-                              {instructor.courses.map(course => course.title).join(', ')}
+                            <div className="text-sm text-gray-900 line-clamp-2">
+                              {instructor.bio || 'No bio available'}
                             </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {instructor.students_count}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900">{instructor.rating} ⭐</div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <button className="text-primary-600 hover:text-primary-900 mr-4">Edit</button>
@@ -230,15 +197,6 @@ const InstructorsPage: NextPage = () => {
                   ></textarea>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Specialization</label>
-                  <input
-                    type="text"
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                    value={newInstructor.specialization}
-                    onChange={(e) => setNewInstructor({...newInstructor, specialization: e.target.value})}
-                  />
-                </div>
-                <div>
                   <label className="block text-sm font-medium text-gray-700">Avatar URL</label>
                   <input
                     type="url"
@@ -251,7 +209,15 @@ const InstructorsPage: NextPage = () => {
               <div className="mt-6 flex justify-end space-x-3">
                 <button
                   type="button"
-                  onClick={() => setShowAddModal(false)}
+                  onClick={() => {
+                    setShowAddModal(false);
+                    setNewInstructor({
+                      full_name: '',
+                      email: '',
+                      bio: '',
+                      avatar_url: ''
+                    });
+                  }}
                   className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
                 >
                   Cancel

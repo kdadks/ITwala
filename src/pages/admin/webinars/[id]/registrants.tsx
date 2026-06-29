@@ -61,13 +61,13 @@ const WebinarRegistrants: NextPage = () => {
       }
     };
     checkAdmin();
-  }, [user, supabase]);
+  }, [user]);
 
   useEffect(() => {
     if (!user && !isLoading) {
       router.push('/admin/login');
     }
-  }, [user, isLoading, router]);
+  }, [user, isLoading]);
 
   useEffect(() => {
     if (!id || !isAdmin) return;

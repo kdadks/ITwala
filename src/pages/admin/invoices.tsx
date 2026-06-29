@@ -53,7 +53,7 @@ const AdminInvoices: NextPage = () => {
     };
 
     checkAdmin();
-  }, [user, supabase, router]);
+  }, [user]);
 
   if (isLoading) {
     return (

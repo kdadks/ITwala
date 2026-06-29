@@ -27,7 +27,7 @@ const CoursePage: NextPage<CoursePageProps> = ({ course }) => {
     if (!user && !isLoading) {
       router.push('/auth');
     }
-  }, [user, isLoading, router]);
+  }, [user, isLoading]);
 
   useEffect(() => {
     const fetchProgress = async () => {

@@ -54,7 +54,7 @@ const Settings: NextPage = () => {
     if (!user && !isLoading) {
       router.push('/auth');
     }
-  }, [user, isLoading, router]);
+  }, [user, isLoading]);
 
   useEffect(() => {
     const fetchProfile = async () => {

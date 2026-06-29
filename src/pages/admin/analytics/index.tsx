@@ -219,7 +219,7 @@ const AnalyticsPage: NextPage = () => {
     };
 
     checkAdmin();
-  }, [user?.id, timeRange]);
+  }, [user?.id]);
 
   useEffect(() => {
     if (authChecked && isAdmin && timeRange !== 'custom') {

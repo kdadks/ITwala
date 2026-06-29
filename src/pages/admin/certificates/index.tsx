@@ -88,11 +88,11 @@ const AdminCertificates: NextPage = () => {
       setPageLoading(false);
     };
     check();
-  }, [user, supabase, router]);
+  }, [user]);
 
   useEffect(() => {
     if (!user && !pageLoading) router.push('/admin/login');
-  }, [user, pageLoading, router]);
+  }, [user, pageLoading]);
 
   // ── Fetch courses ────────────────────────────────────────────────────────
   useEffect(() => {

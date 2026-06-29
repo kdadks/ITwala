@@ -99,13 +99,13 @@ const AdminWebinars: NextPage = () => {
     };
     checkAdmin();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, supabase]);
+  }, [user]);
 
   useEffect(() => {
     if (!user && !isLoading) {
       router.push('/admin/login');
     }
-  }, [user, isLoading, router]);
+  }, [user, isLoading]);
 
   const handleDelete = async (id: string) => {
     if (!window.confirm('Are you sure you want to delete this webinar? All registrations will be removed.')) return;

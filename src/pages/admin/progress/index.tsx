@@ -42,7 +42,7 @@ const AdminProgress: NextPage = () => {
     if (!authLoading && !isAdmin) {
       router.push('/admin/login');
     }
-  }, [isAdmin, authLoading, router]);
+  }, [isAdmin, authLoading]);
 
   useEffect(() => {
     fetchStudents();

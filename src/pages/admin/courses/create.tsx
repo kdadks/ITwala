@@ -103,7 +103,7 @@ const CreateCourse: NextPage = () => {
     };
 
     checkAdmin();
-  }, [user, supabase, router]);
+  }, [user]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;

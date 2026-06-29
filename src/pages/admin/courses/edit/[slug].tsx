@@ -146,7 +146,7 @@ const EditCourse: NextPage = () => {
     };
 
     checkAdminAndFetchCourse();
-  }, [user, slug, supabase, router]);
+  }, [user, slug]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;

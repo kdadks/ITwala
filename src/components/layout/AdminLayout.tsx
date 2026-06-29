@@ -65,7 +65,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     if (!user && !isLoading) {
       router.push('/admin/login');
     }
-  }, [user, isLoading, router]);
+  }, [user, isLoading]);
 
   // Loading state
   if (isLoading) {

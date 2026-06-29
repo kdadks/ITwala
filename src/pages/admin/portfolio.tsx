@@ -64,7 +64,7 @@ const PortfolioCMS: NextPage = () => {
     };
 
     checkAdmin();
-  }, [user, supabaseClient, router]);
+  }, [user]); // Removed router and supabaseClient from dependencies
 
   const fetchPortfolioItems = async () => {
     setIsLoading(true);
@@ -430,6 +430,7 @@ const PortfolioCMS: NextPage = () => {
                                   alt={`${project.title} logo`}
                                   width={40}
                                   height={40}
+                                  style={{ width: 'auto', height: 'auto', maxWidth: '40px', maxHeight: '40px' }}
                                   className="object-contain"
                                   onError={(e) => {
                                     e.currentTarget.style.display = 'none';

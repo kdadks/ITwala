@@ -22,7 +22,7 @@ const Dashboard: NextPage = () => {
     if (!user && !isLoading) {
       router.push('/auth');
     }
-  }, [user, isLoading, router]);
+  }, [user, isLoading]);
 
   if (isLoading || !user) {
     return (
