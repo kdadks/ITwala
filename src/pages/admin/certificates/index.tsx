@@ -353,7 +353,7 @@ const AdminCertificates: NextPage = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
+                <label className="flex items-center gap-1 text-sm font-medium text-gray-700 mb-1">
                   <Calendar className="w-4 h-4" /> Completion Date
                 </label>
                 <input

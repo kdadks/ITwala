@@ -4,13 +4,60 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ExternalLink, ArrowUpRight, Sparkles, Filter, TrendingUp, Users, Award } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { PortfolioItem } from '@/types/portfolio';
+import toast from 'react-hot-toast';
 
 const Portfolio: NextPage = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [hoveredProject, setHoveredProject] = useState<number | null>(null);
+  const [projects, setProjects] = useState<PortfolioItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [settings, setSettings] = useState({
+    page_title: 'Our Success Stories',
+    page_subtitle: 'Transforming ideas into digital excellence',
+    tagline: 'trusted by 50+ businesses worldwide',
+    breadcrumb_label: 'Our Work · {count}+ Projects Delivered',
+    metrics: [
+      { value: '10K+', label: 'Active Users' },
+      { value: '95%', label: 'Client Satisfaction' },
+      { value: '10+', label: 'Projects Delivered' },
+      { value: '7', label: 'Industries Served' }
+    ],
+    featured_section_title: 'Featured Projects',
+    featured_section_subtitle: 'Real solutions, real impact. Filter by category to explore our work.'
+  });
 
-  const projects = [
+  // Fetch portfolio items and settings from database
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch portfolio items
+        const itemsResponse = await fetch('/api/portfolio');
+        if (itemsResponse.ok) {
+          const itemsData = await itemsResponse.json();
+          setProjects(itemsData);
+        }
+
+        // Fetch portfolio settings
+        const settingsResponse = await fetch('/api/portfolio/settings');
+        if (settingsResponse.ok) {
+          const settingsData = await settingsResponse.json();
+          setSettings(prev => ({ ...prev, ...settingsData }));
+        }
+      } catch (error: any) {
+        console.warn('Error fetching portfolio data:', error.message);
+        toast.error('Failed to load portfolio');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Legacy hardcoded projects as fallback (will be removed after migration)
+  const fallbackProjects = [
     {
       href: "https://www.raahirides.com",
       logo: "/images/raahi_rides_logo.png",
@@ -183,11 +230,14 @@ const Portfolio: NextPage = () => {
     }
   ];
 
+  // Use fetched projects or fallback
+  const displayProjects = projects.length > 0 ? projects : fallbackProjects;
+
   const categories = ['All', 'Mobile App', 'Web Platform', 'E-commerce', 'Healthcare'];
 
   const filteredProjects = selectedCategory === 'All' 
-    ? projects 
-    : projects.filter(p => p.category === selectedCategory);
+    ? displayProjects 
+    : displayProjects.filter(p => p.category === selectedCategory);
 
   return (
     <>
@@ -517,6 +567,15 @@ const Portfolio: NextPage = () => {
         </script>
       </Head>
 
+      {isLoading ? (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary-500 mx-auto mb-4"></div>
+            <p className="text-lg text-gray-600 font-medium">Loading Portfolio...</p>
+            <p className="text-sm text-gray-500 mt-2">Fetching our amazing projects</p>
+          </div>
+        </div>
+      ) : (
       <main className="min-h-screen">
         {/* Hero Section */}
         <section className="relative overflow-hidden bg-white">
@@ -531,26 +590,22 @@ const Portfolio: NextPage = () => {
             >
               <div className="flex items-center gap-3 mb-7">
                 <div className="h-px w-10 bg-primary-500 shrink-0" />
-                <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-primary-500">Our Work · 50+ Projects Delivered</span>
+                <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-primary-500">
+                  {settings.breadcrumb_label.replace('{count}', displayProjects.length.toString())}
+                </span>
               </div>
               <h1 className="font-serif text-[2.4rem] sm:text-[3rem] lg:text-[3.6rem] leading-[1.06] text-gray-900 mb-5">
-                Our Success{' '}
-                <span className="text-gradient">Stories</span>
+                {settings.page_title}
               </h1>
               <div className="flex items-center gap-3 mb-8">
                 <div className="w-[3px] h-9 bg-accent-500 rounded-full shrink-0" />
                 <p className="text-[1.05rem] text-gray-600 font-medium leading-snug">
-                  Transforming ideas into digital excellence
-                  <span className="text-gray-400 font-normal"> · trusted by 50+ businesses worldwide</span>
+                  {settings.page_subtitle}
+                  <span className="text-gray-400 font-normal"> · {settings.tagline}</span>
                 </p>
               </div>
               <div className="flex items-stretch divide-x divide-gray-200">
-                {[
-                  { value: '10K+', label: 'Active Users' },
-                  { value: '95%', label: 'Client Satisfaction' },
-                  { value: '20+', label: 'Projects Delivered' },
-                  { value: '7', label: 'Industries Served' },
-                ].map((stat) => (
+                {settings.metrics.map((stat: any) => (
                   <div key={stat.label} className="px-6 first:pl-0">
                     <div className="text-[1.6rem] font-bold text-gray-900 leading-none tracking-tight">{stat.value}</div>
                     <div className="text-[11px] uppercase tracking-[0.13em] text-gray-400 mt-1.5">{stat.label}</div>
@@ -575,10 +630,10 @@ const Portfolio: NextPage = () => {
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
                 <div>
                   <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">
-                    Featured Projects
+                    {settings.featured_section_title}
                   </h2>
                   <p className="text-lg text-gray-600">
-                    Real solutions, real impact. Filter by category to explore our work.
+                    {settings.featured_section_subtitle}
                   </p>
                 </div>
 
@@ -643,17 +698,26 @@ const Portfolio: NextPage = () => {
                             <div className="flex items-start justify-between mb-6">
                               <div className="flex items-center gap-4 flex-1 min-w-0">
                                 <div className={`relative w-16 h-16 ${colors.bg} rounded-2xl p-3 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300`}>
-                                  <Image
-                                    src={project.logo}
-                                    alt={`${project.title} logo`}
-                                    width={48}
-                                    height={48}
-                                    className="object-contain"
-                                    loading={index < 3 ? "eager" : "lazy"}
-                                    priority={index < 3}
-                                    quality={85}
-                                    sizes="48px"
-                                  />
+                                  {project.logo && (project.logo.startsWith('/') || project.logo.startsWith('http')) ? (
+                                    <Image
+                                      src={project.logo}
+                                      alt={`${project.title} logo`}
+                                      width={48}
+                                      height={48}
+                                      className="object-contain"
+                                      loading={index < 3 ? "eager" : "lazy"}
+                                      priority={index < 3}
+                                      quality={85}
+                                      sizes="48px"
+                                      onError={(e) => {
+                                        e.currentTarget.style.display = 'none';
+                                      }}
+                                    />
+                                  ) : (
+                                    <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                                      <span className="text-gray-400 text-sm font-bold">?</span>
+                                    </div>
+                                  )}
                                 </div>
                                 <div className="min-w-0 flex-1">
                                   <h3 className="text-2xl font-bold text-gray-900 mb-1 truncate group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:bg-clip-text group-hover:from-primary-600 group-hover:to-secondary-600 transition-all duration-300">
@@ -864,6 +928,7 @@ const Portfolio: NextPage = () => {
           </div>
         </section>
       </main>
+      )}
     </>
   );
 };

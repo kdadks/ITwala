@@ -120,7 +120,7 @@ const AdminDashboard: React.FC = () => {
 
       let totalRevenue = 0;
       if (revenueError) {
-        console.error('Error fetching revenue from payments:', revenueError);
+        console.warn('Payments table not available yet:', revenueError.message);
         
         // Fallback: try to get revenue from invoices table
         const { data: paidInvoices, error: invoiceRevenueError } = await supabase
@@ -158,6 +158,7 @@ const AdminDashboard: React.FC = () => {
   // Quick action buttons
   const quickActions = [
     { title: 'Add New Course', href: '/admin/courses/create', color: 'bg-primary-500' },
+    { title: 'Manage Portfolio', href: '/admin/portfolio', color: 'bg-purple-500' },
     { title: 'Manage Content', href: '/admin/content', color: 'bg-secondary-500' },
     { title: 'View Students', href: '/admin/students', color: 'bg-success-500' }
   ];
@@ -169,7 +170,7 @@ const AdminDashboard: React.FC = () => {
         <p className="text-sm text-gray-500">Welcome back! Here&apos;s what&apos;s happening with your academy.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {quickActions.map((action, index) => (
           <Link href={action.href} key={index}>
             <div className={`${action.color} text-white p-5 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5`}>

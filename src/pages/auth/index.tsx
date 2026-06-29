@@ -151,7 +151,8 @@ const AuthPage: NextPage = () => {
 
       // Handle specific error cases
       if (signInError) {
-        console.error('Login error:', signInError);
+        // Use console.warn instead of console.error to avoid Next.js error overlay
+        console.warn('Login error:', signInError.message);
 
         if (signInError.message.toLowerCase().includes('invalid login credentials')) {
           // Special handling for admin account setup
@@ -170,7 +171,7 @@ const AuthPage: NextPage = () => {
       }
     } catch (error: any) {
       const errorMessage = error.message || 'An error occurred. Please try again.';
-      console.error('Login error:', errorMessage);
+      console.warn('Login error:', errorMessage);
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);

@@ -51,16 +51,24 @@ const RevenuePage: NextPage = () => {
         `)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        // Handle missing table gracefully
+        if (error.code === '42P01') {
+          console.warn('Payments table does not exist yet. Please run the migration.');
+          setPayments([]);
+          return;
+        }
+        throw error;
+      }
       const formattedData = (data || []).map(item => ({
         ...item,
         student: item.student[0],
         course: item.course[0]
       }));
       setPayments(formattedData);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching payments:', error);
-      toast.error('Failed to load payment history');
+      toast.error(error.message || 'Failed to load payment history');
     } finally {
       setIsLoading(false);
     }
@@ -69,10 +77,22 @@ const RevenuePage: NextPage = () => {
   const fetchStats = async () => {
     try {
       // Total Revenue
-      const { data: totalRevenue } = await supabase
+      const { data: totalRevenue, error: totalError } = await supabase
         .from('payments')
         .select('amount')
         .eq('status', 'completed');
+
+      // Handle missing table gracefully
+      if (totalError && totalError.code === '42P01') {
+        console.warn('Payments table does not exist yet. Stats will be empty.');
+        setStats({
+          totalRevenue: 0,
+          monthlyRevenue: 0,
+          pendingPayments: 0,
+          averageOrderValue: 0
+        });
+        return;
+      }
 
       // Monthly Revenue
       const monthStart = new Date();

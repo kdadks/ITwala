@@ -73,7 +73,8 @@ const AdminLogin: NextPage = () => {
       });
 
       if (signInError) {
-        console.error('Admin login error:', signInError);
+        // Use console.warn instead of console.error to avoid Next.js error overlay
+        console.warn('Admin login error:', signInError.message);
 
         if (signInError.message.toLowerCase().includes('invalid login credentials')) {
           toast.error('Invalid email or password. Please check your credentials.');
@@ -113,7 +114,7 @@ const AdminLogin: NextPage = () => {
       }
     } catch (error: any) {
       const errorMessage = error.message || 'An error occurred. Please try again.';
-      console.error('Admin login error:', errorMessage);
+      console.warn('Admin login error:', errorMessage);
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);

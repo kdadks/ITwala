@@ -18,6 +18,7 @@ import {
   ChevronRight,
   Video,
   Award,
+  Briefcase,
 } from 'lucide-react';
 
 interface MenuItem {
@@ -39,6 +40,7 @@ const AdminSidebar = () => {
     'User Management',
     'Academic Tracking',
     'Financial',
+    'CMS',
     'Analytics & Reports',
     'System'
   ]);
@@ -92,6 +94,12 @@ const AdminSidebar = () => {
       title: 'Special Events',
       items: [
         { href: '/admin/webinars', label: 'Webinars', icon: <Video className="w-4 h-4" /> }
+      ]
+    },
+    {
+      title: 'CMS',
+      items: [
+        { href: '/admin/portfolio', label: 'Portfolio', icon: <Briefcase className="w-4 h-4" /> }
       ]
     },
     {
