@@ -5,7 +5,7 @@ import { useUser, useSupabaseClient } from '@supabase/auth-helpers-react';
 import { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import CoursePricingManager from '@/components/admin/CoursePricingManager';
-import CourseImageUpload from '@/components/admin/CourseImageUpload';
+import { MediaPicker } from '@/components/admin/media/MediaPicker';
 
 interface CourseFormData {
   title: string;
@@ -496,21 +496,10 @@ const EditCourse: NextPage = () => {
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Course Image
                       </label>
-                      <CourseImageUpload
-                        courseId={courseId}
-                        currentImage={formData.image}
-                        onImageChange={async (url) => {
-                          setFormData(prev => ({ ...prev, image: url }));
-                          try {
-                            await fetch(`/api/admin/courses/${courseId}`, {
-                              method: 'PATCH',
-                              headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({ image: url }),
-                            });
-                          } catch {
-                            // image url is saved in formData and will persist on next Save
-                          }
-                        }}
+                      <MediaPicker
+                        value={formData.image}
+                        onChange={(url) => setFormData(prev => ({ ...prev, image: url }))}
+                        accept="image"
                       />
                     </div>
 

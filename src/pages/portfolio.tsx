@@ -1,60 +1,38 @@
-import { NextPage } from 'next';
+import { NextPage, GetStaticProps } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ExternalLink, ArrowUpRight, Sparkles, Filter, TrendingUp, Users, Award } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { PortfolioItem } from '@/types/portfolio';
-import toast from 'react-hot-toast';
+import { createClient } from '@supabase/supabase-js';
 
-const Portfolio: NextPage = () => {
+const defaultSettings = {
+  page_title: 'Our Success Stories',
+  page_subtitle: 'Transforming ideas into digital excellence',
+  tagline: 'trusted by 50+ businesses worldwide',
+  breadcrumb_label: 'Our Work · {count}+ Projects Delivered',
+  metrics: [
+    { value: '10K+', label: 'Active Users' },
+    { value: '95%', label: 'Client Satisfaction' },
+    { value: '10+', label: 'Projects Delivered' },
+    { value: '7', label: 'Industries Served' }
+  ],
+  featured_section_title: 'Featured Projects',
+  featured_section_subtitle: 'Real solutions, real impact. Filter by category to explore our work.'
+};
+
+interface PortfolioProps {
+  initialProjects: PortfolioItem[];
+  initialSettings: typeof defaultSettings | null;
+}
+
+const Portfolio: NextPage<PortfolioProps> = ({ initialProjects, initialSettings }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [hoveredProject, setHoveredProject] = useState<number | null>(null);
-  const [projects, setProjects] = useState<PortfolioItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [settings, setSettings] = useState({
-    page_title: 'Our Success Stories',
-    page_subtitle: 'Transforming ideas into digital excellence',
-    tagline: 'trusted by 50+ businesses worldwide',
-    breadcrumb_label: 'Our Work · {count}+ Projects Delivered',
-    metrics: [
-      { value: '10K+', label: 'Active Users' },
-      { value: '95%', label: 'Client Satisfaction' },
-      { value: '10+', label: 'Projects Delivered' },
-      { value: '7', label: 'Industries Served' }
-    ],
-    featured_section_title: 'Featured Projects',
-    featured_section_subtitle: 'Real solutions, real impact. Filter by category to explore our work.'
-  });
-
-  // Fetch portfolio items and settings from database
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch portfolio items
-        const itemsResponse = await fetch('/api/portfolio');
-        if (itemsResponse.ok) {
-          const itemsData = await itemsResponse.json();
-          setProjects(itemsData);
-        }
-
-        // Fetch portfolio settings
-        const settingsResponse = await fetch('/api/portfolio/settings');
-        if (settingsResponse.ok) {
-          const settingsData = await settingsResponse.json();
-          setSettings(prev => ({ ...prev, ...settingsData }));
-        }
-      } catch (error: any) {
-        console.warn('Error fetching portfolio data:', error.message);
-        toast.error('Failed to load portfolio');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
+  const [projects] = useState<PortfolioItem[]>(initialProjects);
+  const [settings] = useState({ ...defaultSettings, ...(initialSettings || {}) });
 
   // Legacy hardcoded projects as fallback (will be removed after migration)
   const fallbackProjects = [
@@ -230,7 +208,6 @@ const Portfolio: NextPage = () => {
     }
   ];
 
-  // Use fetched projects or fallback
   const displayProjects = projects.length > 0 ? projects : fallbackProjects;
 
   const categories = ['All', 'Mobile App', 'Web Platform', 'E-commerce', 'Healthcare'];
@@ -567,15 +544,6 @@ const Portfolio: NextPage = () => {
         </script>
       </Head>
 
-      {isLoading ? (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary-500 mx-auto mb-4"></div>
-            <p className="text-lg text-gray-600 font-medium">Loading Portfolio...</p>
-            <p className="text-sm text-gray-500 mt-2">Fetching our amazing projects</p>
-          </div>
-        </div>
-      ) : (
       <main className="min-h-screen">
         {/* Hero Section */}
         <section className="relative overflow-hidden bg-white">
@@ -929,7 +897,6 @@ const Portfolio: NextPage = () => {
           </div>
         </section>
       </main>
-      )}
     </>
   );
 };
@@ -987,5 +954,35 @@ const getColorClasses = (color: string) => {
     }
   };
 
+
+export const getStaticProps: GetStaticProps = async () => {
+  try {
+    const supabaseStatic = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+
+    const [{ data: projects }, { data: settings }] = await Promise.all([
+      supabaseStatic.from('public_portfolio').select('*'),
+      supabaseStatic
+        .from('portfolio_settings')
+        .select('page_title, page_subtitle, tagline, breadcrumb_label, metrics, featured_section_title, featured_section_subtitle')
+        .single()
+    ]);
+
+    return {
+      props: {
+        initialProjects: projects || [],
+        initialSettings: settings || null
+      },
+      revalidate: 60
+    };
+  } catch {
+    return {
+      props: { initialProjects: [], initialSettings: null },
+      revalidate: 30
+    };
+  }
+};
 
 export default Portfolio;

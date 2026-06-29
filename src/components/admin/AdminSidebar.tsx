@@ -19,6 +19,7 @@ import {
   Video,
   Award,
   Briefcase,
+  Images,
 } from 'lucide-react';
 
 interface MenuItem {
@@ -99,7 +100,8 @@ const AdminSidebar = () => {
     {
       title: 'CMS',
       items: [
-        { href: '/admin/portfolio', label: 'Portfolio', icon: <Briefcase className="w-4 h-4" /> }
+        { href: '/admin/portfolio', label: 'Portfolio',      icon: <Briefcase className="w-4 h-4" /> },
+        { href: '/admin/media',     label: 'Media Library',  icon: <Images className="w-4 h-4" /> },
       ]
     },
     {

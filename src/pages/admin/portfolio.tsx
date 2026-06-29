@@ -64,7 +64,7 @@ const PortfolioCMS: NextPage = () => {
     };
 
     checkAdmin();
-  }, [user]); // Removed router and supabaseClient from dependencies
+  }, [user?.id]); // Depend only on user ID to avoid spurious refetches on token refresh
 
   const fetchPortfolioItems = async () => {
     setIsLoading(true);
@@ -260,7 +260,7 @@ const PortfolioCMS: NextPage = () => {
     return colorMap[color] || colorMap.indigo;
   };
 
-  if (isLoading) {
+  if (isLoading && portfolioItems.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">

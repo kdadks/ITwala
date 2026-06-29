@@ -233,10 +233,9 @@ const AnalyticsPage: NextPage = () => {
     if (!authChecked || !isAdmin) return;
 
     const refreshInterval = setInterval(() => {
-      console.log('🔄 Auto-refreshing analytics data...');
       fetchAnalytics();
       fetchRealTimePageViews();
-    }, 30000); // 30 seconds
+    }, 300000); // 5 minutes
 
     return () => clearInterval(refreshInterval);
   }, [authChecked, isAdmin, timeRange, customStartDate, customEndDate]);
@@ -504,7 +503,7 @@ const AnalyticsPage: NextPage = () => {
                   </span>
                   {lastRefreshed && (
                     <span className="text-xs text-gray-400">
-                      Updated {lastRefreshed.toLocaleTimeString()} · auto-refresh 30s
+                      Updated {lastRefreshed.toLocaleTimeString()} · auto-refresh 5m
                     </span>
                   )}
                 </div>

@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import { useUser, useSupabaseClient } from '@supabase/auth-helpers-react';
 import { useState, useEffect } from 'react';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
-import { ImageUploader } from '@/components/admin/ImageUploader';
+import { MediaPicker } from '@/components/admin/media/MediaPicker';
 import { motion } from 'framer-motion';
 import { toast } from 'react-hot-toast';
 import { Plus, Trash2, ChevronDown, ChevronUp, ArrowLeft } from 'lucide-react';
@@ -254,11 +254,11 @@ const CreateWebinar: NextPage = () => {
                       name="banner_image"
                       control={control}
                       render={({ field }) => (
-                        <ImageUploader
+                        <MediaPicker
                           value={field.value}
                           onChange={field.onChange}
+                          accept="image"
                           label="Banner Image"
-                          placeholder="Or enter path like public/images/AIcourse.png"
                         />
                       )}
                     />
@@ -322,11 +322,11 @@ const CreateWebinar: NextPage = () => {
                       name="speaker_image"
                       control={control}
                       render={({ field }) => (
-                        <ImageUploader
+                        <MediaPicker
                           value={field.value}
                           onChange={field.onChange}
+                          accept="image"
                           label="Speaker Image"
-                          placeholder="Or enter path like public/images/speaker.jpg"
                         />
                       )}
                     />

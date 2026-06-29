@@ -5,7 +5,7 @@ import { useUser, useSupabaseClient } from '@supabase/auth-helpers-react';
 import { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import CoursePricingManager from '@/components/admin/CoursePricingManager';
-import CourseImageUpload from '@/components/admin/CourseImageUpload';
+import { MediaPicker } from '@/components/admin/media/MediaPicker';
 
 interface CourseFormData {
   title: string;
@@ -652,10 +652,11 @@ const CreateCourse: NextPage = () => {
                   <p className="text-sm text-gray-500 mb-4">
                     Uploaded to Supabase Storage. Recommended: 1280×720px, landscape.
                   </p>
-                  <CourseImageUpload
-                    courseId={createdCourse.id}
-                    currentImage={uploadedImageUrl}
-                    onImageChange={handleImageChange}
+                  <MediaPicker
+                    value={uploadedImageUrl}
+                    onChange={handleImageChange}
+                    accept="image"
+                    label="Course image"
                   />
                 </div>
 
