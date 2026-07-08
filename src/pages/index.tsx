@@ -12,17 +12,17 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>ITWala - Top Web Development, AI Education & IT Consulting Globally</title>
-        <meta name="description" content="#1 Web development company, AI education platform & IT consulting firm. Custom software development, edutech training, product development, digital transformation, training programs & IT staffing solutions worldwide." />
-        <meta name="keywords" content="web development company, AI education platform, edutech solutions, custom software development, AI development services, IT consulting firm, product development services, digital transformation consulting, training and development, IT staffing partner, full stack development, react development, node.js development, machine learning courses, AI training online, enterprise software development, mobile app development, cloud development services, DevOps consulting, agile development, software engineering, technology consulting, IT recruitment, tech talent acquisition, SaaS development, API development, microservices, e-learning platform, online courses, professional training" />
-        <meta property="og:title" content="ITWala - #1 Web Development, AI Education & IT Consulting Worldwide" />
-        <meta property="og:description" content="Leading web development company, AI education platform & IT consulting services. Custom software, edutech solutions, product development, digital transformation & IT staffing globally." />
+        <title>ITWala - Web Development, AI Academy & AI Crash Courses Globally</title>
+        <meta name="description" content="#1 Web development company & AI Academy. Free AI education resources plus AI crash courses and full programs for beginners and professionals. Custom software, edutech training & IT consulting worldwide." />
+        <meta name="keywords" content="web development company, AI education platform, AI academy, AI crash course, free AI education, AI courses for beginners, AI courses for professionals, where to learn AI courses, edutech solutions, custom software development, AI development services, IT consulting firm, product development services, digital transformation consulting, training and development, IT staffing partner, full stack development, react development, node.js development, machine learning courses, AI training online, enterprise software development, mobile app development, cloud development services, DevOps consulting, agile development, software engineering, technology consulting, IT recruitment, tech talent acquisition, SaaS development, API development, microservices, e-learning platform, online courses, professional training" />
+        <meta property="og:title" content="ITWala - Web Development, AI Academy & AI Crash Courses" />
+        <meta property="og:description" content="Leading web development company and AI Academy. Free AI education resources, AI crash courses, and full AI/ML programs for beginners and professionals. Custom software, edutech solutions & IT consulting globally." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://academy.it-wala.com" />
         <meta property="og:image" content="https://academy.it-wala.com/images/IT - WALA_logo (1).png" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="ITWala - Top Web Dev, AI Education & IT Consulting" />
-        <meta name="twitter:description" content="Global leader: Web development, AI education platform, custom software, product development, digital transformation, training programs & IT staffing solutions." />
+        <meta name="twitter:title" content="ITWala - Web Dev, AI Academy & AI Crash Courses" />
+        <meta name="twitter:description" content="Web development, AI Academy with free resources and crash courses, custom software, product development, digital transformation, training programs & IT staffing solutions." />
         <meta name="twitter:image" content="https://academy.it-wala.com/images/IT - WALA_logo (1).png" />
         <link rel="canonical" href="https://academy.it-wala.com" />
         
@@ -54,7 +54,12 @@ const Home: NextPage = () => {
               {
                 "@type": "Thing",
                 "name": "AI Education",
-                "description": "Artificial intelligence education, machine learning training, data science courses"
+                "description": "Artificial intelligence education, machine learning training, data science courses for beginners and professionals"
+              },
+              {
+                "@type": "Thing",
+                "name": "AI Academy",
+                "description": "AI Academy offering free AI education resources, AI crash courses, and structured learning paths for beginners through professionals"
               },
               {
                 "@type": "Thing",

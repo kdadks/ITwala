@@ -7,15 +7,15 @@ export default function Document() {
         {/* Preconnect to Google Fonts for better performance */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <meta name="description" content="ITWala - Global leader in web development, AI education, custom software development, and IT consulting. Transform careers with edutech training or scale businesses with product development, digital transformation & IT staffing solutions." />
-        <meta name="keywords" content="web development company, AI education platform, edutech solutions, custom software development, AI development services, IT consulting services, product development company, digital transformation consulting, training and development programs, IT staffing solutions, machine learning education, custom web applications, enterprise software development, AI training courses, technology consulting firm, software engineering services, cloud development, mobile app development, full stack development, react development, node.js development, python AI development, data science training, agile development, DevOps consulting, IT recruitment services, tech talent acquisition, business intelligence solutions, API development, microservices architecture, SaaS development, e-learning platform" />
+        <meta name="description" content="ITWala - Global leader in web development, AI education, and IT consulting. ITWala AI Academy offers free AI education, an AI crash course, and AI courses for beginners and professionals, plus custom software development and IT staffing solutions." />
+        <meta name="keywords" content="web development company, AI education platform, AI academy, AI crash course, free AI education, AI courses for beginners, AI courses for professionals, where to learn AI, edutech solutions, custom software development, AI development services, IT consulting services, product development company, digital transformation consulting, training and development programs, IT staffing solutions, machine learning education, custom web applications, enterprise software development, AI training courses, technology consulting firm, software engineering services, cloud development, mobile app development, full stack development, react development, node.js development, python AI development, data science training, agile development, DevOps consulting, IT recruitment services, tech talent acquisition, business intelligence solutions, API development, microservices architecture, SaaS development, e-learning platform" />
         <meta name="author" content="ITWala" />
         <meta name="robots" content="index, follow" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         
         {/* Open Graph Meta Tags */}
-        <meta property="og:title" content="ITWala - Global Web Development, AI Education & IT Consulting Leader" />
-        <meta property="og:description" content="Top-ranked web development company, AI education platform, and IT consulting firm. Custom software development, edutech solutions, digital transformation, training programs & IT staffing services worldwide." />
+        <meta property="og:title" content="ITWala - Web Development, AI Academy & IT Consulting Leader" />
+        <meta property="og:description" content="Web development company, AI Academy with free AI education and courses for beginners and professionals, and IT consulting firm. Custom software, edutech, digital transformation & IT staffing worldwide." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://academy.it-wala.com" />
         <meta property="og:image" content="https://academy.it-wala.com/images/IT - WALA_logo (1).png" />
@@ -91,8 +91,8 @@ export default function Document() {
                   "@type": "Offer",
                   "itemOffered": {
                     "@type": "EducationalOccupationalProgram",
-                    "name": "AI Education & Training Platform",
-                    "description": "Comprehensive AI education, machine learning courses, data science training, edutech platform with hands-on projects",
+                    "name": "ITWala AI Academy",
+                    "description": "AI Academy offering free AI education resources, an AI crash course, and AI/machine learning courses for beginners and professionals, with hands-on projects",
                     "provider": {
                       "@type": "Organization",
                       "name": "ITWala"

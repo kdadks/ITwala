@@ -48,6 +48,22 @@ const aiEducationFAQs: FAQItem[] = [
   {
     question: "How do you ensure the AI curriculum stays current with industry trends?",
     answer: "Our AI education curriculum is continuously updated by industry experts who work with the latest AI technologies. We regularly incorporate new developments in artificial intelligence, machine learning frameworks, and emerging AI applications. Our advisory board includes AI leaders from top companies ensuring our content remains cutting-edge and industry-relevant."
+  },
+  {
+    question: "Where can I learn AI courses online?",
+    answer: "ITWala Academy is an AI Academy where you can learn AI courses online, from complete beginner fundamentals to advanced professional programs. You get expert-led instruction, hands-on projects, and industry-recognized certifications, so you can learn artificial intelligence, machine learning, and data science in one place instead of piecing together scattered tutorials."
+  },
+  {
+    question: "Does ITWala Academy offer free AI education?",
+    answer: "Yes. Our resources page and AI Education Guide provide free AI education content — guides, learning paths, and career resources — at no cost. These free resources give you a fast, crash-course-style introduction to AI and machine learning before you decide whether to enroll in a full paid course."
+  },
+  {
+    question: "What's the difference between AI courses for beginners and AI courses for professionals?",
+    answer: "Our AI courses for beginners, like AI & Machine Learning Fundamentals, assume no prior programming or AI experience and build up from Python basics to core AI concepts. Our AI courses for professionals, like the Data Science Professional Program, are for learners who already know the fundamentals and want advanced, real-world projects, specialization, and career acceleration."
+  },
+  {
+    question: "Is there a free AI crash course to get started?",
+    answer: "Our free AI Education Guide and learning resources act as an AI crash course primer — covering core AI and machine learning concepts, career paths, and what to learn next — so you can get oriented before enrolling in a full beginner or professional course."
   }
 ];
 

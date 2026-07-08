@@ -94,11 +94,11 @@ const AIResourcesPage: NextPage = () => {
   return (
     <>
       <Head>
-        <title>AI Learning Resources - Free Guides & Courses | ITwala Academy</title>
-        <meta name="description" content="Comprehensive AI learning resources, guides, and courses. Free educational content for artificial intelligence, machine learning, and data science." />
-        <meta name="keywords" content="AI resources, machine learning guides, artificial intelligence tutorials, free AI courses, data science learning, AI education materials, ML resources, deep learning guides" />
-        <meta property="og:title" content="AI Learning Resources - Free Guides & Courses | ITwala Academy" />
-        <meta property="og:description" content="Access comprehensive AI learning resources, guides, and courses for mastering artificial intelligence and machine learning." />
+        <title>Free AI Education Resources & Guides | ITwala Academy</title>
+        <meta name="description" content="Free AI education: guides and learning resources for artificial intelligence, machine learning, and data science — a quick-start path for beginners plus deep dives for professionals." />
+        <meta name="keywords" content="free AI education, free AI resources, AI crash course, where to learn AI, AI resources, machine learning guides, artificial intelligence tutorials, free AI courses, data science learning, AI education materials, ML resources, deep learning guides" />
+        <meta property="og:title" content="Free AI Education Resources & Guides | ITwala Academy" />
+        <meta property="og:description" content="Access free AI education resources and guides for mastering artificial intelligence and machine learning, from beginner quick-starts to professional deep dives." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://academy.it-wala.com/resources" />
         <meta property="og:image" content="https://academy.it-wala.com/images/IT - WALA_logo (1).png" />

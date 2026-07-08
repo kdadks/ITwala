@@ -8,25 +8,25 @@ const AIEducationGuide: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Complete AI Education Guide 2025 | Master AI & ML - ITwala</title>
-        <meta name="description" content="Complete AI education guide for 2025. Learn artificial intelligence, machine learning, data science with ITWala Academy. Best AI courses, career paths." />
-        <meta name="keywords" content="AI education guide, artificial intelligence learning path, machine learning courses 2025, AI career guide, best AI education platform, artificial intelligence training, AI skills development, machine learning bootcamp, data science education, AI certification guide" />
-        <meta property="og:title" content="Complete AI Education Guide 2025 | ITWala Academy" />
-        <meta property="og:description" content="Master AI with our comprehensive education guide. Learn about AI courses, career paths, salary expectations, and skill requirements for 2025." />
+        <title>Where to Learn AI: Complete Education Guide 2025 - ITwala</title>
+        <meta name="description" content="Where to learn AI in 2025: a complete guide to free AI education, an AI crash course, and AI courses for beginners and professionals, plus career paths." />
+        <meta name="keywords" content="where to learn AI, where to learn AI courses, free AI education, AI crash course, AI courses for beginners, AI courses for professionals, AI education guide, artificial intelligence learning path, machine learning courses 2025, AI career guide, best AI education platform, artificial intelligence training, AI skills development, machine learning bootcamp, data science education, AI certification guide" />
+        <meta property="og:title" content="Where to Learn AI: Complete Education Guide 2025 | ITWala Academy" />
+        <meta property="og:description" content="A complete guide to where to learn AI in 2025 — free AI education resources, an AI crash course, and AI courses for beginners and professionals." />
         <meta property="og:type" content="article" />
         <meta property="og:url" content="https://academy.it-wala.com/ai-education-guide" />
         <meta property="og:image" content="https://academy.it-wala.com/images/IT - WALA_logo (1).png" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Complete AI Education Guide 2025" />
-        <meta name="twitter:description" content="Master AI with comprehensive education guide covering courses, careers, and skills for 2025." />
+        <meta name="twitter:title" content="Where to Learn AI: Complete Guide 2025" />
+        <meta name="twitter:description" content="Free AI education, an AI crash course, and AI courses for beginners and professionals, plus career paths for 2025." />
         <link rel="canonical" href="https://academy.it-wala.com/ai-education-guide" />
         
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Article",
-            "headline": "Complete AI Education Guide 2025",
-            "description": "Comprehensive guide to AI education covering artificial intelligence, machine learning, and data science learning paths",
+            "headline": "Where to Learn AI: Complete Education Guide 2025",
+            "description": "Comprehensive guide to where to learn AI, covering free AI education resources, an AI crash course, and AI courses for beginners and professionals across artificial intelligence, machine learning, and data science",
             "author": {
               "@type": "Organization",
               "name": "ITWala Academy"
@@ -44,7 +44,11 @@ const AIEducationGuide: NextPage = () => {
               "AI Education",
               "Artificial Intelligence Learning",
               "Machine Learning Courses",
-              "Data Science Training"
+              "Data Science Training",
+              "Free AI Education",
+              "AI Crash Course",
+              "AI Courses for Beginners",
+              "AI Courses for Professionals"
             ]
           })}
         </script>

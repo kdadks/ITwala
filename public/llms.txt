@@ -1,0 +1,20 @@
+# ITWala
+
+> ITWala is a global web development company and AI Academy. ITWala Academy provides free AI education resources, an AI crash course, and structured AI & machine learning courses for both beginners and professionals. ITWala also offers custom software development, product development, digital transformation, technical consulting, training & development, and IT staffing services worldwide.
+
+## AI Academy & Education
+- [AI Academy](https://academy.it-wala.com/academy): ITWala's AI Academy — AI and machine learning courses for beginners and professionals, with an AI crash course track for newcomers.
+- [AI Courses](https://academy.it-wala.com/courses): Browse all AI, machine learning, and data science courses, filterable by beginner or professional level.
+- [Where to Learn AI: Complete Education Guide](https://academy.it-wala.com/ai-education-guide): Free guide covering AI learning paths, career paths, and how to choose between beginner and professional AI courses.
+- [Free AI Education Resources](https://academy.it-wala.com/resources): Free guides and learning resources for artificial intelligence, machine learning, and data science.
+
+## Web Development & IT Consulting
+- [Services](https://academy.it-wala.com/services): Web development, product development, AI solutions, digital transformation, technical consulting, and IT staffing services.
+- [Consulting](https://academy.it-wala.com/consulting): ITWala's IT consulting and digital transformation practice.
+
+## Company
+- [About](https://academy.it-wala.com/about): ITWala's mission, team, and background as an AI Academy and web development company.
+- [Contact](https://academy.it-wala.com/contact): Get in touch about AI courses, web development, or consulting.
+
+## Optional
+- [Sitemap](https://academy.it-wala.com/sitemap.xml): Full list of indexable pages.

@@ -5,6 +5,7 @@ import { useRouter } from 'next/router';
 import CourseFilter from '@/components/courses/CourseFilter';
 import CourseGrid from '../../components/courses/CourseGrid';
 import BacklinkingHub from '@/components/seo/BacklinkingHub';
+import AIEducationFAQ from '@/components/seo/AIEducationFAQ';
 import { motion } from 'framer-motion';
 import { Course } from '@/types/course';
 import { getCountryFromCookie, SUPPORTED_COUNTRIES } from '@/utils/countryDetection';
@@ -194,17 +195,17 @@ const CoursesPage: NextPage = () => {
   return (
     <>
       <Head>
-        <title>AI Courses & ML Training - ITwala Academy</title>
-        <meta name="description" content="Master AI with comprehensive courses in artificial intelligence, machine learning, and data science. Expert-led training with hands-on projects." />
-        <meta name="keywords" content="AI courses, machine learning training, artificial intelligence courses, data science courses, deep learning certification, neural networks training, AI bootcamp, ML engineering courses, AI career training, online AI education, professional AI courses" />
-        <meta property="og:title" content="AI Courses & Machine Learning Training - ITwala Academy" />
-        <meta property="og:description" content="Master AI with comprehensive courses in artificial intelligence, machine learning, and data science. Expert-led training with hands-on projects and industry certifications." />
+        <title>AI Courses for Beginners & Professionals - ITwala Academy</title>
+        <meta name="description" content="Browse AI courses for beginners and professionals at ITwala Academy. Artificial intelligence, machine learning, and data science training with hands-on projects." />
+        <meta name="keywords" content="AI courses for beginners, AI courses for professionals, where to learn AI courses, AI courses, machine learning training, artificial intelligence courses, data science courses, deep learning certification, neural networks training, AI bootcamp, ML engineering courses, AI career training, online AI education, professional AI courses" />
+        <meta property="og:title" content="AI Courses for Beginners & Professionals - ITwala Academy" />
+        <meta property="og:description" content="Browse AI courses for beginners and professionals: artificial intelligence, machine learning, and data science training with hands-on projects and industry certifications." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://academy.it-wala.com/courses" />
         <meta property="og:image" content="https://academy.it-wala.com/images/IT - WALA_logo (1).png" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="AI Courses & ML Training - ITwala Academy" />
-        <meta name="twitter:description" content="Comprehensive AI and machine learning courses with expert instructors, hands-on projects, and industry certifications." />
+        <meta name="twitter:title" content="AI Courses for Beginners & Professionals" />
+        <meta name="twitter:description" content="AI courses for beginners and professionals: artificial intelligence, machine learning, and data science training with hands-on projects and industry certifications." />
         <meta name="twitter:image" content="https://academy.it-wala.com/images/IT - WALA_logo (1).png" />
         <link rel="canonical" href="https://academy.it-wala.com/courses" />
 
@@ -224,18 +225,18 @@ const CoursesPage: NextPage = () => {
                 {
                   "@type": "Course",
                   "name": "AI & Machine Learning Fundamentals",
-                  "description": "Master the fundamentals of artificial intelligence and machine learning",
+                  "description": "Master the fundamentals of artificial intelligence and machine learning — designed for beginners with no prior AI experience",
                   "provider": "ITWala Academy",
                   "courseMode": "online",
-                  "educationalLevel": "Beginner to Advanced"
+                  "educationalLevel": "Beginner"
                 },
                 {
                   "@type": "Course",
                   "name": "Data Science Professional Program",
-                  "description": "Comprehensive data science training with real-world applications",
+                  "description": "Comprehensive data science training with real-world applications for working professionals",
                   "provider": "ITWala Academy",
                   "courseMode": "online",
-                  "educationalLevel": "Intermediate to Advanced"
+                  "educationalLevel": "Professional"
                 }
               ]
             },
@@ -419,6 +420,8 @@ const CoursesPage: NextPage = () => {
             )}
           </div>
         </section>
+
+        <AIEducationFAQ />
 
         <BacklinkingHub currentPage="course" currentCategory={selectedCategory} />
       </main>

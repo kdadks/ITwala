@@ -12,8 +12,10 @@ const ServicesIndex: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Our Services - ITwala Consulting</title>
-        <meta name="description" content="Comprehensive IT consulting services including product development, AI solutions, digital transformation, technical consulting, and IT staffing." />
+        <title>Web Development & IT Consulting Services - ITwala</title>
+        <meta name="description" content="Comprehensive web development and IT consulting services including product development, AI solutions, digital transformation, technical consulting, and IT staffing." />
+        <meta name="keywords" content="web development company, web development services, IT consulting services, product development, AI solutions, digital transformation, technical consulting, IT staffing" />
+        <link rel="canonical" href="https://academy.it-wala.com/services" />
       </Head>
 
       <main>
