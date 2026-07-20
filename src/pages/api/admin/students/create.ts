@@ -4,6 +4,15 @@ import { supabaseAdmin } from '@/lib/supabaseClient';
 import { createTransport } from 'nodemailer';
 import { getCountryIsoCode, getStateIsoCode } from '@/utils/locationData';
 
+// Builds a fallback student ID when the RPC is unavailable, e.g. GLOBAL-NA-2026-07-0123
+function buildFallbackStudentId(countryCode: string, stateCode: string): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const random = String(Math.floor(Math.random() * 9999) + 1).padStart(4, '0');
+  return `${countryCode}-${stateCode}-${year}-${month}-${random}`;
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -108,38 +117,28 @@ export default async function handler(
 
     const userId = authData.user.id;
 
-    // Generate student ID if country and state are provided
+    // Always generate a student ID. Use the supplied country/state when available,
+    // otherwise fall back to generic codes so every student still gets an ID.
     let studentId = null;
-    if (country && state) {
-      const countryCode = getCountryIsoCode(country);
-      const stateCode = getStateIsoCode(state, countryCode);
 
-      try {
-        const { data: studentIdResult, error: studentIdError } = await supabaseAdmin.rpc('generate_student_id', {
-          country_code: countryCode,
-          state_code: stateCode
-        });
+    const countryCode = country ? getCountryIsoCode(country) : 'GLOBAL';
+    const stateCode = country && state ? getStateIsoCode(state, countryCode) : 'NA';
 
-        if (studentIdError) {
-          console.error('Error generating student ID:', studentIdError);
-          // Generate a fallback student ID
-          const now = new Date();
-          const year = now.getFullYear();
-          const month = String(now.getMonth() + 1).padStart(2, '0');
-          const random = String(Math.floor(Math.random() * 9999) + 1).padStart(4, '0');
-          studentId = `${countryCode}-${stateCode}-${year}-${month}-${random}`;
-        } else {
-          studentId = studentIdResult;
-        }
-      } catch (rpcError) {
-        console.error('RPC error generating student ID:', rpcError);
-        // Generate a fallback student ID
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const random = String(Math.floor(Math.random() * 9999) + 1).padStart(4, '0');
-        studentId = `${countryCode}-${stateCode}-${year}-${month}-${random}`;
+    try {
+      const { data: studentIdResult, error: studentIdError } = await supabaseAdmin.rpc('generate_student_id', {
+        country_code: countryCode,
+        state_code: stateCode
+      });
+
+      if (studentIdError) {
+        console.error('Error generating student ID:', studentIdError);
+        studentId = buildFallbackStudentId(countryCode, stateCode);
+      } else {
+        studentId = studentIdResult;
       }
+    } catch (rpcError) {
+      console.error('RPC error generating student ID:', rpcError);
+      studentId = buildFallbackStudentId(countryCode, stateCode);
     }
 
     // Create profile using admin client
