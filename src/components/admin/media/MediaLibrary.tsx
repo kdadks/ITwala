@@ -33,9 +33,10 @@ interface DetailPanelProps {
   onClose: () => void;
   onDelete: (id: string) => void;
   onUpdate: (id: string, updates: Partial<MediaAsset>) => void;
+  getToken: () => Promise<string | null>;
 }
 
-function DetailPanel({ asset, onClose, onDelete, onUpdate }: DetailPanelProps) {
+function DetailPanel({ asset, onClose, onDelete, onUpdate, getToken }: DetailPanelProps) {
   const [name, setName]         = useState(asset.original_name);
   const [altText, setAltText]   = useState(asset.alt_text);
   const [desc, setDesc]         = useState(asset.description);
@@ -48,9 +49,10 @@ function DetailPanel({ asset, onClose, onDelete, onUpdate }: DetailPanelProps) {
   const handleSave = async () => {
     setSaving(true);
     try {
+      const token = await getToken();
       const res = await fetch(`/api/admin/media/${asset.id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ original_name: name, alt_text: altText, description: desc }),
       });
       if (!res.ok) throw new Error((await res.json()).error || 'Save failed');
@@ -68,7 +70,11 @@ function DetailPanel({ asset, onClose, onDelete, onUpdate }: DetailPanelProps) {
     if (!window.confirm(`Delete "${asset.original_name}"? This cannot be undone.`)) return;
     setDeleting(true);
     try {
-      const res = await fetch(`/api/admin/media/${asset.id}`, { method: 'DELETE' });
+      const token = await getToken();
+      const res = await fetch(`/api/admin/media/${asset.id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
       if (!res.ok) throw new Error((await res.json()).error || 'Delete failed');
       onDelete(asset.id);
       toast.success('Deleted');
@@ -480,6 +486,7 @@ export function MediaLibrary() {
           onClose={() => setSelected(null)}
           onDelete={handleDelete}
           onUpdate={handleUpdate}
+          getToken={getToken}
         />
       )}
     </div>
