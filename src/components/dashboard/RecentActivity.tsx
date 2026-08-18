@@ -65,6 +65,7 @@ const RecentActivity = () => {
           .eq('user_id', user.id)
           .eq('completed', true)
           .not('completed_at', 'is', null)
+          .not('lesson_id', 'is', null)
           .order('completed_at', { ascending: false })
           .limit(5);
 

@@ -20,8 +20,9 @@ interface Course {
 }
 
 interface ProgressItem {
-  lesson_id: string;
-  class_number: number;
+  lesson_id: string | null;
+  module_id: string | null;
+  class_number: number | null;
   completed: boolean;
 }
 
@@ -89,16 +90,26 @@ const AdminProgress: NextPage = () => {
     try {
       const { data, error } = await supabase
         .from('progress')
-        .select('lesson_id, class_number, completed')
+        .select('lesson_id, module_id, class_number, completed')
         .eq('user_id', selectedStudent)
         .eq('course_id', selectedCourse);
 
       if (error) throw error;
 
       const progressMap: Record<string, boolean> = {};
+      const selectedCourseData = courses.find(c => c.id === selectedCourse);
+
       data?.forEach((item: ProgressItem) => {
-        const key = `${item.class_number}`;
-        progressMap[key] = item.completed;
+        if (item.lesson_id && item.class_number) {
+          const key = `class-${item.class_number}`;
+          progressMap[key] = item.completed;
+        } else if (item.module_id && selectedCourseData) {
+          const moduleIndex = selectedCourseData.modules.findIndex(m => m.id === item.module_id);
+          if (moduleIndex >= 0) {
+            const key = `module-${moduleIndex}`;
+            progressMap[key] = item.completed;
+          }
+        }
       });
 
       setProgress(progressMap);
@@ -119,12 +130,32 @@ const AdminProgress: NextPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedStudent, selectedCourse]);
 
-  const toggleProgress = (classNumber: number) => {
-    const key = `${classNumber}`;
-    setProgress(prev => ({
-      ...prev,
-      [key]: !prev[key]
-    }));
+  const toggleProgress = (key: string) => {
+    setProgress(prev => {
+      const newValue = !prev[key];
+      const updated = {
+        ...prev,
+        [key]: newValue
+      };
+
+      if (key.startsWith('module-')) {
+        const moduleIndex = parseInt(key.replace('module-', ''), 10);
+        const selectedCourseData = courses.find(c => c.id === selectedCourse);
+        const courseModule = selectedCourseData?.modules?.[moduleIndex];
+
+        if (courseModule?.lessons?.length > 0) {
+          let classNumber = 0;
+          for (const m of selectedCourseData?.modules || []) {
+            for (const l of m.lessons || []) {
+              classNumber++;
+              updated[`class-${classNumber}`] = newValue;
+            }
+          }
+        }
+      }
+
+      return updated;
+    });
   };
 
   const saveProgress = async () => {
@@ -138,40 +169,74 @@ const AdminProgress: NextPage = () => {
       const selectedCourseData = courses.find(c => c.id === selectedCourse);
       if (!selectedCourseData) throw new Error('Course not found');
 
-      const progressUpdates = [];
+      const lessonUpdates = [];
+      const moduleUpdates = [];
       let classNumber = 0;
 
       // Iterate through modules and lessons
-      for (const courseModule of selectedCourseData.modules || []) {
-        for (const lesson of courseModule.lessons || []) {
-          classNumber++;
-          const key = `${classNumber}`;
-          const isCompleted = progress[key] || false;
+      for (let moduleIndex = 0; moduleIndex < (selectedCourseData.modules || []).length; moduleIndex++) {
+        const courseModule = selectedCourseData.modules[moduleIndex];
+        const moduleKey = `module-${moduleIndex}`;
+        const isModuleCompleted = progress[moduleKey] || false;
 
-          progressUpdates.push({
+        if (!courseModule.lessons || courseModule.lessons.length === 0) {
+          // Module has no lessons - create module-level entry
+          moduleUpdates.push({
             user_id: selectedStudent,
             course_id: selectedCourse,
-            lesson_id: lesson.id || `lesson-${classNumber}`,
-            class_number: classNumber,
-            completed: isCompleted,
-            completed_at: isCompleted ? new Date().toISOString() : null,
+            module_id: courseModule.id,
+            lesson_id: null,
+            class_number: null,
+            completed: isModuleCompleted,
+            completed_at: isModuleCompleted ? new Date().toISOString() : null,
             updated_at: new Date().toISOString()
           });
+        } else {
+          // Module has lessons - create lesson-level entries
+          for (const lesson of courseModule.lessons) {
+            classNumber++;
+            const key = `class-${classNumber}`;
+            const isCompleted = progress[key] || false;
+
+            lessonUpdates.push({
+              user_id: selectedStudent,
+              course_id: selectedCourse,
+              module_id: courseModule.id,
+              lesson_id: lesson.id,
+              class_number: classNumber,
+              completed: isCompleted,
+              completed_at: isCompleted ? new Date().toISOString() : null,
+              updated_at: new Date().toISOString()
+            });
+          }
         }
       }
 
-      // Upsert all progress records
-      const { error } = await supabase
-        .from('progress')
-        .upsert(progressUpdates, {
-          onConflict: 'user_id,course_id,lesson_id'
-        });
+      // Upsert lesson-level progress records
+      if (lessonUpdates.length > 0) {
+        const { error } = await supabase
+          .from('progress')
+          .upsert(lessonUpdates, {
+            onConflict: 'user_id,lesson_id'
+          });
 
-      if (error) throw error;
+        if (error) throw error;
+      }
+
+      // Upsert module-level progress records
+      if (moduleUpdates.length > 0) {
+        const { error } = await supabase
+          .from('progress')
+          .upsert(moduleUpdates, {
+            onConflict: 'user_id,module_id'
+          });
+
+        if (error) throw error;
+      }
 
       // Update enrollment progress percentage
       const completedCount = Object.values(progress).filter(Boolean).length;
-      const totalClasses = progressUpdates.length;
+      const totalClasses = lessonUpdates.length + moduleUpdates.length;
       const progressPercentage = totalClasses > 0
         ? Math.round((completedCount / totalClasses) * 100)
         : 0;
@@ -268,40 +333,61 @@ const AdminProgress: NextPage = () => {
                   </div>
                 ) : (
                   <div className="space-y-6">
-                    {selectedCourseData?.modules?.map((module: any, moduleIndex: number) => (
-                      <div key={moduleIndex} className="border rounded-lg p-4">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                          Module {moduleIndex + 1}: {module.title}
-                        </h3>
-                        <div className="space-y-2">
-                          {module.lessons?.map((lesson: any, lessonIndex: number) => {
-                            classNumber++;
-                            const key = `${classNumber}`;
-                            return (
-                              <label
-                                key={lessonIndex}
-                                className="flex items-center p-3 hover:bg-gray-50 rounded-md cursor-pointer"
-                              >
-                                <input
-                                  type="checkbox"
-                                  checked={progress[key] || false}
-                                  onChange={() => toggleProgress(classNumber)}
-                                  className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
-                                />
-                                <span className="ml-3 text-sm text-gray-900">
-                                  Class {classNumber}: {lesson.title}
-                                </span>
-                              </label>
-                            );
-                          })}
+                    {selectedCourseData?.modules?.map((module: any, moduleIndex: number) => {
+                      const moduleKey = `module-${moduleIndex}`;
+                      const isModuleCompleted = progress[moduleKey] || false;
+                      const hasLessons = module.lessons && module.lessons.length > 0;
+
+                      return (
+                        <div key={moduleIndex} className="border rounded-lg p-4">
+                          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                            Module {moduleIndex + 1}: {module.title}
+                          </h3>
+                          <div className="space-y-2">
+                            <label className="flex items-center p-3 hover:bg-gray-50 rounded-md cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={isModuleCompleted}
+                                onChange={() => toggleProgress(moduleKey)}
+                                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                              />
+                              <span className="ml-3 text-sm font-medium text-gray-900">
+                                {hasLessons ? 'Mark entire module as complete' : 'Mark module as complete'}
+                              </span>
+                            </label>
+                            {hasLessons && (
+                              <div className="ml-4 space-y-2">
+                                {module.lessons.map((lesson: any, lessonIndex: number) => {
+                                  classNumber++;
+                                  const key = `class-${classNumber}`;
+                                  return (
+                                    <label
+                                      key={lessonIndex}
+                                      className="flex items-center p-3 hover:bg-gray-50 rounded-md cursor-pointer"
+                                    >
+                                      <input
+                                        type="checkbox"
+                                        checked={progress[key] || false}
+                                        onChange={() => toggleProgress(key)}
+                                        className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                                      />
+                                      <span className="ml-3 text-sm text-gray-900">
+                                        Class {classNumber}: {lesson.title}
+                                      </span>
+                                    </label>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
 
                     {/* Save Button */}
                     <div className="flex items-center justify-between pt-4 border-t">
                       <div className="text-sm text-gray-600">
-                        {Object.values(progress).filter(Boolean).length} of {classNumber} classes completed
+                        {Object.values(progress).filter(Boolean).length} of {Object.keys(progress).length} items completed
                       </div>
                       <button
                         onClick={saveProgress}
