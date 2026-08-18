@@ -3,6 +3,8 @@ import { createPagesServerClient } from '@supabase/auth-helpers-nextjs';
 import { supabaseAdmin } from '@/lib/supabaseClient';
 import { createTransport } from 'nodemailer';
 import { getCountryIsoCode, getStateIsoCode } from '@/utils/locationData';
+import { sanitizeText } from '@/utils/sanitize';
+import { studentCreateSchema } from '@/utils/validation';
 
 // Builds a fallback student ID when the RPC is unavailable, e.g. GLOBAL-NA-2026-07-0123
 function buildFallbackStudentId(countryCode: string, stateCode: string): string {
@@ -46,7 +48,7 @@ export default async function handler(
       return res.status(403).json({ error: 'Admin access required' });
     }
 
-    // Extract form data
+    const validated = studentCreateSchema.parse(req.body);
     const {
       full_name,
       email,
@@ -62,32 +64,19 @@ export default async function handler(
       country,
       pincode,
       courseIds = []
-    } = req.body;
+    } = validated;
 
-    // Validate required fields
     if (!full_name || !email || !password) {
       return res.status(400).json({ error: 'Name, email, and password are required' });
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return res.status(400).json({ error: 'Invalid email format' });
-    }
-
-    // Validate password length
-    if (password.length < 6) {
-      return res.status(400).json({ error: 'Password must be at least 6 characters' });
-    }
-
-    // Check if admin client is available
     if (!supabaseAdmin) {
       return res.status(500).json({
-        error: 'Admin client not configured. Please set SUPABASE_SERVICE_ROLE_KEY environment variable.'
+        error: 'Admin client not configured'
       });
     }
 
-    // Create auth user using Supabase Admin API
+    const tempPassword = password;
     const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,
@@ -99,15 +88,12 @@ export default async function handler(
     });
 
     if (authError) {
-      console.error('Auth user creation error:', authError);
-
-      // Handle specific errors
       if (authError.message.includes('already registered')) {
         return res.status(409).json({ error: 'A user with this email already exists' });
       }
 
       return res.status(400).json({
-        error: authError.message || 'Failed to create user account'
+        error: 'Failed to create user account'
       });
     }
 
@@ -131,13 +117,11 @@ export default async function handler(
       });
 
       if (studentIdError) {
-        console.error('Error generating student ID:', studentIdError);
         studentId = buildFallbackStudentId(countryCode, stateCode);
       } else {
         studentId = studentIdResult;
       }
     } catch (rpcError) {
-      console.error('RPC error generating student ID:', rpcError);
       studentId = buildFallbackStudentId(countryCode, stateCode);
     }
 
@@ -167,9 +151,6 @@ export default async function handler(
       .insert(profileData);
 
     if (profileCreateError) {
-      console.error('Profile creation error:', profileCreateError);
-
-      // If profile creation fails, delete the auth user
       await supabaseAdmin.auth.admin.deleteUser(userId);
 
       return res.status(500).json({
@@ -196,11 +177,8 @@ export default async function handler(
 
           if (!enrollmentError && enrollment) {
             enrollments.push(enrollment);
-          } else {
-            console.error(`Failed to enroll in course ${courseId}:`, enrollmentError);
           }
         } catch (enrollError) {
-          console.error(`Error enrolling in course ${courseId}:`, enrollError);
         }
       }
     }
@@ -217,30 +195,32 @@ export default async function handler(
         },
       });
 
-      // Send email to student with login credentials
+      const safeFullName = sanitizeText(full_name);
+      const safeEmail = sanitizeText(email);
+      const safeStudentId = studentId ? sanitizeText(studentId) : '';
+
       await transporter.sendMail({
         from: process.env.SMTP_FROM || 'support@it-wala.com',
         to: email,
         subject: 'Welcome to ITwala Academy - Your Account Details',
         html: `
           <h2>Welcome to ITwala Academy!</h2>
-          <p>Dear ${full_name},</p>
-          <p>Your student account has been created by our admin team. Here are your login credentials:</p>
+          <p>Dear ${safeFullName},</p>
+          <p>Your student account has been created by our admin team. Here are your login details:</p>
 
           <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <p><strong>Email:</strong> ${email}</p>
-            <p><strong>Password:</strong> ${password}</p>
-            ${studentId ? `<p><strong>Student ID:</strong> ${studentId}</p>` : ''}
+            <p><strong>Email:</strong> ${safeEmail}</p>
+            ${safeStudentId ? `<p><strong>Student ID:</strong> ${safeStudentId}</p>` : ''}
           </div>
 
-          <p><strong>Important:</strong> Please keep these credentials secure and change your password after your first login.</p>
+          <p><strong>Important:</strong> Please use the password you set during account creation. If you need to reset your password, use the "Forgot Password" option on the login page.</p>
 
           <p>You can log in to the student portal at: <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://it-wala.com'}/auth">Student Login</a></p>
 
           ${enrollments.length > 0 ? `
             <h3>Your Enrolled Courses:</h3>
             <ul>
-              ${enrollments.map(e => `<li>${e.course.title}</li>`).join('')}
+              ${enrollments.map(e => `<li>${sanitizeText(e.course.title)}</li>`).join('')}
             </ul>
           ` : ''}
 
@@ -254,29 +234,29 @@ export default async function handler(
       await transporter.sendMail({
         from: process.env.SMTP_FROM || 'support@it-wala.com',
         to: 'support@it-wala.com',
-        subject: `New Student Created: ${full_name}`,
+        subject: `New Student Created: ${safeFullName}`,
         html: `
           <h2>New Student Account Created</h2>
           <p>A new student account has been created by ${session.user.email}</p>
 
           <h3>Student Details:</h3>
           <ul>
-            <li><strong>Name:</strong> ${full_name}</li>
-            <li><strong>Email:</strong> ${email}</li>
-            ${studentId ? `<li><strong>Student ID:</strong> ${studentId}</li>` : ''}
-            ${phone ? `<li><strong>Phone:</strong> ${phone}</li>` : ''}
-            ${date_of_birth ? `<li><strong>Date of Birth:</strong> ${date_of_birth}</li>` : ''}
-            ${parent_name ? `<li><strong>Parent Name:</strong> ${parent_name}</li>` : ''}
-            ${highest_qualification ? `<li><strong>Highest Qualification:</strong> ${highest_qualification}</li>` : ''}
-            ${city ? `<li><strong>City:</strong> ${city}</li>` : ''}
-            ${state ? `<li><strong>State:</strong> ${state}</li>` : ''}
-            ${country ? `<li><strong>Country:</strong> ${country}</li>` : ''}
+            <li><strong>Name:</strong> ${safeFullName}</li>
+            <li><strong>Email:</strong> ${safeEmail}</li>
+            ${safeStudentId ? `<li><strong>Student ID:</strong> ${safeStudentId}</li>` : ''}
+            ${phone ? `<li><strong>Phone:</strong> ${sanitizeText(phone)}</li>` : ''}
+            ${date_of_birth ? `<li><strong>Date of Birth:</strong> ${sanitizeText(date_of_birth)}</li>` : ''}
+            ${parent_name ? `<li><strong>Parent Name:</strong> ${sanitizeText(parent_name)}</li>` : ''}
+            ${highest_qualification ? `<li><strong>Highest Qualification:</strong> ${sanitizeText(highest_qualification)}</li>` : ''}
+            ${city ? `<li><strong>City:</strong> ${sanitizeText(city)}</li>` : ''}
+            ${state ? `<li><strong>State:</strong> ${sanitizeText(state)}</li>` : ''}
+            ${country ? `<li><strong>Country:</strong> ${sanitizeText(country)}</li>` : ''}
           </ul>
 
           ${enrollments.length > 0 ? `
             <h3>Enrolled Courses:</h3>
             <ul>
-              ${enrollments.map(e => `<li>${e.course.title}</li>`).join('')}
+              ${enrollments.map(e => `<li>${sanitizeText(e.course.title)}</li>`).join('')}
             </ul>
           ` : '<p>No courses enrolled yet.</p>'}
 
@@ -284,10 +264,9 @@ export default async function handler(
         `,
       });
 
-      console.log('✅ Student account emails sent successfully');
-    } catch (emailError) {
-      console.error('❌ Email notification error:', emailError);
       // Don't fail the student creation if email fails
+    } catch (emailError) {
+      // Email sending failed, but continue with student creation
     }
 
     return res.status(201).json({
@@ -305,10 +284,10 @@ export default async function handler(
     });
 
   } catch (error: any) {
-    console.error('Student creation error:', error);
+    const isDev = process.env.NODE_ENV === 'development';
     return res.status(500).json({
       error: 'Failed to create student',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      ...(isDev && { details: error.message })
     });
   }
 }

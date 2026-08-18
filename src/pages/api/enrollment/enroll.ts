@@ -3,6 +3,17 @@ import { createPagesServerClient } from '@supabase/auth-helpers-nextjs';
 import { supabaseAdmin } from '@/lib/supabaseClient';
 import { createTransport } from 'nodemailer';
 import { getCountryIsoCode, getStateIsoCode } from '@/utils/locationData';
+import { sanitizeText } from '@/utils/sanitize';
+import { applyRateLimit } from '@/lib/rateLimit';
+import { enrollmentSchema } from '@/utils/validation';
+
+function buildFallbackStudentId(countryCode: string, stateCode: string): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const random = String(Math.floor(Math.random() * 9999) + 1).padStart(4, '0');
+  return `${countryCode}-${stateCode}-${year}-${month}-${random}`;
+}
 
 export default async function handler(
   req: NextApiRequest,
@@ -13,11 +24,14 @@ export default async function handler(
   }
 
   try {
-    const { courseId, userDetails, directEnrollment } = req.body;
+    const validated = enrollmentSchema.parse(req.body);
+    const { courseId, userDetails, directEnrollment } = validated;
 
     if (!courseId) {
       return res.status(400).json({ message: 'Course ID is required' });
     }
+
+    if (!applyRateLimit(req, res)) return;
 
     // Create Supabase client for the request
     const supabase = createPagesServerClient({ req, res });
@@ -71,7 +85,6 @@ export default async function handler(
         .single();
 
       if (profileFetchError) {
-        console.error('Error fetching existing profile:', profileFetchError);
         return res.status(400).json({ message: 'Unable to fetch profile for direct enrollment' });
       }
       
@@ -122,15 +135,10 @@ export default async function handler(
         });
 
         if (profileError) {
-          console.error('Profile update error:', profileError);
-          // Don't fail enrollment if profile update fails, but log the issue
-          console.warn('Profile update failed during enrollment, but enrollment will continue');
+          // Don't fail enrollment if profile update fails
         } else {
-          console.log('Profile updated successfully during enrollment:', updateResult);
         }
       } catch (profileUpdateError) {
-        console.error('Unexpected error during profile update:', profileUpdateError);
-        // Don't fail enrollment if profile update fails
       }
     }
 
@@ -161,24 +169,12 @@ export default async function handler(
         });
 
         if (studentIdError) {
-          console.error('Error generating student ID:', studentIdError);
-          // Generate a fallback student ID if database function fails
-          const now = new Date();
-          const year = now.getFullYear();
-          const month = String(now.getMonth() + 1).padStart(2, '0');
-          const random = String(Math.floor(Math.random() * 9999) + 1).padStart(4, '0');
-          studentId = `${countryCode}-${stateCode}-${year}-${month}-${random}`;
+          studentId = buildFallbackStudentId(countryCode, stateCode);
         } else {
           studentId = studentIdResult;
         }
       } catch (rpcError) {
-        console.error('RPC error generating student ID:', rpcError);
-        // Generate a fallback student ID
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const random = String(Math.floor(Math.random() * 9999) + 1).padStart(4, '0');
-        studentId = `${countryCode}-${stateCode}-${year}-${month}-${random}`;
+        studentId = buildFallbackStudentId(countryCode, stateCode);
       }
 
       // Update profile with student ID (1:1 relationship)
@@ -188,12 +184,9 @@ export default async function handler(
         .eq('id', userId);
 
       if (profileUpdateError) {
-        console.error('Error updating profile with student ID:', profileUpdateError);
       } else {
-        console.log('Student ID assigned to profile:', studentId);
       }
     } else {
-      console.log('Using existing student ID from profile:', studentId);
     }
 
     // Create enrollment record (student_id is now on profile, not enrollment)
@@ -232,8 +225,6 @@ export default async function handler(
             role: 'student'
           }
         });
-        
-        console.log('Role updated to student:', roleUpdateResult);
       }
 
       // Get updated profile
@@ -245,15 +236,11 @@ export default async function handler(
         
       updatedProfile = finalProfile;
     } catch (roleError) {
-      console.error('Error updating user role:', roleError);
-      // Default to student if role update fails
       updatedProfile = { role: 'student' };
     }
 
     // Send enrollment notification email directly
     try {
-      console.log('Sending enrollment notification emails...');
-      
       // Create a transporter using SMTP
       const transporter = createTransport({
         host: process.env.SMTP_HOST,
@@ -273,19 +260,22 @@ export default async function handler(
         ? profileData?.phone
         : userDetails?.phone;
 
-      console.log('Sending email to admin...');
-      // Send email to admin
+      const safeStudentName = sanitizeText(studentName);
+      const safeStudentPhone = studentPhone ? sanitizeText(studentPhone) : '';
+      const safeCourseTitle = sanitizeText(course.title);
+      const safeCourseDescription = sanitizeText(course.description || '');
+
       await transporter.sendMail({
         from: process.env.SMTP_FROM || 'support@it-wala.com',
         to: 'support@it-wala.com',
-        subject: `New Course Enrollment: ${course.title}`,
+        subject: `New Course Enrollment: ${safeCourseTitle}`,
         html: `
           <h2>New Course Enrollment</h2>
           <p><strong>Student ID:</strong> ${studentId}</p>
-          <p><strong>Course:</strong> ${course.title}</p>
-          <p><strong>Student Name:</strong> ${studentName}</p>
+          <p><strong>Course:</strong> ${safeCourseTitle}</p>
+          <p><strong>Student Name:</strong> ${safeStudentName}</p>
           <p><strong>Student Email:</strong> ${studentEmail}</p>
-          <p><strong>Student Phone:</strong> ${studentPhone || 'Not provided'}</p>
+          <p><strong>Student Phone:</strong> ${safeStudentPhone || 'Not provided'}</p>
           <p><strong>Country:</strong> ${countryName}</p>
           <p><strong>State:</strong> ${stateName || 'Not provided'}</p>
           <p><strong>Course Price:</strong> ₹${course.price}</p>
@@ -293,40 +283,24 @@ export default async function handler(
         `,
       });
 
-      console.log('Sending confirmation email to student...');
-      // Send confirmation email to student
       await transporter.sendMail({
         from: process.env.SMTP_FROM || 'support@it-wala.com',
         to: studentEmail,
-        subject: `Enrollment Confirmation: ${course.title}`,
+        subject: `Enrollment Confirmation: ${safeCourseTitle}`,
         html: `
           <h2>Enrollment Confirmation</h2>
-          <p>Dear ${studentName},</p>
-          <p>Thank you for enrolling in <strong>${course.title}</strong>.</p>
+          <p>Dear ${safeStudentName},</p>
+          <p>Thank you for enrolling in <strong>${safeCourseTitle}</strong>.</p>
           <p><strong>Your Student ID: ${studentId}</strong></p>
           <p><em>Please save this Student ID for future reference.</em></p>
           ${directEnrollment ? '<p><em>You have been enrolled using your existing profile information for a faster enrollment process.</em></p>' : ''}
-          <p>${course.description}</p>
+          <p>${safeCourseDescription}</p>
           <p>Our team will contact you shortly with further details about the course schedule and payment options.</p>
           <p>If you have any questions, please contact us at support@it-wala.com or call +91 7982303199.</p>
           <p>Best regards,<br>ITwala Academy Team</p>
         `,
       });
-
-      console.log('✅ Enrollment notification emails sent successfully');
     } catch (emailError) {
-      console.error('❌ Email notification error:', emailError);
-      
-      // More detailed error logging
-      if (emailError.code === 'EAUTH') {
-        console.error('Authentication error - check SMTP_USER and SMTP_PASS');
-      } else if (emailError.code === 'ESOCKET') {
-        console.error('Socket error - check SMTP host and port');
-      } else if (emailError.code === 'EENVELOPE') {
-        console.error('Envelope error - check from/to email addresses');
-      }
-      
-      // Don't fail enrollment if email fails
     }
 
     return res.status(200).json({
@@ -341,10 +315,10 @@ export default async function handler(
     });
 
   } catch (error: any) {
-    console.error('Enrollment error:', error);
+    const isDev = process.env.NODE_ENV === 'development';
     return res.status(500).json({
       message: 'Failed to enroll in the course',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      ...(isDev && { error: error.message })
     });
   }
 }

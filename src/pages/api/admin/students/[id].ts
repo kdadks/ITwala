@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createPagesServerClient } from '@supabase/auth-helpers-nextjs';
 import { supabaseAdmin } from '@/lib/supabaseClient';
+import { studentUpdateSchema } from '@/utils/validation';
 
 export default async function handler(
   req: NextApiRequest,
@@ -64,22 +65,21 @@ export default async function handler(
         .eq('user_id', id);
 
       if (enrollError) {
-        console.error('Error deleting enrollments:', enrollError);
-        return res.status(500).json({ error: enrollError.message });
+        return res.status(500).json({ error: 'Failed to delete student enrollments' });
       }
 
       // Delete the auth user (cascades to profile and remaining related rows)
       const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(id);
 
       if (deleteError) {
-        console.error('Error deleting auth user:', deleteError);
-        return res.status(500).json({ error: deleteError.message });
+        return res.status(500).json({ error: 'Failed to delete student' });
       }
 
       return res.status(200).json({ message: 'Student deleted successfully' });
     }
 
     // PUT / PATCH: update student profile information
+    const validated = studentUpdateSchema.parse(req.body);
     const {
       full_name,
       email,
@@ -93,7 +93,7 @@ export default async function handler(
       state,
       country,
       pincode,
-    } = req.body;
+    } = validated;
 
     const updateData: Record<string, any> = {
       updated_at: new Date().toISOString()
@@ -117,8 +117,7 @@ export default async function handler(
       .eq('id', id);
 
     if (updateError) {
-      console.error('Error updating student profile:', updateError);
-      return res.status(500).json({ error: updateError.message });
+      return res.status(500).json({ error: 'Failed to update student' });
     }
 
     // Update email in auth if it changed (keeps it confirmed)
@@ -134,8 +133,7 @@ export default async function handler(
       });
 
       if (emailError) {
-        console.error('Error updating auth email:', emailError);
-        return res.status(400).json({ error: emailError.message });
+        return res.status(400).json({ error: 'Failed to update email' });
       }
 
       await supabaseAdmin
@@ -154,10 +152,10 @@ export default async function handler(
     });
 
   } catch (error: any) {
-    console.error('Student API error:', error);
+    const isDev = process.env.NODE_ENV === 'development';
     return res.status(500).json({
       error: 'Failed to process request',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      ...(isDev && { details: error.message })
     });
   }
 }

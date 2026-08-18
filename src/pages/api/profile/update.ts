@@ -12,11 +12,6 @@ export default async function handler(
   try {
     const { profileData } = req.body;
 
-    console.log('Profile update request received:', {
-      hasProfileData: !!profileData,
-      profileDataKeys: profileData ? Object.keys(profileData) : null
-    });
-
     if (!profileData) {
       return res.status(400).json({ message: 'Profile data is required' });
     }
@@ -27,34 +22,21 @@ export default async function handler(
     // Get the current user session
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
     
-    console.log('Authentication check:', {
-      hasSession: !!session,
-      hasUser: !!session?.user,
-      userId: session?.user?.id,
-      sessionError: sessionError?.message,
-      userEmail: session?.user?.email
-    });
-    
     if (sessionError) {
-      console.error('Session error:', sessionError);
       return res.status(401).json({
-        message: 'Session error: ' + sessionError.message,
-        requiresAuth: true,
-        debug: { sessionError: sessionError.message }
+        message: 'Session error',
+        requiresAuth: true
       });
     }
     
     if (!session?.user) {
-      console.error('No user in session');
       return res.status(401).json({
         message: 'No authenticated user found',
-        requiresAuth: true,
-        debug: { hasSession: !!session, sessionKeys: session ? Object.keys(session) : null }
+        requiresAuth: true
       });
     }
 
     const userId = session.user.id;
-    console.log('Authenticated user ID:', userId);
 
     // Prepare update data
     const updateData = {
@@ -75,8 +57,6 @@ export default async function handler(
       updated_at: new Date().toISOString()
     };
 
-    console.log('Attempting profile update with data:', updateData);
-
     // Update profile in database
     const { data: updatedProfile, error: profileError } = await supabase
       .from('profiles')
@@ -84,28 +64,9 @@ export default async function handler(
       .select()
       .single();
 
-    console.log('Database operation result:', {
-      success: !profileError,
-      hasData: !!updatedProfile,
-      error: profileError ? {
-        message: profileError.message,
-        code: profileError.code,
-        details: profileError.details,
-        hint: profileError.hint
-      } : null
-    });
-
     if (profileError) {
-      console.error('Profile update error:', profileError);
       return res.status(500).json({
-        message: 'Failed to update profile',
-        error: profileError.message,
-        debug: {
-          code: profileError.code,
-          details: profileError.details,
-          hint: profileError.hint,
-          userId: userId
-        }
+        message: 'Failed to update profile'
       });
     }
 
@@ -117,8 +78,6 @@ export default async function handler(
         },
       });
     } catch (authError) {
-      console.log('Auth metadata update skipped:', authError);
-      // This is not critical, so we don't fail the request
     }
 
     return res.status(200).json({
@@ -127,10 +86,10 @@ export default async function handler(
     });
 
   } catch (error: any) {
-    console.error('Profile update error:', error);
+    const isDev = process.env.NODE_ENV === 'development';
     return res.status(500).json({
       message: 'Failed to update profile',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      ...(isDev && { error: error.message })
     });
   }
 }

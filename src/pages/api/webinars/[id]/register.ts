@@ -3,6 +3,8 @@ import { createTransport } from 'nodemailer';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { supabase, supabaseAdmin } from '@/lib/supabaseClient';
+import { webinarRegisterSchema } from '@/utils/validation';
+import { applyRateLimit } from '@/lib/rateLimit';
 
 // ─── Validation ───────────────────────────────────────────────────────────────
 
@@ -97,20 +99,24 @@ function buildConfirmationEmail(params: {
   const { firstName, hasBanner, webinar } = params;
   const formattedDate = formatDateTime(webinar.date_time);
 
+  const safeFirstName = firstName.replace(/[<>&"']/g, '');
+  const safeWebinarTitle = webinar.title.replace(/[<>&"']/g, '');
+  const safeSpeakerName = webinar.speaker_name.replace(/[<>&"']/g, '');
+
   const bannerRow = hasBanner
-    ? `<tr><td style="padding:0;line-height:0;"><img src="cid:banner" alt="${webinar.title}" style="width:100%;max-height:220px;object-fit:cover;display:block;"/></td></tr>`
+    ? `<tr><td style="padding:0;line-height:0;"><img src="cid:banner" alt="${safeWebinarTitle}" style="width:100%;max-height:220px;object-fit:cover;display:block;"/></td></tr>`
     : '';
 
   const speakerLine = webinar.speaker_title
-    ? `${webinar.speaker_name}, ${webinar.speaker_title}`
-    : webinar.speaker_name;
+    ? `${safeSpeakerName}, ${webinar.speaker_title}`
+    : safeSpeakerName;
 
   const topicsHtml =
     webinar.topics && webinar.topics.length > 0
       ? `<div style="margin-bottom:28px;">
           <p style="font-size:14px;font-weight:600;color:#111827;margin:0 0 10px;">Topics covered:</p>
           <ul style="margin:0;padding-left:20px;">
-            ${webinar.topics.map((t) => `<li style="font-size:14px;color:#4b5563;margin-bottom:5px;">${t}</li>`).join('')}
+            ${webinar.topics.map((t) => `<li style="font-size:14px;color:#4b5563;margin-bottom:5px;">${t.replace(/[<>&"']/g, '')}</li>`).join('')}
           </ul>
         </div>`
       : '';
@@ -139,7 +145,7 @@ function buildConfirmationEmail(params: {
           <tr>
             <td style="padding:40px 40px 32px;">
               <p style="color:#1a56a0;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 6px;">Registration Confirmed</p>
-              <h2 style="color:#111827;margin:0 0 8px;font-size:22px;font-weight:700;line-height:1.3;">You're in, ${firstName}! 🎉</h2>
+              <h2 style="color:#111827;margin:0 0 8px;font-size:22px;font-weight:700;line-height:1.3;">You're in, ${safeFirstName}! 🎉</h2>
               <p style="color:#6b7280;margin:0 0 28px;font-size:15px;">Your spot is reserved. Here are the details:</p>
 
               <!-- Event card -->
@@ -208,6 +214,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ error: 'Webinar ID is required' });
   }
 
+  const validated = webinarRegisterSchema.parse(req.body);
   const {
     first_name,
     last_name,
@@ -218,23 +225,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     country,
     state,
     custom_answers,
-  } = req.body;
+  } = validated;
 
-  // Validate required fields
-  if (!first_name || typeof first_name !== 'string' || !first_name.trim()) {
-    return res.status(400).json({ error: 'first_name is required' });
-  }
-  if (!last_name || typeof last_name !== 'string' || !last_name.trim()) {
-    return res.status(400).json({ error: 'last_name is required' });
-  }
-  if (!email || typeof email !== 'string' || !isValidEmail(email.trim())) {
-    return res.status(400).json({ error: 'A valid email is required' });
-  }
-  if (!phone || typeof phone !== 'string' || !isValidInternationalPhone(phone)) {
-    return res.status(400).json({
-      error: 'A valid international phone number starting with + is required',
-    });
-  }
+  if (!applyRateLimit(req, res)) return;
 
   try {
     // Fetch the webinar
@@ -298,26 +291,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Send confirmation email (non-fatal)
     try {
-      console.log('Sending webinar registration confirmation email...');
-      
       // Validate SMTP configuration
       if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS || !process.env.SMTP_FROM) {
-        console.error('❌ SMTP configuration is incomplete. Missing required environment variables:');
-        console.error('SMTP_HOST:', process.env.SMTP_HOST ? '✓ Set' : '✗ Missing');
-        console.error('SMTP_USER:', process.env.SMTP_USER ? '✓ Set' : '✗ Missing');
-        console.error('SMTP_PASS:', process.env.SMTP_PASS ? '✓ Set' : '✗ Missing');
-        console.error('SMTP_FROM:', process.env.SMTP_FROM ? '✓ Set' : '✗ Missing');
         throw new Error('SMTP configuration is incomplete');
       }
       
-      console.log('SMTP Config:', {
-        host: process.env.SMTP_HOST,
-        port: process.env.SMTP_PORT,
-        secure: process.env.SMTP_SECURE,
-        user: process.env.SMTP_USER,
-        from: process.env.SMTP_FROM,
-      });
-
       const transporter = createTransport({
         host: process.env.SMTP_HOST,
         port: parseInt(process.env.SMTP_PORT ?? '465'),
@@ -391,33 +369,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }),
         attachments,
       });
-
-      console.log('✅ Webinar registration email sent successfully');
-
-      await supabaseAdmin!
-        .from('webinar_registrations')
-        .update({ confirmation_sent: true })
-        .eq('id', registration.id);
     } catch (emailError: any) {
-      console.error('❌ Email notification error:', emailError);
-      
-      // More detailed error logging
-      if (emailError.code === 'EAUTH') {
-        console.error('Authentication error - check SMTP_USER and SMTP_PASS');
-      } else if (emailError.code === 'ESOCKET') {
-        console.error('Socket error - check SMTP host and port');
-      } else if (emailError.code === 'EENVELOPE') {
-        console.error('Envelope error - check from/to email addresses');
-      } else if (emailError.code === 'ECONNECTION') {
-        console.error('Connection error - check SMTP_HOST and network connectivity');
-      }
-      
-      // Email failure is non-fatal — registration is already saved
-      // But we log it so admins can diagnose the issue
     }
 
     return res.status(201).json({ message: 'Registration successful' });
   } catch (err: any) {
-    return res.status(500).json({ error: err.message ?? 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 }

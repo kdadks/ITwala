@@ -1,10 +1,15 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { supabaseAdmin } from '@/lib/supabaseClient';
+import { requireAdmin } from '@/lib/adminAuth';
+import { courseUpdateSchema } from '@/utils/validation';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (!['PUT', 'PATCH'].includes(req.method || '')) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
+
+  const admin = await requireAdmin(req, res);
+  if (!admin) return;
 
   const { id } = req.query;
 
@@ -31,6 +36,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(200).json({ course: data });
     }
 
+    const validated = courseUpdateSchema.parse(req.body);
     const {
       title,
       slug,
@@ -49,7 +55,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       certification_included,
       fees_discussed_post_enrollment,
       modules
-    } = req.body;
+    } = validated;
 
     // First, verify the course exists
     const { data: existingCourse, error: checkError } = await supabaseAdmin

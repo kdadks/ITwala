@@ -8,6 +8,28 @@ import type { SupabaseClient } from '@supabase/supabase-js';
  * very session conflicts it was trying to resolve.  Now it delegates to the
  * single canonical client defined in supabaseClient.ts.
  */
+const SESSION_TIMEOUT = 30 * 60 * 1000;
+
+let inactivityTimer: ReturnType<typeof setTimeout> | null = null;
+
+function resetInactivityTimer() {
+  if (inactivityTimer) clearTimeout(inactivityTimer);
+  inactivityTimer = setTimeout(() => {
+    if (typeof window !== 'undefined') {
+      supabase.auth.signOut();
+      localStorage.clear();
+      sessionStorage.clear();
+    }
+  }, SESSION_TIMEOUT);
+}
+
+if (typeof window !== 'undefined') {
+  ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(event => {
+    window.addEventListener(event, resetInactivityTimer, { passive: true });
+  });
+  resetInactivityTimer();
+}
+
 export function getSupabaseClient(): SupabaseClient {
   return supabase;
 }

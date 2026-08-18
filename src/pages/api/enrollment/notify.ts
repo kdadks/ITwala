@@ -1,6 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createTransport } from 'nodemailer';
 import { createClient } from '@supabase/supabase-js';
+import { sanitizeText } from '@/utils/sanitize';
+import { notifySchema } from '@/utils/validation';
+import { applyRateLimit } from '@/lib/rateLimit';
 
 // Initialize Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
@@ -16,11 +19,14 @@ export default async function handler(
   }
 
   try {
-    const { userId, courseId, name, email, phone } = req.body;
+    const validated = notifySchema.parse(req.body);
+    const { userId, courseId, name, email, phone } = validated;
 
     if (!userId || !courseId) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
+
+    if (!applyRateLimit(req, res)) return;
 
     // Get course details
     const { data: courseData, error: courseError } = await supabase
@@ -30,7 +36,7 @@ export default async function handler(
       .single();
 
     if (courseError) {
-      throw new Error(`Error fetching course: ${courseError.message}`);
+      return res.status(500).json({ message: 'Course information not available' });
     }
 
     // Create a transporter using SMTP
@@ -44,30 +50,36 @@ export default async function handler(
       },
     });
 
+    const safeName = sanitizeText(name || 'Student');
+    const safeEmail = sanitizeText(email || '');
+    const safePhone = phone ? sanitizeText(phone) : '';
+    const safeCourseTitle = sanitizeText(courseData.title);
+    const safeCourseDescription = sanitizeText(courseData.description || '');
+
     // Send email to admin
     await transporter.sendMail({
       from: process.env.SMTP_FROM || 'support@it-wala.com',
       to: 'support@it-wala.com',
-      subject: `New Course Enrollment: ${courseData.title}`,
+      subject: `New Course Enrollment: ${safeCourseTitle}`,
       html: `
         <h2>New Course Enrollment</h2>
-        <p><strong>Course:</strong> ${courseData.title}</p>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
+        <p><strong>Course:</strong> ${safeCourseTitle}</p>
+        <p><strong>Name:</strong> ${safeName}</p>
+        <p><strong>Email:</strong> ${safeEmail}</p>
+        <p><strong>Phone:</strong> ${safePhone || 'Not provided'}</p>
       `,
     });
 
     // Send confirmation email to student
     await transporter.sendMail({
       from: process.env.SMTP_FROM || 'support@it-wala.com',
-      to: email,
-      subject: `Enrollment Confirmation: ${courseData.title}`,
+      to: safeEmail,
+      subject: `Enrollment Confirmation: ${safeCourseTitle}`,
       html: `
         <h2>Enrollment Confirmation</h2>
-        <p>Dear ${name},</p>
-        <p>Thank you for enrolling in <strong>${courseData.title}</strong>.</p>
-        <p>${courseData.description}</p>
+        <p>Dear ${safeName},</p>
+        <p>Thank you for enrolling in <strong>${safeCourseTitle}</strong>.</p>
+        <p>${safeCourseDescription}</p>
         <p>Our team will contact you shortly with further details about the course schedule and payment options.</p>
         <p>If you have any questions, please contact us at support@it-wala.com or call +91 7982303199.</p>
         <p>Best regards,<br>ITwala Academy Team</p>
@@ -76,26 +88,8 @@ export default async function handler(
 
     return res.status(200).json({ message: 'Enrollment notification sent successfully' });
   } catch (error) {
-    console.error('Error sending enrollment notification:', error);
-    
-    // More detailed error logging
-    if (error.code === 'EAUTH') {
-      console.error('Authentication error - check SMTP_USER and SMTP_PASS');
-      return res.status(500).json({ message: 'Authentication error with email server' });
-    } else if (error.code === 'ESOCKET') {
-      console.error('Socket error - check SMTP host and port');
-      return res.status(500).json({ message: 'Connection error with email server' });
-    } else if (error.code === 'EENVELOPE') {
-      console.error('Envelope error - check from/to email addresses');
-      return res.status(500).json({ message: 'Invalid sender or recipient email' });
-    } else if (error.message.includes('no such table')) {
-      console.error('Database error - table not found');
-      return res.status(500).json({ message: 'Database error - course information not available' });
-    }
-    
     return res.status(500).json({
-      message: 'Error sending enrollment notification',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      message: 'Error sending enrollment notification'
     });
   }
 }

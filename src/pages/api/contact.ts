@@ -1,5 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createTransport } from 'nodemailer';
+import { sanitizeText, sanitizeEmail } from '@/utils/sanitize';
+import { applyRateLimit } from '@/lib/rateLimit';
+import { contactSchema } from '@/utils/validation';
 
 export default async function handler(
   req: NextApiRequest,
@@ -10,20 +13,25 @@ export default async function handler(
   }
 
   try {
-    const { name, email, phone, subject, message, toEmail } = req.body;
+    const validated = contactSchema.parse(req.body);
+    const { name, email, phone, subject, message, toEmail } = validated;
 
-    // Debug information
-    console.log('Contact form submission:');
-    console.log('- Name:', name);
-    console.log('- Email:', email);
-    console.log('- Subject:', subject);
-    console.log('- To Email:', toEmail);
-    console.log('- SMTP User:', process.env.SMTP_USER);
-    console.log('- SMTP From:', process.env.SMTP_FROM);
-    console.log('- SMTP Host:', process.env.SMTP_HOST);
-    console.log('- SMTP Port:', process.env.SMTP_PORT);
-    
-    // Create a transporter using SMTP
+    if (!applyRateLimit(req, res)) return;
+
+    if (!name || !email || !subject || !message) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    const safeName = sanitizeText(name);
+    const safeEmail = sanitizeEmail(email);
+    const safeSubject = sanitizeText(subject);
+    const safeMessage = sanitizeText(message);
+    const safeToEmail = toEmail ? sanitizeEmail(toEmail) : undefined;
+
+    if (!safeToEmail) {
+      return res.status(400).json({ message: 'Recipient email is required' });
+    }
+
     const transporter = createTransport({
       host: process.env.SMTP_HOST,
       port: parseInt(process.env.SMTP_PORT || '465'),
@@ -34,41 +42,27 @@ export default async function handler(
       },
     });
 
-    // Send email
     await transporter.sendMail({
       from: process.env.SMTP_FROM,
-      to: toEmail,
-      subject: `Contact Form: ${subject}`,
+      to: safeToEmail,
+      subject: `Contact Form: ${safeSubject}`,
       html: `
         <h2>New Contact Form Submission</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Name:</strong> ${safeName}</p>
+        <p><strong>Email:</strong> ${safeEmail}</p>
         <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
-        <p><strong>Subject:</strong> ${subject}</p>
+        <p><strong>Subject:</strong> ${safeSubject}</p>
         <p><strong>Message:</strong></p>
-        <p>${message}</p>
+        <p>${safeMessage}</p>
       `,
     });
 
     return res.status(200).json({ message: 'Email sent successfully' });
-  } catch (error) {
-    console.error('Error sending email:', error);
-    
-    // More detailed error logging
-    if (error.code === 'EAUTH') {
-      console.error('Authentication error - check SMTP_USER and SMTP_PASS');
-      return res.status(500).json({ message: 'Authentication error with email server' });
-    } else if (error.code === 'ESOCKET') {
-      console.error('Socket error - check SMTP host and port');
-      return res.status(500).json({ message: 'Connection error with email server' });
-    } else if (error.code === 'EENVELOPE') {
-      console.error('Envelope error - check from/to email addresses');
-      return res.status(500).json({ message: 'Invalid sender or recipient email' });
-    }
-    
+  } catch (error: any) {
+    const isDev = process.env.NODE_ENV === 'development';
     return res.status(500).json({
       message: 'Error sending email',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      ...(isDev && { error: error.message })
     });
   }
 }
