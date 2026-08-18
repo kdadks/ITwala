@@ -393,6 +393,18 @@ const StudentsPage: NextPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
+  useEffect(() => {
+    if (!isAdmin) return;
+
+    const interval = setInterval(() => {
+      fetchStudents();
+      fetchCourses();
+    }, 5000);
+
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAdmin]);
+
   const handleEnrollmentStatusChange = async (enrollmentId: string, newStatus: 'active' | 'completed' | 'paused') => {
     try {
       const { error } = await supabase

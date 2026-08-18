@@ -2,6 +2,15 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { createPagesServerClient } from '@supabase/auth-helpers-nextjs';
 import { supabaseAdmin } from '@/lib/supabaseClient';
 import { studentUpdateSchema } from '@/utils/validation';
+import { getCountryIsoCode, getStateIsoCode } from '@/utils/locationData';
+
+function buildFallbackStudentId(countryCode: string, stateCode: string): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const random = String(Math.floor(Math.random() * 9999) + 1).padStart(4, '0');
+  return `${countryCode}-${stateCode}-${year}-${month}-${random}`;
+}
 
 export default async function handler(
   req: NextApiRequest,
@@ -120,6 +129,41 @@ export default async function handler(
       return res.status(500).json({ error: 'Failed to update student' });
     }
 
+    // Generate student ID if missing and country/state are now populated
+    const { data: updatedProfile, error: profileFetchError } = await supabaseAdmin
+      .from('profiles')
+      .select('student_id, country, state')
+      .eq('id', id)
+      .single();
+
+    if (!profileFetchError && updatedProfile && !updatedProfile.student_id && updatedProfile.country && updatedProfile.state) {
+      const countryCode = getCountryIsoCode(updatedProfile.country);
+      const stateCode = getStateIsoCode(updatedProfile.state, countryCode);
+
+      let studentId: string | null = null;
+      try {
+        const { data: studentIdResult, error: studentIdError } = await supabaseAdmin.rpc('generate_student_id', {
+          country_code: countryCode,
+          state_code: stateCode
+        });
+
+        if (studentIdError) {
+          studentId = buildFallbackStudentId(countryCode, stateCode);
+        } else {
+          studentId = studentIdResult;
+        }
+      } catch (rpcError) {
+        studentId = buildFallbackStudentId(countryCode, stateCode);
+      }
+
+      if (studentId) {
+        await supabaseAdmin
+          .from('profiles')
+          .update({ student_id: studentId, updated_at: new Date().toISOString() })
+          .eq('id', id);
+      }
+    }
+
     // Update email in auth if it changed (keeps it confirmed)
     if (email && email !== existingStudent.email) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -142,12 +186,19 @@ export default async function handler(
         .eq('id', id);
     }
 
+    const { data: finalProfile } = await supabaseAdmin
+      .from('profiles')
+      .select('student_id')
+      .eq('id', id)
+      .single();
+
     return res.status(200).json({
       message: 'Student updated successfully',
       student: {
         id,
         full_name,
-        email: email || existingStudent.email
+        email: email || existingStudent.email,
+        student_id: finalProfile?.student_id || null
       }
     });
 

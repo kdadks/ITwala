@@ -145,11 +145,12 @@ const AdminProgress: NextPage = () => {
 
         if (courseModule?.lessons?.length > 0) {
           let classNumber = 0;
-          for (const m of selectedCourseData?.modules || []) {
-            for (const l of m.lessons || []) {
-              classNumber++;
-              updated[`class-${classNumber}`] = newValue;
-            }
+          for (let m = 0; m < moduleIndex; m++) {
+            classNumber += selectedCourseData.modules[m]?.lessons?.length || 0;
+          }
+          for (const l of courseModule.lessons) {
+            classNumber++;
+            updated[`class-${classNumber}`] = newValue;
           }
         }
       }
@@ -223,13 +224,21 @@ const AdminProgress: NextPage = () => {
         if (error) throw error;
       }
 
-      // Upsert module-level progress records
+      // For module-level entries, delete existing entries first then insert
       if (moduleUpdates.length > 0) {
+        for (const moduleUpdate of moduleUpdates) {
+          await supabase
+            .from('progress')
+            .delete()
+            .eq('user_id', moduleUpdate.user_id)
+            .eq('course_id', moduleUpdate.course_id)
+            .eq('module_id', moduleUpdate.module_id)
+            .is('lesson_id', null);
+        }
+
         const { error } = await supabase
           .from('progress')
-          .upsert(moduleUpdates, {
-            onConflict: 'user_id,module_id'
-          });
+          .insert(moduleUpdates);
 
         if (error) throw error;
       }
@@ -241,14 +250,15 @@ const AdminProgress: NextPage = () => {
         ? Math.round((completedCount / totalClasses) * 100)
         : 0;
 
-      await supabase
+      const { error: enrollmentError } = await supabase
         .from('enrollments')
         .update({
-          progress: progressPercentage,
-          updated_at: new Date().toISOString()
+          progress: progressPercentage
         })
         .eq('user_id', selectedStudent)
         .eq('course_id', selectedCourse);
+
+      if (enrollmentError) throw enrollmentError;
 
       toast.success('Progress updated successfully!');
     } catch (error: any) {
