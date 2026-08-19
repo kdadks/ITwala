@@ -1,21 +1,7 @@
 import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-
-// ─── Country detection constants ────────────────────────────────────────────
-const EU_CODES = new Set([
-  'DE','FR','IT','ES','NL','BE','AT','PT','GR','IE','FI','SE','DK','PL','CZ','RO','HU',
-]);
-const SUPPORTED_COUNTRY_CODES = new Set(['US', 'GB', 'EU', 'IN']);
-
-function resolveCountry(req: NextRequest): string {
-  // Cloudflare sets this header in production automatically — free, no extra API call
-  const cf = req.headers.get('cf-ipcountry') ?? '';
-  const raw = cf.toUpperCase();
-  if (EU_CODES.has(raw)) return 'EU';
-  if (SUPPORTED_COUNTRY_CODES.has(raw)) return raw;
-  return 'IN'; // default
-}
+import { resolveCountryFromRequest } from '@/utils/countryDetection';
 
 // ─── Protected route definitions ─────────────────────────────────────────────
 const PROTECTED_ROUTES: Record<string, string[]> = {
@@ -38,11 +24,13 @@ export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
 
   // ── Step 1: Country detection (runs for every page request) ─────────────
-  // Only set if not already cached — respects manual overrides and avoids
-  // unnecessary cookie writes on every request.
-  if (!req.cookies.get('user_country')?.value) {
-    const country = resolveCountry(req);
-    res.cookies.set('user_country', country, {
+  // Resolve from trusted request context (cookie → Cloudflare → Vercel → default).
+  // Only persist a long-lived cookie when detection is positive so we don't
+  // lock an unknown user into a one-year IN cookie.
+  const resolution = resolveCountryFromRequest(req);
+
+  if (resolution.detected && !req.cookies.get('user_country')?.value) {
+    res.cookies.set('user_country', resolution.country, {
       maxAge: 60 * 60 * 24 * 365, // 1 year
       path: '/',
       sameSite: 'lax',

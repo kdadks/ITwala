@@ -1,5 +1,6 @@
 import { NextPage } from 'next';
 import Head from 'next/head';
+import { GetServerSideProps } from 'next';
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import CourseFilter from '@/components/courses/CourseFilter';
@@ -8,7 +9,8 @@ import BacklinkingHub from '@/components/seo/BacklinkingHub';
 import AIEducationFAQ from '@/components/seo/AIEducationFAQ';
 import { motion } from 'framer-motion';
 import { Course } from '@/types/course';
-import { getCountryFromCookie, SUPPORTED_COUNTRIES } from '@/utils/countryDetection';
+import { getCountryFromCookie, SUPPORTED_COUNTRIES, resolveCountryFromRequest } from '@/utils/countryDetection';
+import { useUserCountry } from '@/hooks/useUserCountry';
 
 interface CoursePricing {
   price: number;
@@ -17,7 +19,11 @@ interface CoursePricing {
   symbol: string;
 }
 
-const CoursesPage: NextPage = () => {
+interface CoursesPageProps {
+  initialCountry: string;
+}
+
+const CoursesPage: NextPage<CoursesPageProps> = ({ initialCountry }) => {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedLevel, setSelectedLevel] = useState<string>('all');
@@ -38,12 +44,10 @@ const CoursesPage: NextPage = () => {
 
   const [suggestions, setSuggestions] = useState<Course[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [userCountry, setUserCountry] = useState<string>(() =>
-    typeof window !== 'undefined' ? getCountryFromCookie() : 'IN'
-  );
+  const { userCountry } = useUserCountry(initialCountry);
   const [suggestionPricing, setSuggestionPricing] = useState<Record<string, CoursePricing>>({});
 
-  // Country is set by middleware on every request — no client-side detection needed.
+  // Country is resolved server-side by getServerSideProps and synced client-side by useUserCountry.
 
   // Fetch categories/levels once on mount — long-lived, separate from course results
   useEffect(() => {
@@ -430,3 +434,12 @@ const CoursesPage: NextPage = () => {
 };
 
 export default CoursesPage;
+
+export const getServerSideProps: GetServerSideProps<CoursesPageProps> = async (ctx) => {
+  const resolution = resolveCountryFromRequest(ctx.req as any);
+  return {
+    props: {
+      initialCountry: resolution.country,
+    },
+  };
+};

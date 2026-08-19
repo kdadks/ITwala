@@ -1,5 +1,6 @@
 import { NextPage } from 'next';
 import Head from 'next/head';
+import { GetServerSideProps } from 'next';
 import UnifiedHero from '@/components/home/UnifiedHero';
 import ServiceShowcase from '@/components/home/ServiceShowcase';
 import Stats from '@/components/home/Stats';
@@ -7,8 +8,13 @@ import FeaturedCourses from '@/components/home/FeaturedCourses';
 import Testimonials from '@/components/home/Testimonials';
 import BacklinkingHub from '@/components/seo/BacklinkingHub';
 import { motion } from 'framer-motion';
+import { resolveCountryFromRequest } from '@/utils/countryDetection';
 
-const Home: NextPage = () => {
+interface HomeProps {
+  initialCountry: string;
+}
+
+const Home: NextPage<HomeProps> = ({ initialCountry }) => {
   return (
     <>
       <Head>
@@ -109,7 +115,7 @@ const Home: NextPage = () => {
           viewport={{ once: true }}
           transition={{ delay: 0.3, duration: 0.5 }}
         >
-          <FeaturedCourses />
+          <FeaturedCourses initialCountry={initialCountry} />
         </motion.div>
         
         {/* <motion.div
@@ -144,3 +150,12 @@ const Home: NextPage = () => {
 };
 
 export default Home;
+
+export const getServerSideProps: GetServerSideProps<HomeProps> = async (ctx) => {
+  const resolution = resolveCountryFromRequest(ctx.req as any);
+  return {
+    props: {
+      initialCountry: resolution.country,
+    },
+  };
+};

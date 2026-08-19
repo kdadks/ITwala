@@ -4,18 +4,17 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import RatingComponent from '../RatingComponent';
-import { getCountryFromCookie } from '@/utils/countryDetection';
 import { formatCurrency } from '@/utils/currency';
+import { useUserCountry } from '@/hooks/useUserCountry';
 
 const RecommendedCourses = () => {
   const [recommendedCourses, setRecommendedCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { userCountry } = useUserCountry();
 
-  // Middleware sets the cookie before the page renders — read it once, no async detection.
-  const [userCountry] = useState<string>(() =>
-    typeof window !== 'undefined' ? getCountryFromCookie() : 'IN'
-  );
+  // Country is resolved server-side by the dashboard page's getServerSideProps
+  // and synced client-side by useUserCountry.
 
   useEffect(() => {
     const fetchRecommendedCourses = async () => {

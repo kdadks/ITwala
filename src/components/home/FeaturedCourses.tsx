@@ -4,20 +4,20 @@ import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Course } from '@/types/course';
 import { formatCurrency } from '@/utils/currency';
-import { getCountryFromCookie } from '@/utils/countryDetection';
+import { useUserCountry } from '@/hooks/useUserCountry';
 
-const FeaturedCourses = () => {
+interface FeaturedCoursesProps {
+  initialCountry?: string;
+}
+
+const FeaturedCourses = ({ initialCountry }: FeaturedCoursesProps) => {
   const sliderRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
   const [featuredCourses, setFeaturedCourses] = useState<Course[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [userCountry, setUserCountry] = useState<string>(() =>
-    typeof window !== 'undefined' ? getCountryFromCookie() : 'IN'
-  );
-
-  // Country is set by middleware on every request — cookie is already correct on mount.
+  const { userCountry } = useUserCountry(initialCountry);
 
   useEffect(() => {
     const fetchFeaturedCourses = async () => {

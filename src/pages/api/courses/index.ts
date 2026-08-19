@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabaseClient';
+import { validateCountry, SUPPORTED_COUNTRIES } from '@/utils/countryDetection';
 
 function getCurrencySymbol(currency: string): string {
   const symbols: Record<string, string> = { USD: '$', GBP: '£', EUR: '€', INR: '₹' };
@@ -23,8 +24,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       sortBy = 'popular',
       limit,
       offset = 0,
-      country = 'IN',
+      country: rawCountry,
     } = req.query;
+
+    // Cookie is authoritative: it was set by middleware from trusted infra headers.
+    // Query param is only used when no cookie exists, and must be valid.
+    const cookieCountry = req.cookies.user_country;
+    const validatedQuery = validateCountry(rawCountry as string | undefined);
+    const hasQueryCountry = rawCountry !== undefined;
+    const country = cookieCountry || validatedQuery || 'IN';
+
+    // Reject explicitly provided but invalid query params to prevent manipulation
+    if (hasQueryCountry && !validatedQuery && !cookieCountry) {
+      return res.status(400).json({ error: 'Invalid country code' });
+    }
+
+    // Final safety: ensure resolved country is supported
+    if (!SUPPORTED_COUNTRIES[country]) {
+      return res.status(400).json({ error: 'Invalid country code' });
+    }
 
     const pageLimit = limit ? parseInt(limit as string) : DEFAULT_LIMIT;
     const pageOffset = parseInt(offset as string);

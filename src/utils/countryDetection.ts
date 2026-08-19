@@ -1,10 +1,18 @@
 // Country detection and currency utilities
 
+import type { NextRequest } from 'next/server';
+
 export interface CountryInfo {
   code: string;
   currency: string;
   symbol: string;
   name: string;
+}
+
+export interface CountryResolution {
+  country: string;
+  detected: boolean;
+  source: 'cookie' | 'cloudflare' | 'vercel' | 'default';
 }
 
 export const SUPPORTED_COUNTRIES: Record<string, CountryInfo> = {
@@ -16,8 +24,60 @@ export const SUPPORTED_COUNTRIES: Record<string, CountryInfo> = {
 
 export const DEFAULT_COUNTRY = 'IN';
 
+// EU country codes to map to the shared 'EU' grouping
+const EU_COUNTRY_CODES = [
+  'DE', 'FR', 'IT', 'ES', 'NL', 'BE', 'AT', 'PT', 'GR', 'IE', 'FI', 'SE', 'DK', 'PL', 'CZ', 'RO', 'HU',
+];
+
+function normalizeCountryCode(code: string): string {
+  const upper = code.toUpperCase();
+  const mapped = EU_COUNTRY_CODES.includes(upper) ? 'EU' : upper;
+  return SUPPORTED_COUNTRIES[mapped] ? mapped : upper;
+}
+
 /**
- * Get country code from cookies
+ * Validate a raw country code and return the normalized supported code, or null.
+ */
+export function validateCountry(raw?: string): string | null {
+  if (!raw) return null;
+  const normalized = normalizeCountryCode(raw);
+  return SUPPORTED_COUNTRIES[normalized] ? normalized : null;
+}
+
+/**
+ * Resolve country from a Next.js request (server-side).
+ * Priority: existing cookie → Cloudflare header → Vercel header → default.
+ */
+export function resolveCountryFromRequest(req: NextRequest): CountryResolution {
+  // 1. Existing user_country cookie
+  const cookie = req.cookies.get('user_country')?.value;
+  if (cookie && SUPPORTED_COUNTRIES[cookie]) {
+    return { country: cookie, detected: true, source: 'cookie' };
+  }
+
+  // 2. Cloudflare cf-ipcountry
+  const cf = req.headers.get('cf-ipcountry')?.toUpperCase();
+  if (cf) {
+    if (EU_COUNTRY_CODES.includes(cf)) {
+      return { country: 'EU', detected: true, source: 'cloudflare' };
+    }
+    if (SUPPORTED_COUNTRIES[cf]) {
+      return { country: cf, detected: true, source: 'cloudflare' };
+    }
+  }
+
+  // 3. Vercel x-vercel-ip-country
+  const vercel = req.headers.get('x-vercel-ip-country')?.toUpperCase();
+  if (vercel && SUPPORTED_COUNTRIES[vercel]) {
+    return { country: vercel, detected: true, source: 'vercel' };
+  }
+
+  // 4. Safe fallback — not a detection, so we avoid persisting a sticky cookie
+  return { country: DEFAULT_COUNTRY, detected: false, source: 'default' };
+}
+
+/**
+ * Get country code from cookies (client-side)
  */
 export function getCountryFromCookie(): string {
   if (typeof window === 'undefined') return DEFAULT_COUNTRY;
@@ -36,25 +96,15 @@ export function getCountryFromCookie(): string {
 }
 
 /**
- * Set country code in cookie
+ * Set country code in cookie (client-side)
  */
 export function setCountryInCookie(countryCode: string) {
   if (typeof window === 'undefined') return;
 
-  // Set cookie for 1 year
   const expires = new Date();
   expires.setFullYear(expires.getFullYear() + 1);
 
   document.cookie = `user_country=${countryCode}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`;
-}
-
-// EU country codes to map to the 'EU' grouping
-const EU_COUNTRY_CODES = ['DE', 'FR', 'IT', 'ES', 'NL', 'BE', 'AT', 'PT', 'GR', 'IE', 'FI', 'SE', 'DK', 'PL', 'CZ', 'RO', 'HU'];
-
-function normalizeCountryCode(code: string): string {
-  // Map EU member states to the shared 'EU' grouping used for pricing
-  const mapped = EU_COUNTRY_CODES.includes(code) ? 'EU' : code;
-  return SUPPORTED_COUNTRIES[mapped] ? mapped : DEFAULT_COUNTRY;
 }
 
 /**

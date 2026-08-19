@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabaseClient';
+import { validateCountry, SUPPORTED_COUNTRIES } from '@/utils/countryDetection';
 
 export default async function handler(
   req: NextApiRequest,
@@ -10,13 +11,28 @@ export default async function handler(
   }
 
   try {
-    const { courseId, country } = req.query;
+    const { courseId, country: rawCountry } = req.query;
 
     if (!courseId) {
       return res.status(400).json({ error: 'Course ID is required' });
     }
 
-    const countryCode = (country as string) || 'IN';
+    // Cookie is authoritative: it was set by middleware from trusted infra headers.
+    // Query param is only used when no cookie exists, and must be valid.
+    const cookieCountry = req.cookies.user_country;
+    const validatedQuery = validateCountry(rawCountry as string | undefined);
+    const hasQueryCountry = rawCountry !== undefined;
+    const countryCode = cookieCountry || validatedQuery || 'IN';
+
+    // Reject explicitly provided but invalid query params to prevent manipulation
+    if (hasQueryCountry && !validatedQuery && !cookieCountry) {
+      return res.status(400).json({ error: 'Invalid country code' });
+    }
+
+    // Final safety: ensure resolved country is supported
+    if (!SUPPORTED_COUNTRIES[countryCode]) {
+      return res.status(400).json({ error: 'Invalid country code' });
+    }
 
     // Try to get country-specific pricing
     const { data: pricingData, error: pricingError } = await supabase
