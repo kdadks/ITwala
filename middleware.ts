@@ -1,7 +1,7 @@
 import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { resolveCountryFromRequest } from '@/utils/countryDetection';
+import { resolveCountryFromRequest, fromNextRequest } from '@/utils/countryDetection';
 
 // ─── Protected route definitions ─────────────────────────────────────────────
 const PROTECTED_ROUTES: Record<string, string[]> = {
@@ -27,7 +27,7 @@ export async function middleware(req: NextRequest) {
   // Resolve from trusted request context (cookie → Cloudflare → Vercel → default).
   // Only persist a long-lived cookie when detection is positive so we don't
   // lock an unknown user into a one-year IN cookie.
-  const resolution = resolveCountryFromRequest(req);
+  const resolution = resolveCountryFromRequest(fromNextRequest(req));
 
   if (resolution.detected && !req.cookies.get('user_country')?.value) {
     res.cookies.set('user_country', resolution.country, {

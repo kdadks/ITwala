@@ -1,23 +1,12 @@
-import { resolveCountryFromRequest, validateCountry, SUPPORTED_COUNTRIES } from '../../src/utils/countryDetection';
+import { resolveCountryFromRequest, fromNextRequest, fromPagesReq, validateCountry, SUPPORTED_COUNTRIES } from '../../src/utils/countryDetection';
 
 function mockReq(overrides: {
   cookies?: Record<string, string>;
   headers?: Record<string, string | string[] | undefined>;
 } = {}): any {
   return {
-    cookies: {
-      get: (name: string) => {
-        const value = overrides.cookies?.[name];
-        return value !== undefined ? { value } : undefined;
-      },
-    },
-    headers: {
-      get: (header: string) => {
-        const val = overrides.headers?.[header];
-        if (Array.isArray(val)) return val[0];
-        return val ?? null;
-      },
-    },
+    cookies: overrides.cookies ?? {},
+    headers: overrides.headers ?? {},
   };
 }
 
@@ -108,6 +97,60 @@ describe('resolveCountryFromRequest', () => {
     const result = resolveCountryFromRequest(req);
     expect(result.country).toBe('EU');
     expect(result.detected).toBe(true);
+  });
+});
+
+describe('fromNextRequest adapter', () => {
+  it('converts NextRequest cookies and headers', () => {
+    const headerEntries: [string, string][] = [
+      ['cf-ipcountry', 'GB'],
+      ['x-vercel-ip-country', 'IE'],
+    ];
+    const mockNextRequest = {
+      cookies: {
+        getAll: () => [{ name: 'user_country', value: 'US' }],
+      },
+      headers: {
+        get: (name: string) => {
+          const entry = headerEntries.find(([k]) => k === name);
+          return entry ? entry[1] : null;
+        },
+        forEach: (cb: (value: string, key: string) => void) => {
+          headerEntries.forEach(([k, v]) => cb(v, k));
+        },
+      },
+    } as any;
+
+    const raw = fromNextRequest(mockNextRequest);
+    expect(raw.cookies['user_country']).toBe('US');
+    expect(resolveCountryFromRequest(raw).country).toBe('US');
+  });
+});
+
+describe('fromPagesReq adapter', () => {
+  it('parses cookies from raw cookie header', () => {
+    const req = {
+      headers: {
+        cookie: 'user_country=GB; session=abc123',
+      },
+    };
+    const raw = fromPagesReq(req);
+    expect(raw.cookies['user_country']).toBe('GB');
+    expect(raw.cookies['session']).toBe('abc123');
+  });
+
+  it('resolves country from Pages Router request', () => {
+    const req = {
+      headers: {
+        cookie: '',
+        'cf-ipcountry': 'IE',
+      },
+    };
+    const raw = fromPagesReq(req);
+    const result = resolveCountryFromRequest(raw);
+    expect(result.country).toBe('EU');
+    expect(result.detected).toBe(true);
+    expect(result.source).toBe('cloudflare');
   });
 });
 

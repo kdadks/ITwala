@@ -17,7 +17,7 @@ import ErrorBoundary from '../../components/common/ErrorBoundary';
 import { getSiteSettings } from '@/utils/siteSettings';
 import { toast } from 'react-hot-toast';
 import { formatCurrency } from '@/utils/currency';
-import { resolveCountryFromRequest } from '@/utils/countryDetection';
+import { resolveCountryFromRequest, fromPagesReq } from '@/utils/countryDetection';
 import { useUserCountry } from '@/hooks/useUserCountry';
 
 interface CoursePageProps {
@@ -579,7 +579,7 @@ const CoursePage: NextPage<CoursePageProps> = ({ initialCountry }) => {
 export default CoursePage;
 
 export const getServerSideProps: GetServerSideProps<CoursePageProps> = async (ctx) => {
-  const resolution = resolveCountryFromRequest(ctx.req as any);
+  const resolution = resolveCountryFromRequest(fromPagesReq(ctx.req));
   return {
     props: {
       initialCountry: resolution.country,

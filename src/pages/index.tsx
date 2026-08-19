@@ -8,7 +8,7 @@ import FeaturedCourses from '@/components/home/FeaturedCourses';
 import Testimonials from '@/components/home/Testimonials';
 import BacklinkingHub from '@/components/seo/BacklinkingHub';
 import { motion } from 'framer-motion';
-import { resolveCountryFromRequest } from '@/utils/countryDetection';
+import { resolveCountryFromRequest, fromPagesReq } from '@/utils/countryDetection';
 
 interface HomeProps {
   initialCountry: string;
@@ -152,7 +152,7 @@ const Home: NextPage<HomeProps> = ({ initialCountry }) => {
 export default Home;
 
 export const getServerSideProps: GetServerSideProps<HomeProps> = async (ctx) => {
-  const resolution = resolveCountryFromRequest(ctx.req as any);
+  const resolution = resolveCountryFromRequest(fromPagesReq(ctx.req));
   return {
     props: {
       initialCountry: resolution.country,

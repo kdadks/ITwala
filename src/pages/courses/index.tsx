@@ -9,7 +9,7 @@ import BacklinkingHub from '@/components/seo/BacklinkingHub';
 import AIEducationFAQ from '@/components/seo/AIEducationFAQ';
 import { motion } from 'framer-motion';
 import { Course } from '@/types/course';
-import { getCountryFromCookie, SUPPORTED_COUNTRIES, resolveCountryFromRequest } from '@/utils/countryDetection';
+import { getCountryFromCookie, SUPPORTED_COUNTRIES, resolveCountryFromRequest, fromPagesReq } from '@/utils/countryDetection';
 import { useUserCountry } from '@/hooks/useUserCountry';
 
 interface CoursePricing {
@@ -436,7 +436,7 @@ const CoursesPage: NextPage<CoursesPageProps> = ({ initialCountry }) => {
 export default CoursesPage;
 
 export const getServerSideProps: GetServerSideProps<CoursesPageProps> = async (ctx) => {
-  const resolution = resolveCountryFromRequest(ctx.req as any);
+  const resolution = resolveCountryFromRequest(fromPagesReq(ctx.req));
   return {
     props: {
       initialCountry: resolution.country,

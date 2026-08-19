@@ -15,6 +15,11 @@ export interface CountryResolution {
   source: 'cookie' | 'cloudflare' | 'vercel' | 'default';
 }
 
+export interface RawRequest {
+  cookies: Record<string, string>;
+  headers: Record<string, string | string[] | undefined>;
+}
+
 export const SUPPORTED_COUNTRIES: Record<string, CountryInfo> = {
   US: { code: 'US', currency: 'USD', symbol: '$', name: 'United States' },
   GB: { code: 'GB', currency: 'GBP', symbol: '£', name: 'United Kingdom' },
@@ -44,19 +49,30 @@ export function validateCountry(raw?: string): string | null {
   return SUPPORTED_COUNTRIES[normalized] ? normalized : null;
 }
 
+function getHeader(raw: Record<string, string | string[] | undefined>, name: string): string | undefined {
+  const value = raw[name];
+  if (Array.isArray(value)) return value[0];
+  return value ?? undefined;
+}
+
+function getCookie(raw: Record<string, string>, name: string): string | undefined {
+  return raw[name];
+}
+
 /**
- * Resolve country from a Next.js request (server-side).
+ * Resolve country from a normalized request object.
+ * Works with both Next.js App Router (NextRequest) and Pages Router (IncomingMessage).
  * Priority: existing cookie → Cloudflare header → Vercel header → default.
  */
-export function resolveCountryFromRequest(req: NextRequest): CountryResolution {
+export function resolveCountryFromRequest(req: RawRequest): CountryResolution {
   // 1. Existing user_country cookie
-  const cookie = req.cookies.get('user_country')?.value;
+  const cookie = getCookie(req.cookies, 'user_country');
   if (cookie && SUPPORTED_COUNTRIES[cookie]) {
     return { country: cookie, detected: true, source: 'cookie' };
   }
 
   // 2. Cloudflare cf-ipcountry
-  const cf = req.headers.get('cf-ipcountry')?.toUpperCase();
+  const cf = getHeader(req.headers, 'cf-ipcountry')?.toUpperCase();
   if (cf) {
     if (EU_COUNTRY_CODES.includes(cf)) {
       return { country: 'EU', detected: true, source: 'cloudflare' };
@@ -67,13 +83,49 @@ export function resolveCountryFromRequest(req: NextRequest): CountryResolution {
   }
 
   // 3. Vercel x-vercel-ip-country
-  const vercel = req.headers.get('x-vercel-ip-country')?.toUpperCase();
+  const vercel = getHeader(req.headers, 'x-vercel-ip-country')?.toUpperCase();
   if (vercel && SUPPORTED_COUNTRIES[vercel]) {
     return { country: vercel, detected: true, source: 'vercel' };
   }
 
   // 4. Safe fallback — not a detection, so we avoid persisting a sticky cookie
   return { country: DEFAULT_COUNTRY, detected: false, source: 'default' };
+}
+
+/**
+ * Adapter for Next.js App Router / Middleware (NextRequest).
+ */
+export function fromNextRequest(req: NextRequest): RawRequest {
+  const cookies: Record<string, string> = {};
+  req.cookies.getAll().forEach((c) => {
+    cookies[c.name] = c.value;
+  });
+
+  const headers: Record<string, string | string[] | undefined> = {};
+  req.headers.forEach((value, key) => {
+    headers[key] = value;
+  });
+
+  return { cookies, headers };
+}
+
+/**
+ * Adapter for Next.js Pages Router getServerSideProps (IncomingMessage).
+ */
+export function fromPagesReq(req: any): RawRequest {
+  const cookies: Record<string, string> = {};
+  const cookieHeader = req.headers?.cookie;
+  if (cookieHeader) {
+    cookieHeader.split(';').forEach((c: string) => {
+      const idx = c.indexOf('=');
+      if (idx === -1) return;
+      const name = c.slice(0, idx).trim();
+      const value = c.slice(idx + 1).trim();
+      if (name) cookies[name] = value;
+    });
+  }
+
+  return { cookies, headers: req.headers || {} };
 }
 
 /**
