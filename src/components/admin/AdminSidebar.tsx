@@ -100,6 +100,7 @@ const AdminSidebar = () => {
       title: 'CMS',
       items: [
         { href: '/admin/content',   label: 'Page CMS Hub',    icon: <FileText className="w-4 h-4" /> },
+        { href: '/admin/resources', label: 'Blog / Resources',icon: <BookOpen className="w-4 h-4" /> },
         { href: '/admin/portfolio', label: 'Portfolio',      icon: <Briefcase className="w-4 h-4" /> },
         { href: '/admin/media',     label: 'Media Library',  icon: <Images className="w-4 h-4" /> },
       ]

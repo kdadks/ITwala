@@ -338,33 +338,41 @@ const ResourceArticlePage: NextPage<ResourceArticlePageProps> = ({
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const paths = RESOURCES_DATA.map((article) => ({
+  const { getAllResources } = await import('@/lib/resourcesService');
+  const allArticles = await getAllResources(false);
+  const paths = allArticles.map((article) => ({
     params: { slug: article.slug },
   }));
 
   return {
     paths,
-    fallback: false,
+    fallback: 'blocking',
   };
 };
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const slug = params?.slug as string;
-  const article = getResourceBySlug(slug);
+  const { getResourceBySlug, getAllResources } = await import('@/lib/resourcesService');
+  const article = await getResourceBySlug(slug);
 
   if (!article) {
     return {
       notFound: true,
+      revalidate: 10,
     };
   }
 
-  const relatedArticles = getRelatedResources(slug, article.category, 3);
+  const all = await getAllResources(false);
+  const relatedArticles = all
+    .filter((r) => r.slug !== slug && r.category === article.category)
+    .slice(0, 3);
 
   return {
     props: {
       article,
       relatedArticles,
     },
+    revalidate: 60,
   };
 };
 

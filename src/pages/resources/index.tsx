@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NextPage } from 'next';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -28,6 +28,24 @@ const ResourcesHubPage: NextPage = () => {
 
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [resources, setResources] = useState<any[]>(RESOURCES_DATA);
+
+  useEffect(() => {
+    const fetchDynamicResources = async () => {
+      try {
+        const res = await fetch('/api/resources');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.resources && data.resources.length > 0) {
+            setResources(data.resources);
+          }
+        }
+      } catch {
+        // fallback to static data
+      }
+    };
+    fetchDynamicResources();
+  }, []);
 
   const categories = [
     'All',
@@ -37,19 +55,19 @@ const ResourcesHubPage: NextPage = () => {
     'Startup & Product',
   ];
 
-  const filteredResources = RESOURCES_DATA.filter((item) => {
+  const filteredResources = resources.filter((item) => {
     const matchesCategory =
       selectedCategory === 'All' || item.category === selectedCategory;
     const matchesSearch =
       searchQuery.trim() === '' ||
       item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.keywords.some((k) => k.toLowerCase().includes(searchQuery.toLowerCase()));
+      item.keywords.some((k: string) => k.toLowerCase().includes(searchQuery.toLowerCase()));
 
     return matchesCategory && matchesSearch;
   });
 
-  const featuredResources = RESOURCES_DATA.filter(
+  const featuredResources = resources.filter(
     (item) => item.slug === 'what-is-agentic-ai' || item.slug === 'ai-roadmap-for-beginners-in-2026' || item.slug === 'what-is-mcp-model-context-protocol-explained'
   );
 

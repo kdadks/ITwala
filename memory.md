@@ -347,10 +347,13 @@ graph LR
 
 ### 5.13 CMS Architecture & Content Management
 
-- **Database-driven CMS**: Dynamic content across pages (`academy`, `about`, `consulting`, `global_header_footer`, `home`) is stored in Supabase `content_sections` table using key naming convention `page_{pageKey}_{sectionType}`.
+- **Database-driven CMS & Blog Engine**: Dynamic content across core pages (`academy`, `about`, `consulting`, `global_header_footer`, `home`) is stored in `content_sections` using key pattern `page_{pageKey}_{sectionType}`. Blog and resource articles are stored in the dedicated `public.resources` PostgreSQL table (with automatic fallback and sync to `content_sections`).
+- **Resource & Blog Service (`resourcesService.ts`)**: Handles CRUD operations for blogs (`getAllResources`, `getResourceByIdOrSlug`, `saveResource`, `deleteResource`, `seedStaticResources`), resolving articles by UUID or slug with dual-layer database fallback.
+- **Media Library Integration**: Blog creation/editing forms (`BlogForm.tsx`) use `MediaPickerModal.tsx` to pick or upload images directly through the `/admin/media` library.
+- **In-Portal Preview Mode**: `/admin/resources` features `BlogPreviewModal.tsx` providing in-dashboard article previewing, status toggling (Published/Draft), and quick edit links.
 - **Hooks & Fallbacks**: `useCMSData(pageKey, defaultData)` in `src/lib/cms.ts` fetches and merges CMS records from `content_sections` with local fallback objects.
-- **Unified TypeScript Definitions**: Single-source-of-truth types defined in `src/types/cms.ts` (`PageCMSData`, `CMSHeroData`, `CMSSEOData`, `AcademyHeroProps`, `ConsultingHeroProps`, `UnifiedHeroProps`) re-exported via `src/lib/cms.ts`.
-- **Admin CMS Editor**: Visual editors located at `/admin/content` (`CMSHeroEditor`, `EmbeddedCoursesCMS`, etc.) allow real-time inline editing of page headers, hero text, CTAs, tags, and SEO metadata.
+- **Unified TypeScript Definitions**: Single-source-of-truth types defined in `src/types/cms.ts` (`PageCMSData`, `CMSHeroData`, `CMSSEOData`, `AcademyHeroProps`, `ConsultingHeroProps`, `UnifiedHeroProps`) and `src/types/resources.ts` (`ResourceArticle`).
+- **Admin CMS & Blog Manager**: Visual editors located at `/admin/content` and `/admin/resources` (`CMSHeroEditor`, `BlogForm`, `MediaPickerModal`, `BlogPreviewModal`) allow real-time inline editing of page headers, hero text, blog articles, FAQs, CTAs, and SEO metadata.
 
 ---
 
@@ -360,6 +363,7 @@ graph LR
 
 | Table | Purpose | Key Columns |
 |---|---|---|
+| `resources` | Dedicated blog & resources catalog | `id` (UUID), `slug` (unique text), `title`, `description`, `quick_answer`, `category`, `read_time`, `difficulty`, `status`, `featured_image`, `author` (JSONB), `cta` (JSONB), `key_takeaways`, `faqs`, `sections`, `publish_date`, `updated_date` |
 | `content_sections` | Dynamic CMS page content & hero configuration | `id`, `name` (e.g. `page_academy_hero`), `content` (JSONB) |
 | `profiles` | User profiles with roles | `id`, `email`, `role`, `full_name`, `student_id`, `country`, `state` |
 | `courses` | Course catalog | `id`, `slug`, `title`, `description`, `price`, `category`, `status`, `image`, `thumbnail`, `enrollments` |
@@ -457,6 +461,9 @@ graph LR
 | `/admin/courses/create` | admin | Create course |
 | `/admin/courses/edit/[slug]` | admin | Edit course |
 | `/admin/content` | admin | Content management |
+| `/admin/resources` | admin | Blog & Resources management (CRUD) |
+| `/admin/resources/create` | admin | Create new blog article |
+| `/admin/resources/edit/[id]` | admin | Edit existing blog article |
 | `/admin/categories` | admin | Category management |
 | `/admin/students` | admin | Student management |
 | `/admin/instructors` | admin | Instructor management |
