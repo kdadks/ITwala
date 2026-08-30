@@ -9,7 +9,54 @@ import {
   FaCheckCircle 
 } from 'react-icons/fa';
 
-const ConsultingCTA: React.FC = () => {
+interface ConsultingCTAProps {
+  ctaData?: {
+    title?: string;
+    subtitle?: string;
+    bulletPoints?: string[];
+    ctaText?: string;
+    ctaLink?: string;
+    contact?: {
+      phone?: string;
+      email?: string;
+      responseTime?: string;
+    };
+    faqs?: Array<{ question: string; answer: string }>;
+  };
+}
+
+const defaultBulletPoints = [
+  'Free initial consultation and project assessment',
+  'Customized solutions tailored to your needs',
+  'Proven track record with 20+ successful projects',
+  'Ongoing support and maintenance included',
+];
+
+const defaultFaqs = [
+  {
+    question: 'How long does a typical project take?',
+    answer: 'Project timelines vary based on scope and complexity, typically ranging from 2-6 months for most consulting engagements.'
+  },
+  {
+    question: 'Do you work with small businesses?',
+    answer: 'Yes, we work with businesses of all sizes, from startups to enterprise organizations, tailoring our approach to fit your budget and needs.'
+  },
+  {
+    question: 'What industries do you serve?',
+    answer: 'We have experience across multiple industries including healthcare, finance, e-commerce, manufacturing, and technology sectors.'
+  }
+];
+
+const ConsultingCTA: React.FC<ConsultingCTAProps> = ({ ctaData }) => {
+  const mainTitle = ctaData?.title || 'Ready to Transform Your Business?';
+  const mainSubtitle = ctaData?.subtitle || "Let's discuss how our expert consulting services can help you achieve your digital transformation goals and drive sustainable growth.";
+  const bullets = ctaData?.bulletPoints && ctaData.bulletPoints.length > 0 ? ctaData.bulletPoints : defaultBulletPoints;
+  const buttonText = ctaData?.ctaText || 'Get Started Today';
+  const buttonLink = ctaData?.ctaLink || '/contact';
+  const phone = ctaData?.contact?.phone || '+91 7982303199';
+  const email = ctaData?.contact?.email || 'sales@it-wala.com';
+  const responseTime = ctaData?.contact?.responseTime || 'We typically respond within 2 hours during business hours.';
+  const faqsList = ctaData?.faqs && ctaData.faqs.length > 0 ? ctaData.faqs : defaultFaqs;
   return (
     <section className="py-8 bg-white relative overflow-hidden">
       {/* Decorative background elements */}
@@ -38,35 +85,25 @@ const ConsultingCTA: React.FC = () => {
                   transition={{ duration: 0.5, delay: 0.2 }}
                 >
                   <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                    Ready to Transform Your Business?
+                    {mainTitle}
                   </h2>
                   <p className="text-xl text-gray-100 mb-8">
-                    Let&apos;s discuss how our expert consulting services can help you achieve your digital transformation goals and drive sustainable growth.
+                    {mainSubtitle}
                   </p>
                   
                   <div className="space-y-4 mb-8">
-                    <div className="flex items-center">
-                      <FaCheckCircle className="w-5 h-5 text-green-300 mr-3 flex-shrink-0" />
-                      <span className="text-gray-100">Free initial consultation and project assessment</span>
-                    </div>
-                    <div className="flex items-center">
-                      <FaCheckCircle className="w-5 h-5 text-green-300 mr-3 flex-shrink-0" />
-                      <span className="text-gray-100">Customized solutions tailored to your needs</span>
-                    </div>
-                    <div className="flex items-center">
-                      <FaCheckCircle className="w-5 h-5 text-green-300 mr-3 flex-shrink-0" />
-                      <span className="text-gray-100">Proven track record with 20+ successful projects</span>
-                    </div>
-                    <div className="flex items-center">
-                      <FaCheckCircle className="w-5 h-5 text-green-300 mr-3 flex-shrink-0" />
-                      <span className="text-gray-100">Ongoing support and maintenance included</span>
-                    </div>
+                    {bullets.map((bullet, idx) => (
+                      <div key={idx} className="flex items-center">
+                        <FaCheckCircle className="w-5 h-5 text-green-300 mr-3 flex-shrink-0" />
+                        <span className="text-gray-100">{bullet}</span>
+                      </div>
+                    ))}
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-4">
-                    <Link href="/contact">
+                    <Link href={buttonLink}>
                       <div className="inline-flex items-center justify-center px-6 py-3 bg-white text-primary-700 font-semibold rounded-full hover:bg-gray-100 transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl">
-                        Get Started Today
+                        {buttonText}
                         <FaArrowRight className="w-4 h-4 ml-2" />
                       </div>
                     </Link>
@@ -94,8 +131,8 @@ const ConsultingCTA: React.FC = () => {
                       <div>
                         <h4 className="text-white font-semibold mb-1">Call Us</h4>
                         <p className="text-gray-200 text-sm mb-2">Speak directly with our experts</p>
-                        <a href="tel:+917982303199" className="text-white hover:text-gray-200 transition-colors">
-                          +91 7982303199
+                        <a href={`tel:${phone.replace(/\s+/g, '')}`} className="text-white hover:text-gray-200 transition-colors">
+                          {phone}
                         </a>
                       </div>
                     </div>
@@ -107,8 +144,8 @@ const ConsultingCTA: React.FC = () => {
                       <div>
                         <h4 className="text-white font-semibold mb-1">Email Us</h4>
                         <p className="text-gray-200 text-sm mb-2">Send us your requirements</p>
-                        <a href="mailto:sales@it-wala.com" className="text-white hover:text-gray-200 transition-colors">
-                          sales@it-wala.com
+                        <a href={`mailto:${email}`} className="text-white hover:text-gray-200 transition-colors">
+                          {email}
                         </a>
                       </div>
                     </div>
@@ -120,16 +157,16 @@ const ConsultingCTA: React.FC = () => {
                       <div>
                         <h4 className="text-white font-semibold mb-1">Schedule Meeting</h4>
                         <p className="text-gray-200 text-sm mb-2">Book a convenient time slot</p>
-                        <button className="text-white hover:text-gray-200 transition-colors">
+                        <Link href="/contact" className="text-white hover:text-gray-200 transition-colors">
                           Book Consultation
-                        </button>
+                        </Link>
                       </div>
                     </div>
                   </div>
 
                   <div className="mt-8 p-4 bg-white/10 rounded-lg">
                     <p className="text-white text-sm">
-                      <strong>Response Time:</strong> We typically respond within 2 hours during business hours.
+                      <strong>Response Time:</strong> {responseTime}
                     </p>
                   </div>
                 </motion.div>
@@ -151,32 +188,16 @@ const ConsultingCTA: React.FC = () => {
           </h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            <div className="bg-gray-50 rounded-2xl p-6 hover:shadow-lg transition-shadow">
-              <h4 className="text-lg font-semibold text-gray-900 mb-3">
-                How long does a typical project take?
-              </h4>
-              <p className="text-gray-600 text-sm">
-                Project timelines vary based on scope and complexity, typically ranging from 2-6 months for most consulting engagements.
-              </p>
-            </div>
-
-            <div className="bg-gray-50 rounded-2xl p-6 hover:shadow-lg transition-shadow">
-              <h4 className="text-lg font-semibold text-gray-900 mb-3">
-                Do you work with small businesses?
-              </h4>
-              <p className="text-gray-600 text-sm">
-                Yes, we work with businesses of all sizes, from startups to enterprise organizations, tailoring our approach to fit your budget and needs.
-              </p>
-            </div>
-
-            <div className="bg-gray-50 rounded-2xl p-6 hover:shadow-lg transition-shadow">
-              <h4 className="text-lg font-semibold text-gray-900 mb-3">
-                What industries do you serve?
-              </h4>
-              <p className="text-gray-600 text-sm">
-                We have experience across multiple industries including healthcare, finance, e-commerce, manufacturing, and technology sectors.
-              </p>
-            </div>
+            {faqsList.map((faq, idx) => (
+              <div key={idx} className="bg-gray-50 rounded-2xl p-6 hover:shadow-lg transition-shadow">
+                <h4 className="text-lg font-semibold text-gray-900 mb-3">
+                  {faq.question}
+                </h4>
+                <p className="text-gray-600 text-sm">
+                  {faq.answer}
+                </p>
+              </div>
+            ))}
           </div>
 
           <div className="mt-12">

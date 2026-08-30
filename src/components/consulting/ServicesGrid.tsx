@@ -21,7 +21,33 @@ interface Service {
   slug: string;
 }
 
-const services: Service[] = [
+interface ServicesGridProps {
+  servicesData?: {
+    sectionTitle?: string;
+    sectionSubtitle?: string;
+    services?: Array<{
+      title: string;
+      description: string;
+      icon?: string | React.ReactNode;
+      features: string[];
+      color?: string;
+      bgGradient?: string;
+      slug: string;
+    }>;
+  };
+}
+
+const ICON_MAP: Record<string, React.ReactNode> = {
+  FaCode: <FaCode className="w-8 h-8" />,
+  FaRobot: <FaRobot className="w-8 h-8" />,
+  FaRocket: <FaRocket className="w-8 h-8" />,
+  FaCogs: <FaCogs className="w-8 h-8" />,
+  FaUsers: <FaUsers className="w-8 h-8" />,
+  FaGraduationCap: <FaGraduationCap className="w-8 h-8" />,
+  FaLightbulb: <FaLightbulb className="w-8 h-8" />,
+};
+
+const defaultServices: Service[] = [
    {
     title: "Product Strategy & Development",
     description: "End-to-end product development services from concept to market research to deployment, ensuring quality and scalability.",
@@ -119,7 +145,28 @@ const services: Service[] = [
   }
 ];
 
-const ServicesGrid: React.FC = () => {
+const ServicesGrid: React.FC<ServicesGridProps> = ({ servicesData }) => {
+  const sectionTitle = servicesData?.sectionTitle || "Our Consulting Services";
+  const sectionSubtitle = servicesData?.sectionSubtitle || "Comprehensive IT solutions designed to accelerate your business growth and digital transformation journey";
+
+  const servicesList = servicesData?.services && servicesData.services.length > 0
+    ? servicesData.services.map((item, idx) => {
+        let nodeIcon = typeof item.icon === 'string' ? ICON_MAP[item.icon] : item.icon;
+        if (!nodeIcon) {
+          nodeIcon = defaultServices[idx % defaultServices.length].icon;
+        }
+        return {
+          title: item.title,
+          description: item.description,
+          icon: nodeIcon,
+          features: item.features || [],
+          color: item.color || defaultServices[idx % defaultServices.length].color,
+          bgGradient: item.bgGradient || defaultServices[idx % defaultServices.length].bgGradient,
+          slug: item.slug,
+        };
+      })
+    : defaultServices;
+
   return (
     <section id="services" className="py-8 bg-gray-50 relative overflow-hidden scroll-mt-32">
       {/* Decorative background elements */}
@@ -136,15 +183,15 @@ const ServicesGrid: React.FC = () => {
           className="max-w-4xl mx-auto text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent mb-6">
-            Our Consulting Services
+            {sectionTitle}
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Comprehensive IT solutions designed to accelerate your business growth and digital transformation journey
+            {sectionSubtitle}
           </p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-          {services.map((service, index) => (
+          {servicesList.map((service, index) => (
             <motion.div
               key={service.title}
               initial={{ opacity: 0, y: 20 }}

@@ -2,7 +2,7 @@
 
 ## ⚠️ IMPORTANT: Correct URLs
 
-**Main Website**: `https://it-wala.com` (NOT academy.it-wala.com)
+**Main Website**: `https://it-wala.com` (NOT it-wala.com)
 
 **Services**:
 - 🎓 Courses: `https://it-wala.com/courses`

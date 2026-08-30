@@ -9,7 +9,7 @@ const CookiePolicy: NextPage = () => {
       <Head>
         <title>Cookie Policy - ITwala Academy</title>
         <meta name="description" content="Cookie Policy for ITwala Academy - Learn how we use cookies and similar tracking technologies on our platform." />
-        <link rel="canonical" href="https://academy.it-wala.com/cookie-policy" />
+        <link rel="canonical" href="https://it-wala.com/cookie-policy" />
       </Head>
 
       <main>

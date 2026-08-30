@@ -21,7 +21,7 @@
 
 #### 🌐 Application Settings
 - **Environment Mode**: ✅ Development for local, Production templates ready
-- **Site URL**: ✅ Set to https://academy.it-wala.com
+- **Site URL**: ✅ Set to https://it-wala.com
 - **Security Headers**: ✅ Implemented in next.config.js
 
 ### 🗂️ Files Created/Updated
@@ -63,7 +63,7 @@ NEXT_PUBLIC_SUPABASE_URL=https://lyywvmoxtlovvxknpkpw.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=[your-anon-key]
 SUPABASE_SERVICE_ROLE_KEY=[your-service-role-key]  
 NODE_ENV=production
-NEXT_PUBLIC_SITE_URL=https://academy.it-wala.com
+NEXT_PUBLIC_SITE_URL=https://it-wala.com
 SMTP_HOST=smtp.hostinger.com
 SMTP_PORT=465
 SMTP_SECURE=true
@@ -146,7 +146,7 @@ SMTP_FROM=sales@it-wala.com
 **The ITWala Academy application is now fully configured and ready for production deployment. All core functionality has been tested and verified to be working correctly.**
 
 **Development Server**: http://localhost:3001 (currently running)
-**Production Domain**: https://academy.it-wala.com (ready for deployment)
+**Production Domain**: https://it-wala.com (ready for deployment)
 
 ---
 

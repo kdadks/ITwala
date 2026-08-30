@@ -6,6 +6,8 @@ import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import ContactInfo from '@/components/contact/ContactInfo';
 import Faqs from '@/components/contact/Faqs';
+import SEOHead from '@/components/seo/SEOHead';
+import { useCMSData } from '@/lib/cms';
 
 const consultingServices = [
   "AI Powered Solutions",
@@ -22,12 +24,30 @@ interface ContactFormData {
   phone: string;
   subject: string;
   message: string;
-  service: string; // New field
-  courseName?: string; // New field for Academy
-  consultingType?: string; // New field for Consulting
+  service: string;
+  courseName?: string;
+  consultingType?: string;
 }
 
+const DEFAULT_CONTACT_CMS = {
+  hero: {
+    badge: 'Get In Touch · Support & Enquiries',
+    title: 'Contact Our Team',
+    subtitle: 'Have questions about our courses or software consulting? Our experts are ready to help.',
+  },
+  seo: {
+    metaTitle: 'Contact ITwala - AI Academy & Web Development Consulting',
+    metaDescription: 'Get in touch with ITwala for AI education support, AI course guidance, web development, and IT consulting services.',
+    keywords: 'contact ITwala, AI academy support, AI course guidance, web development consulting, IT consulting contact',
+    ogImage: '',
+  },
+};
+
 const Contact: NextPage = () => {
+  const { cmsData } = useCMSData('contact', DEFAULT_CONTACT_CMS);
+  const hero = cmsData.hero || DEFAULT_CONTACT_CMS.hero;
+  const seo = cmsData.seo || DEFAULT_CONTACT_CMS.seo;
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedService, setSelectedService] = useState('');
   const [courseOptions, setCourseOptions] = useState<string[]>([]);
@@ -57,26 +77,18 @@ const Contact: NextPage = () => {
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...data,
-          // Only send courseName or consultingType based on service
-          courseName: data.service === 'Academy' ? data.courseName : undefined,
-          consultingType: data.service === 'Consulting' ? data.consultingType : undefined,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to send message');
+      if (response.ok) {
+        toast.success('Thank you for contacting us! We will get back to you shortly.');
+        reset();
+      } else {
+        toast.error('Failed to send message. Please try again.');
       }
-
-      toast.success('Your message has been sent successfully!');
-      reset(); // Reset the form fields
     } catch (error) {
-      toast.error('There was an error sending your message. Please try again.');
-      console.error('Error submitting form:', error);
+      toast.error('Failed to send message. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -84,12 +96,13 @@ const Contact: NextPage = () => {
 
   return (
     <>
-      <Head>
-        <title>Contact ITwala - AI Academy & Web Development Consulting</title>
-        <meta name="description" content="Get in touch with ITwala for AI education support, AI course guidance for beginners and professionals, web development, and IT consulting services." />
-        <meta name="keywords" content="contact ITwala, AI academy support, AI course guidance, web development consulting, IT consulting contact" />
-        <link rel="canonical" href="https://academy.it-wala.com/contact" />
-      </Head>
+      <SEOHead
+        title={seo.metaTitle}
+        description={seo.metaDescription}
+        keywords={seo.keywords}
+        canonicalUrl="https://it-wala.com/contact"
+        ogImage={seo.ogImage}
+      />
 
       <main>
         <section className="relative overflow-hidden bg-white">
@@ -104,17 +117,15 @@ const Contact: NextPage = () => {
             >
               <div className="flex items-center gap-3 mb-7">
                 <div className="h-px w-10 bg-primary-500 shrink-0" />
-                <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-primary-500">Get In Touch · Support &amp; Enquiries</span>
+                <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-primary-500">{hero.badge || 'Get In Touch · Support & Enquiries'}</span>
               </div>
               <h1 className="font-serif text-[2.4rem] sm:text-[3rem] lg:text-[3.6rem] leading-[1.06] text-gray-900 mb-5">
-                Contact{' '}
-                <span className="text-gradient">Our Team</span>
+                {hero.title}
               </h1>
               <div className="flex items-center gap-3">
                 <div className="w-[3px] h-9 bg-accent-500 rounded-full shrink-0" />
                 <p className="text-[1.05rem] text-gray-600 font-medium leading-snug">
-                  Have questions about our courses?
-                  <span className="text-gray-400 font-normal"> · Our experts are ready to help</span>
+                  {hero.subtitle}
                 </p>
               </div>
             </motion.div>
@@ -266,7 +277,7 @@ const Contact: NextPage = () => {
                 </motion.div>
               </div>
 
-              <ContactInfo />
+              <ContactInfo infoData={cmsData.contact_info} />
             </div>
           </div>
         </section>
@@ -277,7 +288,7 @@ const Contact: NextPage = () => {
               <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">Our Locations</h2>
               <div className="relative w-full h-[400px] rounded-lg overflow-hidden">
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3559.817036747081!2d80.9461593150447!3d26.8466939831587!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x399be2b0b0b0b0b0%3A0x0!2sLucknow%2C%20Uttar%20Pradesh!5e0!3m2!1sen!2sin!4v1684637298945!5m2!1sen!2sin"
+                  src={cmsData.contact_info?.mapEmbedUrl || "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3559.817036747081!2d80.9461593150447!3d26.8466939831587!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x399be2b0b0b0b0b0%3A0x0!2sLucknow%2C%20Uttar%20Pradesh!5e0!3m2!1sen!2sin!4v1684637298945!5m2!1sen!2sin"}
                   width="100%"
                   height="100%"
                   style={{ border: 0 }}
@@ -291,7 +302,7 @@ const Contact: NextPage = () => {
           </div>
         </section>
 
-        <Faqs />
+        <Faqs faqsData={cmsData.faqs as any} />
       </main>
     </>
   );

@@ -7,6 +7,23 @@ import { ExternalLink, ArrowUpRight, Sparkles, Filter, TrendingUp, Users, Award 
 import { useState } from 'react';
 import { PortfolioItem } from '@/types/portfolio';
 import { createClient } from '@supabase/supabase-js';
+import SEOHead from '@/components/seo/SEOHead';
+import { useCMSData } from '@/lib/cms';
+
+const DEFAULT_PORTFOLIO_CMS = {
+  hero: {
+    badge: 'Our Work · Projects Delivered',
+    title: 'Our Success Stories',
+    subtitle: 'Transforming ideas into digital excellence',
+    primaryCtaText: 'Featured Projects',
+  },
+  seo: {
+    metaTitle: 'Our Portfolio - Successful Projects & Client Success Stories | ITWala',
+    metaDescription: 'Explore ITWala portfolio of 50+ successful projects across travel, healthcare, e-commerce, AI, and education.',
+    keywords: 'web development portfolio, successful projects, client case studies',
+    ogImage: '',
+  },
+};
 
 const defaultSettings = {
   page_title: 'Our Success Stories',
@@ -29,6 +46,9 @@ interface PortfolioProps {
 }
 
 const Portfolio: NextPage<PortfolioProps> = ({ initialProjects, initialSettings }) => {
+  const { cmsData } = useCMSData('portfolio', DEFAULT_PORTFOLIO_CMS);
+  const seo = cmsData.seo || DEFAULT_PORTFOLIO_CMS.seo;
+
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [hoveredProject, setHoveredProject] = useState<number | null>(null);
   const [projects] = useState<PortfolioItem[]>(initialProjects);
@@ -218,6 +238,13 @@ const Portfolio: NextPage<PortfolioProps> = ({ initialProjects, initialSettings 
 
   return (
     <>
+      <SEOHead
+        title={seo.metaTitle}
+        description={seo.metaDescription}
+        keywords={seo.keywords}
+        canonicalUrl="https://it-wala.com/portfolio"
+        ogImage={seo.ogImage}
+      />
       <Head>
         <title>Our Portfolio - Successful Projects & Client Success Stories | ITWala</title>
         <meta name="description" content="Explore ITWala's portfolio of 50+ successful projects across travel, healthcare, e-commerce, AI, and education. Real results: 10,000+ active users, 95% client satisfaction, innovative digital solutions." />

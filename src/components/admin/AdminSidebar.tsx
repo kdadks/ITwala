@@ -65,7 +65,6 @@ const AdminSidebar = () => {
       title: 'Course Management',
       items: [
         { href: '/admin/courses', label: 'Courses', icon: <BookOpen className="w-4 h-4" /> },
-        { href: '/admin/content', label: 'Content', icon: <FileText className="w-4 h-4" /> },
         { href: '/admin/categories', label: 'Categories', icon: <FolderTree className="w-4 h-4" /> }
       ]
     },
@@ -100,6 +99,7 @@ const AdminSidebar = () => {
     {
       title: 'CMS',
       items: [
+        { href: '/admin/content',   label: 'Page CMS Hub',    icon: <FileText className="w-4 h-4" /> },
         { href: '/admin/portfolio', label: 'Portfolio',      icon: <Briefcase className="w-4 h-4" /> },
         { href: '/admin/media',     label: 'Media Library',  icon: <Images className="w-4 h-4" /> },
       ]

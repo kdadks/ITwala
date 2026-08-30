@@ -1,4 +1,5 @@
 import { GetServerSideProps } from 'next';
+import { RESOURCES_DATA } from '@/data/resourcesData';
 
 function SiteMap() {
   // getServerSideProps will do the heavy lifting
@@ -13,6 +14,7 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
     '/academy',
     '/consulting',
     '/courses',
+    '/resources',
     '/ai-education-guide',
     '/services',
     '/services/ai-solutions',
@@ -25,6 +27,9 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
     '/terms-of-service',
     '/privacy-policy'
   ];
+
+  // Resource article pages
+  const resourcePages = RESOURCES_DATA.map((item) => `/resources/${item.slug}`);
 
   // Generate course pages dynamically
   let coursePages: string[] = [];
@@ -43,7 +48,7 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
     console.error('Error loading course data for sitemap:', error);
   }
 
-  const allPages = [...staticPages, ...coursePages];
+  const allPages = [...staticPages, ...resourcePages, ...coursePages];
 
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -51,18 +56,20 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
         .map((page) => {
           const route = page === '' ? '' : page;
           const priority = page === '' ? '1.0' :
+                          page === '/resources' ? '0.9' :
+                          page.startsWith('/resources/') ? '0.8' :
                           page.startsWith('/courses/') ? '0.8' :
                           page === '/academy' || page === '/consulting' ? '0.9' :
                           page === '/ai-education-guide' ? '0.9' :
                           page === '/courses' || page.startsWith('/services/') ? '0.7' : '0.6';
           
           const changefreq = page === '' ? 'daily' :
-                           page.startsWith('/courses/') ? 'weekly' :
+                           page.startsWith('/resources') || page.startsWith('/courses/') ? 'weekly' :
                            page === '/courses' || page === '/ai-education-guide' ? 'weekly' : 'monthly';
 
           return `
             <url>
-              <loc>https://academy.it-wala.com${route}</loc>
+              <loc>https://it-wala.com${route}</loc>
               <lastmod>${new Date().toISOString()}</lastmod>
               <changefreq>${changefreq}</changefreq>
               <priority>${priority}</priority>

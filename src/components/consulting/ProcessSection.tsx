@@ -18,7 +18,33 @@ interface ProcessStep {
   details: string[];
 }
 
-const processSteps: ProcessStep[] = [
+interface StepItem {
+  step: number;
+  title: string;
+  description: string;
+  icon?: string | React.ReactNode;
+  color?: string;
+  bgColor?: string;
+  details: string[];
+}
+
+interface ProcessSectionProps {
+  processData?: {
+    sectionTitle?: string;
+    sectionSubtitle?: string;
+    steps?: StepItem[];
+  };
+}
+
+const ICON_MAP: Record<string, React.ReactNode> = {
+  FaSearch: <FaSearch className="w-6 h-6" />,
+  FaLightbulb: <FaLightbulb className="w-6 h-6" />,
+  FaCogs: <FaCogs className="w-6 h-6" />,
+  FaRocket: <FaRocket className="w-6 h-6" />,
+  FaHandshake: <FaHandshake className="w-6 h-6" />,
+};
+
+const defaultProcessSteps: StepItem[] = [
   {
     step: 1,
     title: "Discovery & Analysis",
@@ -91,7 +117,28 @@ const processSteps: ProcessStep[] = [
   }
 ];
 
-const ProcessSection: React.FC = () => {
+const ProcessSection: React.FC<ProcessSectionProps> = ({ processData }) => {
+  const sectionTitle = processData?.sectionTitle || "Our Proven Process";
+  const sectionSubtitle = processData?.sectionSubtitle || "A systematic approach that ensures successful project delivery from concept to completion";
+
+  const stepsList = processData?.steps && processData.steps.length > 0
+    ? processData.steps.map((item, idx) => {
+        let nodeIcon = typeof item.icon === 'string' ? ICON_MAP[item.icon] : item.icon;
+        if (!nodeIcon) {
+          nodeIcon = defaultProcessSteps[idx % defaultProcessSteps.length].icon;
+        }
+        return {
+          step: item.step || idx + 1,
+          title: item.title,
+          description: item.description,
+          icon: nodeIcon,
+          color: item.color || defaultProcessSteps[idx % defaultProcessSteps.length].color,
+          bgColor: item.bgColor || defaultProcessSteps[idx % defaultProcessSteps.length].bgColor,
+          details: item.details || [],
+        };
+      })
+    : defaultProcessSteps;
+
   return (
     <section id="process" className="py-8 bg-gray-50 relative overflow-hidden">
       {/* Decorative background elements */}
@@ -109,10 +156,10 @@ const ProcessSection: React.FC = () => {
           className="max-w-4xl mx-auto text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent mb-6">
-            Our Proven Process
+            {sectionTitle}
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            A systematic approach that ensures successful project delivery from concept to completion
+            {sectionSubtitle}
           </p>
         </motion.div>
 
@@ -122,7 +169,7 @@ const ProcessSection: React.FC = () => {
             {/* Timeline line */}
             <div className="absolute top-1/2 left-0 w-full h-1 bg-gradient-to-r from-primary-200 via-secondary-200 to-primary-200 transform -translate-y-1/2"></div>
             <div className="flex justify-between items-stretch gap-8">
-              {processSteps.map((step, index) => (
+              {stepsList.map((step, index) => (
                 <motion.div
                   key={step.step}
                   initial={{ opacity: 0, y: 20 }}
@@ -169,7 +216,7 @@ const ProcessSection: React.FC = () => {
 
         {/* Mobile/Tablet Vertical View */}
         <div className="lg:hidden space-y-8">
-          {processSteps.map((step, index) => (
+          {stepsList.map((step, index) => (
             <motion.div
               key={step.step}
               initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
@@ -188,7 +235,7 @@ const ProcessSection: React.FC = () => {
                     {step.step}
                   </div>
                   {/* Connecting line */}
-                  {index < processSteps.length - 1 && (
+                  {index < stepsList.length - 1 && (
                     <div className="absolute top-12 left-1/2 w-0.5 h-16 bg-gradient-to-b from-primary-200 to-secondary-200 transform -translate-x-1/2"></div>
                   )}
                 </div>

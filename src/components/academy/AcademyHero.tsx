@@ -112,7 +112,21 @@ function EventCardSkeleton() {
   );
 }
 
-const Hero = () => {
+interface AcademyHeroProps {
+  heroData?: {
+    badge?: string;
+    title?: string;
+    subtitle?: string;
+    description?: string;
+    primaryCtaText?: string;
+    primaryCtaLink?: string;
+    secondaryCtaText?: string;
+    secondaryCtaLink?: string;
+  };
+  heroStats?: Array<{ value: string; label: string }>;
+}
+
+const AcademyHero: React.FC<AcademyHeroProps> = ({ heroData, heroStats }) => {
   const [courseCount, setCourseCount] = useState<string>('8+');
   const [webinars, setWebinars] = useState<Webinar[]>([]);
   const [webinarsLoading, setWebinarsLoading] = useState(true);
@@ -156,6 +170,17 @@ const Hero = () => {
   const showEvents = !webinarsLoading && webinars.length > 0;
   const showSkeleton = webinarsLoading;
 
+  const badgeText = heroData?.badge || "AI & Web Technology · Education & Consulting";
+  const mainTitle = heroData?.title || "Transform Your Future with IT Excellence";
+  const subTitle = heroData?.subtitle || "IT — It's Simple · Let us shape your career & business";
+  const descText = heroData?.description || "Master cutting-edge technologies with industry experts and hands-on projects. Accelerate your business with our proven consulting solutions.";
+  const primaryCtaText = heroData?.primaryCtaText || "Get Started";
+  const primaryCtaLink = heroData?.primaryCtaLink || "/courses";
+  const secondaryCtaText = heroData?.secondaryCtaText || "Explore Courses →";
+  const secondaryCtaLink = heroData?.secondaryCtaLink || "/courses";
+
+  const renderStats = heroStats && heroStats.length > 0 ? heroStats : [...stats, { value: courseCount, label: 'Specialized Courses' }];
+
   return (
     <section className="relative overflow-hidden bg-white">
       {/* Mesh gradient backdrop */}
@@ -176,40 +201,37 @@ const Hero = () => {
             <div className="flex items-center gap-3 mb-8">
               <div className="h-px w-10 bg-primary-500 shrink-0" />
               <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-primary-500">
-                AI &amp; Web Technology · Education &amp; Consulting
+                {badgeText}
               </span>
             </div>
 
             <h1 className="font-serif text-[2.6rem] sm:text-[3.2rem] lg:text-[3.8rem] leading-[1.06] text-gray-900 mb-5">
-              Transform Your Future with{' '}
-              <span className="text-gradient">IT Excellence</span>
+              {mainTitle}
             </h1>
 
             <div className="flex items-center gap-3 mb-6">
               <div className="w-[3px] h-9 bg-accent-500 rounded-full shrink-0" />
               <p className="text-[1.05rem] text-gray-600 font-medium leading-snug">
-                IT — It&apos;s Simple
-                <span className="text-gray-400 font-normal"> · Let us shape your career &amp; business</span>
+                {subTitle}
               </p>
             </div>
 
             <p className="text-[0.94rem] text-gray-500 leading-[1.85] max-w-[480px] mb-10">
-              Master cutting-edge technologies with industry experts and hands-on projects.
-              Accelerate your business with our proven consulting solutions.
+              {descText}
             </p>
 
             <div className="flex flex-wrap items-center gap-3">
-              <Link href="/courses">
+              <Link href={primaryCtaLink}>
                 <span className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white h-12 px-7 rounded-lg font-semibold text-sm shadow-md shadow-primary-500/20 transition-all duration-200">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
-                  Get Started
+                  {primaryCtaText}
                 </span>
               </Link>
-              <Link href="/courses">
+              <Link href={secondaryCtaLink}>
                 <span className="inline-flex items-center gap-1.5 h-12 px-5 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 text-sm font-medium transition-all duration-200">
-                  Explore Courses →
+                  {secondaryCtaText}
                 </span>
               </Link>
             </div>
@@ -243,7 +265,7 @@ const Hero = () => {
 
             {/* Stats grid — always shown */}
             <div className="grid grid-cols-2 gap-4 lg:gap-5">
-              {[...stats, { value: courseCount, label: 'Specialized Courses' }].map((stat, i) => (
+              {renderStats.map((stat, i) => (
                 <div
                   key={stat.label}
                   className={`bg-white border border-gray-100 rounded-2xl shadow-sm px-6 py-5 flex flex-col justify-between${i === 3 ? ' col-span-2' : ''}`}
@@ -266,4 +288,4 @@ const Hero = () => {
   );
 };
 
-export default Hero;
+export default AcademyHero;

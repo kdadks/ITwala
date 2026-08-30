@@ -13,7 +13,7 @@ The `.env.local` file has been configured for production use with the following 
 
 **Application Settings:**
 - `NODE_ENV` - ✅ Set to production
-- `NEXT_PUBLIC_SITE_URL` - ✅ Set to https://academy.it-wala.com
+- `NEXT_PUBLIC_SITE_URL` - ✅ Set to https://it-wala.com
 
 **Email Configuration:**
 - `SMTP_HOST` - ✅ Configured for Hostinger
@@ -41,7 +41,7 @@ NEXT_PUBLIC_SUPABASE_URL=https://lyywvmoxtlovvxknpkpw.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 NODE_ENV=production
-NEXT_PUBLIC_SITE_URL=https://academy.it-wala.com
+NEXT_PUBLIC_SITE_URL=https://it-wala.com
 SMTP_HOST=smtp.hostinger.com
 SMTP_PORT=465
 SMTP_SECURE=true

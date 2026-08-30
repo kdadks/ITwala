@@ -68,7 +68,7 @@ function EventCard({ webinar, index }: { webinar: Webinar; index: number }) {
     >
       <Link href={`/events/${webinar.id}`} className="block group">
         <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl border border-gray-100 transition-shadow duration-300 overflow-hidden">
-          {/* Thumbnail — no absolute children so nothing can overlap */}
+          {/* Thumbnail */}
           <div className="relative h-28 w-full bg-gradient-to-br from-primary-600 to-primary-800">
             {webinar.banner_image && (
               <Image
@@ -80,7 +80,7 @@ function EventCard({ webinar, index }: { webinar: Webinar; index: number }) {
             )}
           </div>
 
-          {/* Card body — all in normal flow */}
+          {/* Card body */}
           <div className="p-4 space-y-2.5">
             {/* Badge row */}
             <div className="flex items-center gap-2">
@@ -171,7 +171,6 @@ export default function SpecialEvents() {
   if (!isLoading && webinars.length === 0) return null;
 
   return (
-    // Pulled up over the hero bottom edge; z-10 keeps cards above adjacent sections
     <div className="relative -mt-20 z-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       {/* Label */}
       <div className="flex items-center gap-3 mb-4">
@@ -188,7 +187,7 @@ export default function SpecialEvents() {
         </Link>
       </div>
 
-      {/* Horizontal scroll row — no background, pure cards */}
+      {/* Horizontal scroll row */}
       <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {isLoading
           ? Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={i} />)

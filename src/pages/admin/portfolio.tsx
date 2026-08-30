@@ -2,6 +2,7 @@ import { NextPage } from 'next';
 import Head from 'next/head';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
@@ -288,16 +289,22 @@ const PortfolioCMS: NextPage = () => {
                 <p className="text-sm text-gray-600">Manage portfolio projects with live preview</p>
               </div>
               <div className="flex items-center gap-3">
+                <Link
+                  href="/admin/content"
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all text-sm font-semibold"
+                >
+                  Open Page CMS Hub
+                </Link>
                 <button
                   onClick={() => setShowSettings(true)}
-                  className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all"
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all text-sm font-semibold"
                 >
                   <Settings className="w-4 h-4" />
                   Page Settings
                 </button>
                 <button
                   onClick={openCreateModal}
-                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary-600 to-secondary-600 text-white rounded-lg hover:shadow-lg transition-all"
+                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary-600 to-secondary-600 text-white rounded-lg hover:shadow-lg transition-all text-sm font-semibold"
                 >
                   <Plus className="w-4 h-4" />
                   Add New Project

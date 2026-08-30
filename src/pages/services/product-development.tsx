@@ -12,20 +12,20 @@ const ProductDevelopment: NextPage = () => {
         <title>Custom Product Development Services | Web & Mobile App Development - ITWala</title>
         <meta name="description" content="Top product development company offering custom software, web & mobile app development, MVP development, SaaS solutions. Expert full-stack developers, agile methodology, 50+ successful products launched globally." />
         <meta name="keywords" content="product development company, custom software development, web application development, mobile app development, MVP development, SaaS development, full stack development, agile development, React development, Node.js development, API development, microservices, e-commerce development, enterprise software, UI UX design, quality assurance, product strategy, scalable solutions" />
-        <link rel="canonical" href="https://academy.it-wala.com/services/product-development" />
+        <link rel="canonical" href="https://it-wala.com/services/product-development" />
 
         {/* Open Graph */}
         <meta property="og:title" content="Custom Product Development Services - Web & Mobile Apps | ITWala" />
         <meta property="og:description" content="Leading product development services: Custom software, web & mobile apps, MVP development, SaaS solutions. 50+ successful products, 95% client satisfaction, agile methodology." />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://academy.it-wala.com/services/product-development" />
-        <meta property="og:image" content="https://academy.it-wala.com/images/IT - WALA_logo (1).png" />
+        <meta property="og:url" content="https://it-wala.com/services/product-development" />
+        <meta property="og:image" content="https://it-wala.com/images/IT - WALA_logo (1).png" />
 
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Product Development Services - Custom Software & Apps" />
         <meta name="twitter:description" content="Expert product development: Web apps, mobile apps, MVPs, SaaS. Full-stack team, agile process, 50+ successful launches." />
-        <meta name="twitter:image" content="https://academy.it-wala.com/images/IT - WALA_logo (1).png" />
+        <meta name="twitter:image" content="https://it-wala.com/images/IT - WALA_logo (1).png" />
 
         {/* Schema.org for Product Development Service */}
         <script type="application/ld+json">
@@ -38,8 +38,8 @@ const ProductDevelopment: NextPage = () => {
             "provider": {
               "@type": "Organization",
               "name": "ITWala",
-              "url": "https://academy.it-wala.com",
-              "logo": "https://academy.it-wala.com/images/IT - WALA_logo (1).png",
+              "url": "https://it-wala.com",
+              "logo": "https://it-wala.com/images/IT - WALA_logo (1).png",
               "aggregateRating": {
                 "@type": "AggregateRating",
                 "ratingValue": "4.8",
@@ -111,19 +111,19 @@ const ProductDevelopment: NextPage = () => {
                 "@type": "ListItem",
                 "position": 1,
                 "name": "Home",
-                "item": "https://academy.it-wala.com"
+                "item": "https://it-wala.com"
               },
               {
                 "@type": "ListItem",
                 "position": 2,
                 "name": "Services",
-                "item": "https://academy.it-wala.com/services"
+                "item": "https://it-wala.com/services"
               },
               {
                 "@type": "ListItem",
                 "position": 3,
                 "name": "Product Development",
-                "item": "https://academy.it-wala.com/services/product-development"
+                "item": "https://it-wala.com/services/product-development"
               }
             ]
           })}

@@ -25,8 +25,8 @@ const AIEducationSEO: React.FC<AIEducationSEOProps> = ({
   title = "ITWala Academy - Premier AI Education Platform",
   description = "Master artificial intelligence and machine learning with ITWala Academy. Comprehensive AI courses, expert instructors, hands-on projects, and industry certifications.",
   keywords = [],
-  url = "https://academy.it-wala.com",
-  image = "https://academy.it-wala.com/images/IT - WALA_logo (1).png",
+  url = "https://it-wala.com",
+  image = "https://it-wala.com/images/IT - WALA_logo (1).png",
   type = 'website',
   courseData
 }) => {
@@ -53,8 +53,8 @@ const AIEducationSEO: React.FC<AIEducationSEOProps> = ({
     "provider": {
       "@type": "EducationalOrganization",
       "name": "ITWala Academy",
-      "url": "https://academy.it-wala.com",
-      "logo": "https://academy.it-wala.com/images/IT - WALA_logo (1).png",
+      "url": "https://it-wala.com",
+      "logo": "https://it-wala.com/images/IT - WALA_logo (1).png",
       "description": "Premier AI education platform offering comprehensive artificial intelligence and machine learning courses"
     },
     "image": image,

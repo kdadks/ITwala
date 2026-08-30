@@ -6,7 +6,26 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, User, LogOut, Settings, BookOpen, Home, GraduationCap, Phone, Info, Briefcase, Folder, ChevronDown } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
+import { useCMSData } from '@/lib/cms';
+
+const DEFAULT_HEADER_CMS = {
+  header: {
+    showAnnouncement: false,
+    announcementText: '⚡ New AI Crash Course Started! Enrol now for expert-led training',
+    announcementLink: '/courses',
+    announcementCta: 'Enroll Now →',
+    brandName: 'ITwala',
+    brandTagline: "IT - It's Simple",
+    phoneHotline: '+91 98765 43210',
+    primaryCtaText: 'Contact Us',
+    primaryCtaLink: '/contact',
+  },
+};
+
 const GlossyNavbar = () => {
+  const { cmsData } = useCMSData('global_header_footer', DEFAULT_HEADER_CMS);
+  const headerCms = cmsData?.header || DEFAULT_HEADER_CMS.header;
+
   const router = useRouter();
   const { user, isAdmin, profile, signOut } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -76,6 +95,16 @@ const GlossyNavbar = () => {
 
   return (
     <>
+      {headerCms?.showAnnouncement && headerCms?.announcementText && (
+        <div className="bg-gradient-to-r from-accent-600 via-accent-500 to-amber-500 text-white text-xs font-semibold py-2 px-4 text-center z-50 relative flex items-center justify-center gap-2 shadow-sm">
+          <span>{headerCms.announcementText}</span>
+          {headerCms.announcementLink && (
+            <Link href={headerCms.announcementLink} className="underline hover:text-white/90 font-bold ml-1">
+              {headerCms.announcementCta || 'Learn More →'}
+            </Link>
+          )}
+        </div>
+      )}
       {/* Stunning Rounded Centered Header */}
       <motion.header
         initial={{ y: -100, opacity: 0 }}

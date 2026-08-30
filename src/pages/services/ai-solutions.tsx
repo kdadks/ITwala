@@ -1,5 +1,5 @@
 import { NextPage } from 'next';
-import Head from 'next/head';
+import SEOHead from '@/components/seo/SEOHead';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { FaBrain, FaArrowLeft, FaCheckCircle, FaRocket } from 'react-icons/fa';
@@ -7,10 +7,12 @@ import { FaBrain, FaArrowLeft, FaCheckCircle, FaRocket } from 'react-icons/fa';
 const AISolutions: NextPage = () => {
   return (
     <>
-      <Head>
-        <title>AI Solutions - ITWala Consulting</title>
-        <meta name="description" content="Cutting-edge AI and machine learning solutions to automate processes and drive intelligent decision-making." />
-      </Head>
+      <SEOHead
+        title="AI Solutions - ITWala Consulting"
+        description="Cutting-edge AI and machine learning solutions to automate processes and drive intelligent decision-making."
+        keywords="AI solutions, artificial intelligence consulting, machine learning development, AI automation"
+        canonicalUrl="https://it-wala.com/services/ai-solutions"
+      />
 
       <main>
         {/* Hero Section */}

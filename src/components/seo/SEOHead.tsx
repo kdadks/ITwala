@@ -17,28 +17,30 @@ const SEOHead: React.FC<SEOHeadProps> = ({
   description,
   keywords,
   canonicalUrl,
-  ogImage = "https://academy.it-wala.com/images/IT - WALA_logo (1).png",
+  ogImage = "https://it-wala.com/images/IT - WALA_logo (1).png",
   ogType = 'website',
   noIndex = false,
   schema,
   breadcrumbs
 }) => {
-  // Use the specified title and description
-  const optimizedTitle = "ITWala - Web Development, AI Academy & IT Consulting Globally";
-  const optimizedDescription = "Web development, AI education & IT consulting firm. Custom software development, edutech training, product development, digital transformation, training programs & IT staffing solutions globally.";
+  const defaultTitle = "ITWala - Web Development, AI Academy & IT Consulting Globally";
+  const defaultDescription = "Web development, AI education & IT consulting firm. Custom software development, edutech training, product development, digital transformation, training programs & IT staffing solutions globally.";
+
+  const pageTitle = title ? (title.includes('ITWala') ? title : `${title} | ITWala`) : defaultTitle;
+  const pageDescription = description || defaultDescription;
 
   return (
     <Head>
-      <title>{optimizedTitle}</title>
-      <meta name="description" content={optimizedDescription} />
+      <title>{pageTitle}</title>
+      <meta name="description" content={pageDescription} />
       {keywords && <meta name="keywords" content={keywords} />}
       <meta name="robots" content={noIndex ? "noindex, nofollow" : "index, follow"} />
       <meta name="author" content="ITWala" />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       
       {/* Open Graph Meta Tags */}
-      <meta property="og:title" content={optimizedTitle} />
-      <meta property="og:description" content={optimizedDescription} />
+      <meta property="og:title" content={pageTitle} />
+      <meta property="og:description" content={pageDescription} />
       <meta property="og:type" content={ogType} />
       <meta property="og:url" content={canonicalUrl} />
       <meta property="og:image" content={ogImage} />
@@ -48,8 +50,8 @@ const SEOHead: React.FC<SEOHeadProps> = ({
       
       {/* Twitter Card Meta Tags */}
       <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={optimizedTitle} />
-      <meta name="twitter:description" content={optimizedDescription} />
+      <meta name="twitter:title" content={pageTitle} />
+      <meta name="twitter:description" content={pageDescription} />
       <meta name="twitter:image" content={ogImage} />
       <meta name="twitter:image:alt" content="ITWala Logo" />
       

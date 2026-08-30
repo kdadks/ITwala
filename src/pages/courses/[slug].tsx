@@ -273,8 +273,8 @@ const CoursePage: NextPage<CoursePageProps> = ({ initialCountry }) => {
               "provider": {
                 "@type": "EducationalOrganization",
                 "name": "ITwala Academy",
-                "url": "https://academy.it-wala.com",
-                "logo": "https://academy.it-wala.com/images/IT - WALA_logo (1).png"
+                "url": "https://it-wala.com",
+                "logo": "https://it-wala.com/images/IT - WALA_logo (1).png"
               },
               "image": course.image,
               "url": shareUrl,

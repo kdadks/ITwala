@@ -1,7 +1,17 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const faqs = [
+interface FaqItem {
+  id?: number;
+  question: string;
+  answer: string;
+}
+
+interface FaqsProps {
+  faqsData?: FaqItem[];
+}
+
+const defaultFaqs: FaqItem[] = [
   {
     id: 1,
     question: "How do I enroll in a course?",
@@ -34,8 +44,10 @@ const faqs = [
   }
 ];
 
-const Faqs = () => {
+const Faqs: React.FC<FaqsProps> = ({ faqsData }) => {
   const [openId, setOpenId] = useState<number | null>(null);
+
+  const list = faqsData && faqsData.length > 0 ? faqsData.map((item, idx) => ({ id: item.id || idx + 1, question: item.question, answer: item.answer })) : defaultFaqs;
 
   const toggleFaq = (id: number) => {
     setOpenId(openId === id ? null : id);
@@ -53,7 +65,7 @@ const Faqs = () => {
           </div>
           
           <div className="space-y-4">
-            {faqs.map((faq) => (
+            {list.map((faq) => (
               <motion.div
                 key={faq.id}
                 initial={{ opacity: 0, y: 20 }}

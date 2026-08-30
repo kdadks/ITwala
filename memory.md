@@ -271,7 +271,13 @@ graph LR
 - **Public pages** use `Layout` wrapper (navbar + footer + WhatsApp button + cookie consent).
 - **Admin pages** use `AdminLayout` wrapper (AdminHeader + AdminSidebar).
 - **Dashboard pages** use a separate dashboard layout with its own navigation.
-- Components are organized by feature domain: `home/`, `courses/`, `admin/`, `dashboard/`, `common/`, `shared/`, `seo/`.
+- **Pillar Domain Component Organization**:
+  - `src/components/academy/`: Academy pillar components (`AcademyHero.tsx`, `FeaturedCourses.tsx`, `Categories.tsx`, `SpecialEvents.tsx`).
+  - `src/components/consulting/`: Consulting pillar components (`ConsultingHero.tsx`, `ServicesGrid.tsx`, `ConsultingStats.tsx`, `ConsultingCTA.tsx`, `ProcessSection.tsx`, `WhyChooseUs.tsx`).
+  - `src/components/home/`: Umbrella home portal components (`UnifiedHero.tsx`, `ServiceShowcase.tsx`, `Stats.tsx`, `Testimonials.tsx`, `CtaSection.tsx`).
+  - `src/components/courses/`: Course discovery and detail primitives (`CourseGrid`, `CourseBanner`, `CourseFAQ`, `CourseFilter`, `CourseReviews`, `EnrollmentModal`).
+  - `src/components/shared/`: Generic shared layouts (`PageHero.tsx`).
+  - `src/components/seo/`: Unified SEO components (`SEOHead.tsx` for canonical URL resolution, dynamic OpenGraph, and CMS SEO overrides; `BacklinkingHub.tsx`).
 - Shared UI primitives live in `src/components/common/` (ErrorBoundary, LoadingState, CookieConsent, WhatsAppButton, AnalyticsTracker).
 
 ### 5.4 State Management
@@ -339,6 +345,13 @@ graph LR
 - **Aggregation**: Netlify scheduled function runs `aggregate_daily_analytics` RPC daily at 2 AM UTC.
 - **Consent**: Cookie consent banner controls analytics tracking.
 
+### 5.13 CMS Architecture & Content Management
+
+- **Database-driven CMS**: Dynamic content across pages (`academy`, `about`, `consulting`, `global_header_footer`, `home`) is stored in Supabase `content_sections` table using key naming convention `page_{pageKey}_{sectionType}`.
+- **Hooks & Fallbacks**: `useCMSData(pageKey, defaultData)` in `src/lib/cms.ts` fetches and merges CMS records from `content_sections` with local fallback objects.
+- **Unified TypeScript Definitions**: Single-source-of-truth types defined in `src/types/cms.ts` (`PageCMSData`, `CMSHeroData`, `CMSSEOData`, `AcademyHeroProps`, `ConsultingHeroProps`, `UnifiedHeroProps`) re-exported via `src/lib/cms.ts`.
+- **Admin CMS Editor**: Visual editors located at `/admin/content` (`CMSHeroEditor`, `EmbeddedCoursesCMS`, etc.) allow real-time inline editing of page headers, hero text, CTAs, tags, and SEO metadata.
+
 ---
 
 ## 6. Active State Details
@@ -347,6 +360,7 @@ graph LR
 
 | Table | Purpose | Key Columns |
 |---|---|---|
+| `content_sections` | Dynamic CMS page content & hero configuration | `id`, `name` (e.g. `page_academy_hero`), `content` (JSONB) |
 | `profiles` | User profiles with roles | `id`, `email`, `role`, `full_name`, `student_id`, `country`, `state` |
 | `courses` | Course catalog | `id`, `slug`, `title`, `description`, `price`, `category`, `status`, `image`, `thumbnail`, `enrollments` |
 | `categories` | Course categories | `id`, `name`, `slug`, `description` |
@@ -410,7 +424,8 @@ graph LR
 | `/consulting` | Consulting | Consulting services |
 | `/contact` | Contact | Contact form |
 | `/portfolio` | Portfolio | Project portfolio |
-| `/resources` | Resources | Learning resources |
+| `/resources` | Resources Hub | Category-filtered, searchable AI & business resources directory |
+| `/resources/[slug]` | Resource Article Guide | SSG AEO-optimized article page with quick answers, schemas, and CTAs |
 | `/privacy-policy` | Privacy Policy | Legal page |
 | `/terms-of-service` | Terms | Legal page |
 | `/cookie-policy` | Cookie Policy | Legal page |

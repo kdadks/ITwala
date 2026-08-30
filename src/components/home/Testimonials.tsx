@@ -212,9 +212,22 @@ const TestimonialCard = ({ t }: { t: Testimonial }) => (
 	</div>
 );
 
-const Testimonials = () => {
+interface TestimonialsProps {
+	testimonialsData?: any;
+}
+
+const Testimonials: React.FC<TestimonialsProps> = ({ testimonialsData }) => {
+	const rawList = Array.isArray(testimonialsData) 
+		? testimonialsData 
+		: (testimonialsData?.items || testimonials);
+	const list = rawList && rawList.length > 0 ? rawList : testimonials;
+
+	const headerBadge = testimonialsData?.badge || 'Client Success Stories';
+	const headerTitle = testimonialsData?.title || 'What Our Clients & Students Say';
+	const headerSubtitle = testimonialsData?.subtitle || 'Real outcomes delivered to enterprise clients and learners across 7+ industries worldwide.';
+
 	// Duplicate for seamless infinite loop
-	const doubled = [...testimonials, ...testimonials];
+	const doubled = [...list, ...list];
 
 	return (
 		<section className="relative pt-10 pb-11 md:pt-14 md:pb-16 overflow-hidden bg-gray-50">
@@ -259,16 +272,13 @@ const Testimonials = () => {
 				<div className="text-center">
 					<div className="inline-flex items-center gap-2 bg-primary-50 border border-primary-100 text-primary-600 text-xs font-semibold tracking-widest uppercase px-4 py-1.5 rounded-full mb-5">
 						<span className="w-1.5 h-1.5 rounded-full bg-accent-500 animate-pulse" />
-						Client Success Stories
+						{headerBadge}
 					</div>
 					<h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 leading-tight">
-						What Our Clients &{' '}
-						<span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-500 to-secondary-500">
-							Students Say
-						</span>
+						{headerTitle}
 					</h2>
 					<p className="text-gray-500 text-lg max-w-2xl mx-auto">
-						Real outcomes delivered to enterprise clients and learners across 7+ industries worldwide.
+						{headerSubtitle}
 					</p>
 				</div>
 			</div>
@@ -300,7 +310,7 @@ const Testimonials = () => {
 				{/* Mobile: touch-swipe scroll with snap */}
 				<div className="md:hidden marquee-mobile-scroll px-4">
 					<div className="flex py-3 items-stretch">
-						{testimonials.map((t) => (
+						{list.map((t) => (
 							<div key={t.id} className="marquee-card-snap">
 								<TestimonialCard t={t} />
 							</div>

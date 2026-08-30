@@ -23,7 +23,28 @@ interface CoursesPageProps {
   initialCountry: string;
 }
 
+import SEOHead from '@/components/seo/SEOHead';
+import { useCMSData } from '@/lib/cms';
+
+const DEFAULT_COURSES_CMS = {
+  hero: {
+    badge: 'AI & Machine Learning · Expert-Led Training',
+    title: 'AI Courses & ML Training',
+    subtitle: 'Master artificial intelligence and machine learning with expert-led courses, hands-on projects, and industry certifications.',
+  },
+  seo: {
+    metaTitle: 'AI Courses for Beginners & Professionals - ITwala Academy',
+    metaDescription: 'Browse AI courses for beginners and professionals at ITwala Academy. Artificial intelligence, machine learning, and data science training with hands-on projects.',
+    keywords: 'AI courses for beginners, AI courses for professionals, machine learning training',
+    ogImage: '',
+  },
+};
+
 const CoursesPage: NextPage<CoursesPageProps> = ({ initialCountry }) => {
+  const { cmsData } = useCMSData('courses', DEFAULT_COURSES_CMS);
+  const hero = cmsData.hero || DEFAULT_COURSES_CMS.hero;
+  const seo = cmsData.seo || DEFAULT_COURSES_CMS.seo;
+
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedLevel, setSelectedLevel] = useState<string>('all');
@@ -198,57 +219,21 @@ const CoursesPage: NextPage<CoursesPageProps> = ({ initialCountry }) => {
 
   return (
     <>
+      <SEOHead
+        title={seo.metaTitle}
+        description={seo.metaDescription}
+        keywords={seo.keywords}
+        canonicalUrl="https://it-wala.com/courses"
+        ogImage={seo.ogImage}
+      />
       <Head>
-        <title>AI Courses for Beginners & Professionals - ITwala Academy</title>
-        <meta name="description" content="Browse AI courses for beginners and professionals at ITwala Academy. Artificial intelligence, machine learning, and data science training with hands-on projects." />
-        <meta name="keywords" content="AI courses for beginners, AI courses for professionals, where to learn AI courses, AI courses, machine learning training, artificial intelligence courses, data science courses, deep learning certification, neural networks training, AI bootcamp, ML engineering courses, AI career training, online AI education, professional AI courses" />
-        <meta property="og:title" content="AI Courses for Beginners & Professionals - ITwala Academy" />
-        <meta property="og:description" content="Browse AI courses for beginners and professionals: artificial intelligence, machine learning, and data science training with hands-on projects and industry certifications." />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://academy.it-wala.com/courses" />
-        <meta property="og:image" content="https://academy.it-wala.com/images/IT - WALA_logo (1).png" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="AI Courses for Beginners & Professionals" />
-        <meta name="twitter:description" content="AI courses for beginners and professionals: artificial intelligence, machine learning, and data science training with hands-on projects and industry certifications." />
-        <meta name="twitter:image" content="https://academy.it-wala.com/images/IT - WALA_logo (1).png" />
-        <link rel="canonical" href="https://academy.it-wala.com/courses" />
-
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "CollectionPage",
-            "name": "AI Courses & Machine Learning Training Programs",
-            "description": "Comprehensive collection of AI and machine learning courses offered by ITwala Academy",
-            "url": "https://academy.it-wala.com/courses",
-            "mainEntity": {
-              "@type": "ItemList",
-              "name": "AI and Machine Learning Courses",
-              "description": "Professional AI education and machine learning training programs",
-              "numberOfItems": "20+",
-              "itemListElement": [
-                {
-                  "@type": "Course",
-                  "name": "AI & Machine Learning Fundamentals",
-                  "description": "Master the fundamentals of artificial intelligence and machine learning — designed for beginners with no prior AI experience",
-                  "provider": "ITWala Academy",
-                  "courseMode": "online",
-                  "educationalLevel": "Beginner"
-                },
-                {
-                  "@type": "Course",
-                  "name": "Data Science Professional Program",
-                  "description": "Comprehensive data science training with real-world applications for working professionals",
-                  "provider": "ITWala Academy",
-                  "courseMode": "online",
-                  "educationalLevel": "Professional"
-                }
-              ]
-            },
-            "provider": {
-              "@type": "EducationalOrganization",
-              "name": "ITWala Academy",
-              "url": "https://academy.it-wala.com"
-            }
+            "name": seo.metaTitle,
+            "description": seo.metaDescription,
+            "url": "https://it-wala.com/courses",
           })}
         </script>
       </Head>
@@ -266,14 +251,13 @@ const CoursesPage: NextPage<CoursesPageProps> = ({ initialCountry }) => {
             >
               <div className="flex items-center gap-3 mb-7">
                 <div className="h-px w-10 bg-primary-500 shrink-0" />
-                <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-primary-500">AI &amp; Machine Learning · Expert-Led Training</span>
+                <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-primary-500">{hero.badge || 'AI & Machine Learning · Expert-Led Training'}</span>
               </div>
               <h1 className="font-serif text-[2.4rem] sm:text-[3rem] lg:text-[3.6rem] leading-[1.06] text-gray-900 mb-5">
-                AI Courses &amp;{' '}
-                <span className="text-gradient">ML Training</span>
+                {hero.title}
               </h1>
               <p className="text-[0.97rem] text-gray-500 leading-[1.85] max-w-[540px]">
-                Master artificial intelligence and machine learning with expert-led courses, hands-on projects, and industry-recognized certifications.
+                {hero.subtitle}
               </p>
             </motion.div>
 

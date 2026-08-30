@@ -128,6 +128,47 @@ const BacklinkingHub: React.FC<BacklinkingHubProps> = ({ currentPage, currentCat
       ];
     }
 
+    if (currentPage === 'resources' || currentPage === 'resource-article') {
+      return [
+        {
+          title: "What Is Agentic AI?",
+          url: "/resources/what-is-agentic-ai",
+          description: "Complete guide to autonomous AI agents for business",
+          category: "AEO Guide"
+        },
+        {
+          title: "AI Agents vs Chatbots",
+          url: "/resources/ai-agents-vs-chatbots",
+          description: "Key architectural differences & ROI comparisons",
+          category: "Tech Analysis"
+        },
+        {
+          title: "AI Engineer Roadmap 2026",
+          url: "/resources/how-to-become-an-ai-engineer-complete-roadmap",
+          description: "Step-by-step career path to becoming an AI engineer",
+          category: "Career Roadmap"
+        },
+        {
+          title: "Model Context Protocol (MCP)",
+          url: "/resources/what-is-mcp-model-context-protocol-explained",
+          description: "Connecting AI models to internal enterprise systems",
+          category: "AI Architecture"
+        },
+        {
+          title: "AI Consulting Services",
+          url: "/consulting",
+          description: "Expert guidance for enterprise AI & digital transformation",
+          category: "Services"
+        },
+        {
+          title: "MVP Development Services",
+          url: "/services/product-development",
+          description: "Build & launch your AI startup MVP rapidly",
+          category: "Development"
+        }
+      ];
+    }
+
     return baseLinks;
   };
 

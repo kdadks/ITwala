@@ -2,7 +2,38 @@ import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 
-const ConsultingHero = () => {
+interface ConsultingHeroProps {
+  hero?: {
+    badge?: string;
+    title?: string;
+    subtitle?: string;
+    description?: string;
+  };
+  heroStats?: Array<{ label: string }>;
+}
+
+const DEFAULT_STATS = [
+  { icon: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z", label: "20+ Projects Delivered" },
+  { icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z", label: "50+ Expert Consultants" },
+  { icon: "M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z", label: "25+ Countries Served" },
+  { icon: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z", label: "98% Client Satisfaction" },
+  { icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z", label: "10+ Years Experience" },
+  { icon: "M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6V11m0-5.5v-1a1.5 1.5 0 00-3 0v1.5m9 0V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6V11m0-5.5v-1a1.5 1.5 0 00-3 0v1.5", label: "95% Client Retention" },
+];
+
+const ConsultingHero: React.FC<ConsultingHeroProps> = ({ hero, heroStats }) => {
+  const badgeText = hero?.badge || 'IT Consulting · Digital Transformation';
+  const mainTitle = hero?.title || 'ITWala Product & Consulting';
+  const subTitle = hero?.subtitle || 'Transform Your Business';
+  const descText = hero?.description || 'From strategic planning to implementation, we deliver comprehensive IT solutions that drive growth, innovation, and digital transformation for businesses of all sizes.';
+
+  const statsList = heroStats && heroStats.length > 0
+    ? heroStats.map((st, i) => ({
+        label: st.label,
+        icon: DEFAULT_STATS[i % DEFAULT_STATS.length].icon,
+      }))
+    : DEFAULT_STATS;
+
   return (
     <section className="relative overflow-hidden bg-white">
       {/* Mesh gradient backdrop */}
@@ -22,22 +53,20 @@ const ConsultingHero = () => {
               <div className="flex items-center gap-3 mb-7">
                 <div className="h-px w-10 bg-primary-500 shrink-0" />
                 <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-primary-500">
-                  IT Consulting · Digital Transformation
+                  {badgeText}
                 </span>
               </div>
               <h1 className="font-serif text-[2.6rem] sm:text-[3.2rem] lg:text-[3.8rem] leading-[1.06] text-gray-900 mb-5">
-                ITWala Product &amp;{' '}
-                <span className="text-gradient">Consulting</span>
+                {mainTitle}
               </h1>
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-[3px] h-9 bg-accent-500 rounded-full shrink-0" />
                 <p className="text-[1.05rem] text-gray-600 font-medium leading-snug">
-                  Transform Your Business
-                  <span className="text-gray-400 font-normal"> · Expert IT Solutions</span>
+                  {subTitle}
                 </p>
               </div>
               <p className="text-[0.94rem] text-gray-500 leading-[1.85] mb-10">
-                From strategic planning to implementation, we deliver comprehensive IT solutions that drive growth, innovation, and digital transformation for businesses of all sizes.
+                {descText}
               </p>
             </motion.div>
 
@@ -89,14 +118,7 @@ const ConsultingHero = () => {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="grid grid-cols-2 gap-4 sm:gap-6 text-xs md:text-sm"
           >
-            {[
-              { icon: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z", label: "20+ Projects Delivered" },
-              { icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z", label: "50+ Expert Consultants" },
-              { icon: "M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z", label: "25+ Countries Served" },
-              { icon: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z", label: "98% Client Satisfaction" },
-              { icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z", label: "10+ Years Experience" },
-              { icon: "M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6V11m0-5.5v-1a1.5 1.5 0 00-3 0v1.5m9 0V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6V11m0-5.5v-1a1.5 1.5 0 00-3 0v1.5", label: "95% Client Retention" },
-            ].map((stat) => (
+            {statsList.map((stat) => (
               <div key={stat.label} className="flex items-center gap-3 bg-white/60 backdrop-blur-sm rounded-xl px-4 py-3 shadow-sm border border-gray-100">
                 <svg className="w-5 h-5 shrink-0 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={stat.icon} />

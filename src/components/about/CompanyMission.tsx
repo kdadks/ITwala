@@ -5,10 +5,18 @@ interface MissionCard {
   title: string;
   description: string;
   icon: string;
-  color: string;
+  color?: string;
 }
 
-const missionCards: MissionCard[] = [
+interface CompanyMissionProps {
+  missionData?: {
+    sectionTitle?: string;
+    sectionSubtitle?: string;
+    cards?: MissionCard[];
+  };
+}
+
+const defaultMissionCards: MissionCard[] = [
   {
     title: "Our Mission",
     description: "Driving innovation through education and consulting. At ITwala, we transform aspiring technologists into industry-ready professionals while delivering cutting-edge business solutions to organizations worldwide.",
@@ -29,7 +37,19 @@ const missionCards: MissionCard[] = [
   }
 ];
 
-const CompanyMission: React.FC = () => {
+const CompanyMission: React.FC<CompanyMissionProps> = ({ missionData }) => {
+  const sectionTitle = missionData?.sectionTitle || "Transforming IT Education & Business Solutions";
+  const sectionSubtitle = missionData?.sectionSubtitle || "We're on a mission to make quality IT education accessible while delivering innovative business solutions";
+  
+  const cardsList = missionData?.cards && missionData.cards.length > 0
+    ? missionData.cards.map((c, idx) => ({
+        title: c.title,
+        description: c.description,
+        icon: c.icon || defaultMissionCards[idx % defaultMissionCards.length].icon,
+        color: c.color || defaultMissionCards[idx % defaultMissionCards.length].color,
+      }))
+    : defaultMissionCards;
+
   return (
     <section className="py-6 bg-white relative overflow-hidden">
       {/* Decorative background elements */}
@@ -47,15 +67,15 @@ const CompanyMission: React.FC = () => {
           className="max-w-4xl mx-auto text-center mb-12"
         >
           <h2 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent mb-4">
-            Transforming IT Education & Business Solutions
+            {sectionTitle}
           </h2>
           <p className="text-lg text-gray-600">
-            We&apos;re on a mission to make quality IT education accessible while delivering innovative business solutions
+            {sectionSubtitle}
           </p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {missionCards.map((card, index) => (
+          {cardsList.map((card, index) => (
             <motion.div
               key={card.title}
               initial={{ opacity: 0, y: 20 }}

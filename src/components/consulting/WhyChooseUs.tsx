@@ -9,15 +9,32 @@ import {
   FaGlobe 
 } from 'react-icons/fa';
 
-interface Advantage {
+interface AdvantageItem {
   title: string;
   description: string;
-  icon: React.ReactNode;
-  color: string;
-  bgColor: string;
+  icon?: string | React.ReactNode;
+  color?: string;
+  bgColor?: string;
 }
 
-const advantages: Advantage[] = [
+interface WhyChooseUsProps {
+  whyChooseData?: {
+    sectionTitle?: string;
+    sectionSubtitle?: string;
+    advantages?: AdvantageItem[];
+  };
+}
+
+const ICON_MAP: Record<string, React.ReactNode> = {
+  FaAward: <FaAward className="w-6 h-6" />,
+  FaClock: <FaClock className="w-6 h-6" />,
+  FaShieldAlt: <FaShieldAlt className="w-6 h-6" />,
+  FaHandshake: <FaHandshake className="w-6 h-6" />,
+  FaChartLine: <FaChartLine className="w-6 h-6" />,
+  FaGlobe: <FaGlobe className="w-6 h-6" />,
+};
+
+const defaultAdvantages: AdvantageItem[] = [
   {
     title: "Proven Expertise",
     description: "Over 10 years of experience delivering successful IT solutions across diverse industries with a track record of 20+ completed projects.",
@@ -62,7 +79,25 @@ const advantages: Advantage[] = [
   }
 ];
 
-const WhyChooseUs: React.FC = () => {
+const WhyChooseUs: React.FC<WhyChooseUsProps> = ({ whyChooseData }) => {
+  const sectionTitle = whyChooseData?.sectionTitle || "Why Choose ITWala?";
+  const sectionSubtitle = whyChooseData?.sectionSubtitle || "We combine technical excellence with business acumen to deliver solutions that drive real results for your organization";
+  
+  const advantagesList = whyChooseData?.advantages && whyChooseData.advantages.length > 0
+    ? whyChooseData.advantages.map((item, idx) => {
+        let nodeIcon = typeof item.icon === 'string' ? ICON_MAP[item.icon] : item.icon;
+        if (!nodeIcon) {
+          nodeIcon = defaultAdvantages[idx % defaultAdvantages.length].icon;
+        }
+        return {
+          title: item.title,
+          description: item.description,
+          icon: nodeIcon,
+          color: item.color || defaultAdvantages[idx % defaultAdvantages.length].color,
+          bgColor: item.bgColor || defaultAdvantages[idx % defaultAdvantages.length].bgColor,
+        };
+      })
+    : defaultAdvantages;
   return (
     <section id="why-choose-us" className="py-8 bg-white relative overflow-hidden scroll-mt-32">
       {/* Decorative background elements */}
@@ -80,15 +115,15 @@ const WhyChooseUs: React.FC = () => {
           className="max-w-4xl mx-auto text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent mb-6">
-            Why Choose ITWala?
+            {sectionTitle}
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            We combine technical excellence with business acumen to deliver solutions that drive real results for your organization
+            {sectionSubtitle}
           </p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {advantages.map((advantage, index) => (
+          {advantagesList.map((advantage, index) => (
             <motion.div
               key={advantage.title}
               initial={{ opacity: 0, y: 20 }}

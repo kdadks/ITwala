@@ -69,7 +69,104 @@ const stats: Stat[] = [
   }
 ];
 
-const ConsultingStats: React.FC = () => {
+interface StatItem {
+  icon?: string | React.ReactNode;
+  value: string;
+  label: string;
+  description: string;
+  color?: string;
+  bgColor?: string;
+}
+
+interface ConsultingStatsProps {
+  statsData?: {
+    sectionTitle?: string;
+    sectionSubtitle?: string;
+    stats?: StatItem[];
+  };
+}
+
+const ICON_MAP: Record<string, React.ReactNode> = {
+  FaProjectDiagram: <FaProjectDiagram className="w-8 h-8" />,
+  FaUsers: <FaUsers className="w-8 h-8" />,
+  FaGlobe: <FaGlobe className="w-8 h-8" />,
+  FaTrophy: <FaTrophy className="w-8 h-8" />,
+  FaClock: <FaClock className="w-8 h-8" />,
+  FaHandshake: <FaHandshake className="w-8 h-8" />,
+};
+
+const defaultStats: StatItem[] = [
+  {
+    icon: <FaProjectDiagram className="w-8 h-8" />,
+    value: '20+',
+    label: 'Projects Delivered',
+    description: 'Successfully completed projects across various industries',
+    color: 'text-blue-600',
+    bgColor: 'bg-blue-100'
+  },
+  {
+    icon: <FaUsers className="w-8 h-8" />,
+    value: '50+',
+    label: 'Expert Consultants',
+    description: 'Certified professionals with deep industry expertise',
+    color: 'text-green-600',
+    bgColor: 'bg-green-100'
+  },
+  {
+    icon: <FaGlobe className="w-8 h-8" />,
+    value: '25+',
+    label: 'Countries Served',
+    description: 'Global reach with local expertise and understanding',
+    color: 'text-purple-600',
+    bgColor: 'bg-purple-100'
+  },
+  {
+    icon: <FaTrophy className="w-8 h-8" />,
+    value: '98%',
+    label: 'Client Satisfaction',
+    description: 'Consistently high satisfaction rates from our clients',
+    color: 'text-yellow-600',
+    bgColor: 'bg-yellow-100'
+  },
+  {
+    icon: <FaClock className="w-8 h-8" />,
+    value: '10+',
+    label: 'Years Experience',
+    description: 'Decade of proven track record in IT consulting',
+    color: 'text-red-600',
+    bgColor: 'bg-red-100'
+  },
+  {
+    icon: <FaHandshake className="w-8 h-8" />,
+    value: '95%',
+    label: 'Client Retention',
+    description: 'Long-term partnerships built on trust and results',
+    color: 'text-indigo-600',
+    bgColor: 'bg-indigo-100'
+  }
+];
+
+const ConsultingStats: React.FC<ConsultingStatsProps> = ({ statsData }) => {
+  const sectionTitle = statsData?.sectionTitle || "Proven Track Record";
+  const sectionSubtitle = statsData?.sectionSubtitle || "Our numbers speak for themselves - delivering exceptional results and building lasting partnerships worldwide";
+
+  const statsList = statsData?.stats && statsData.stats.length > 0
+    ? statsData.stats.map((item, idx) => {
+        let nodeIcon = typeof item.icon === 'string' ? ICON_MAP[item.icon] : item.icon;
+        if (!nodeIcon) {
+          nodeIcon = defaultStats[idx % defaultStats.length].icon;
+        }
+        return {
+          value: item.value,
+          label: item.label,
+          description: item.description,
+          icon: nodeIcon,
+          color: item.color || defaultStats[idx % defaultStats.length].color,
+          bgColor: item.bgColor || defaultStats[idx % defaultStats.length].bgColor,
+        };
+      })
+    : defaultStats;
+
   return (
     <section className="py-20 bg-gradient-to-br from-primary-700 via-primary-600 to-secondary-700 text-white relative overflow-hidden">
       {/* Background decorative elements */}
@@ -88,15 +185,15 @@ const ConsultingStats: React.FC = () => {
           className="max-w-4xl mx-auto text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
-            Proven Track Record
+            {sectionTitle}
           </h2>
           <p className="text-xl text-gray-100 max-w-3xl mx-auto">
-            Our numbers speak for themselves - delivering exceptional results and building lasting partnerships worldwide
+            {sectionSubtitle}
           </p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {stats.map((stat, index) => (
+          {statsList.map((stat, index) => (
             <motion.div
               key={stat.label}
               initial={{ opacity: 0, y: 20 }}

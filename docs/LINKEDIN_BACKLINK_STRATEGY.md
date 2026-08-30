@@ -1,7 +1,7 @@
 # LinkedIn Backlink Strategy for SEO Boost
 
 ## 🎯 Objective
-Add backlinks from your LinkedIn posts to ITWala Academy (`https://academy.it-wala.com`) to boost SEO, domain authority, and organic traffic.
+Add backlinks from your LinkedIn posts to ITWala Academy (`https://it-wala.com`) to boost SEO, domain authority, and organic traffic.
 
 ## 📊 Your LinkedIn Posts to Update
 
@@ -37,29 +37,29 @@ For each post, add relevant backlinks naturally. Here are templates:
 
 #### Template 1: Direct Call-to-Action
 ```
-Learn more: https://academy.it-wala.com
+Learn more: https://it-wala.com
 
-Start your AI journey today: https://academy.it-wala.com/courses
+Start your AI journey today: https://it-wala.com/courses
 
-Explore our programs: https://academy.it-wala.com
+Explore our programs: https://it-wala.com
 ```
 
 #### Template 2: Resource Link
 ```
 📚 Free resources available at ITWala Academy
-👉 https://academy.it-wala.com
+👉 https://it-wala.com
 
 🎓 Check out our course catalog:
-https://academy.it-wala.com/courses
+https://it-wala.com/courses
 ```
 
 #### Template 3: Contextual Integration
 ```
-At ITWala Academy (https://academy.it-wala.com), we believe...
+At ITWala Academy (https://it-wala.com), we believe...
 
-Our platform (https://academy.it-wala.com) offers comprehensive AI training...
+Our platform (https://it-wala.com) offers comprehensive AI training...
 
-Visit academy.it-wala.com to learn more about [specific topic]
+Visit it-wala.com to learn more about [specific topic]
 ```
 
 ## 📝 Recommended Edits for Each Post
@@ -67,49 +67,49 @@ Visit academy.it-wala.com to learn more about [specific topic]
 ### Post 1: Activity 7399899317731352576
 **Suggested Addition:**
 ```
-🔗 Learn more about our AI programs: https://academy.it-wala.com/courses
+🔗 Learn more about our AI programs: https://it-wala.com/courses
 
-📚 Free resources: https://academy.it-wala.com
+📚 Free resources: https://it-wala.com
 ```
 
 ### Post 2: Activity 7368716259955306497
 **Suggested Addition:**
 ```
-Explore our complete course catalog: https://academy.it-wala.com/courses
+Explore our complete course catalog: https://it-wala.com/courses
 
-Start learning today: https://academy.it-wala.com
+Start learning today: https://it-wala.com
 ```
 
 ### Post 3: Activity 7356275175895560192
 **Suggested Addition:**
 ```
-Discover more at ITWala Academy: https://academy.it-wala.com
+Discover more at ITWala Academy: https://it-wala.com
 
-🎯 Browse courses: https://academy.it-wala.com/courses
+🎯 Browse courses: https://it-wala.com/courses
 ```
 
 ### Post 4: Activity 7349087209922154496
 **Suggested Addition:**
 ```
-Visit our platform: https://academy.it-wala.com
+Visit our platform: https://it-wala.com
 
-See all offerings: https://academy.it-wala.com/courses
+See all offerings: https://it-wala.com/courses
 ```
 
 ### Post 5: Activity 7347596570139291648
 **Suggested Addition:**
 ```
-Learn with us: https://academy.it-wala.com
+Learn with us: https://it-wala.com
 
-Course catalog: https://academy.it-wala.com/courses
+Course catalog: https://it-wala.com/courses
 ```
 
 ### Post 6: Activity 7342840714570977282
 **Suggested Addition:**
 ```
-Transform your skills at: https://academy.it-wala.com
+Transform your skills at: https://it-wala.com
 
-Explore programs: https://academy.it-wala.com/courses
+Explore programs: https://it-wala.com/courses
 ```
 
 ## 🎯 Advanced LinkedIn SEO Strategies
@@ -120,10 +120,10 @@ If you can't edit the original post, add a **pinned comment**:
 ```
 📌 For those interested in learning more:
 
-🌐 Website: https://academy.it-wala.com
-📚 Courses: https://academy.it-wala.com/courses
-🎓 About Us: https://academy.it-wala.com/about
-💼 Services: https://academy.it-wala.com/services
+🌐 Website: https://it-wala.com
+📚 Courses: https://it-wala.com/courses
+🎓 About Us: https://it-wala.com/about
+💼 Services: https://it-wala.com/services
 
 #AIEducation #MachineLearning #WebDevelopment #ITConsulting
 ```
@@ -131,10 +131,10 @@ If you can't edit the original post, add a **pinned comment**:
 ### 2. Use Different Anchor Variations
 Don't just use the same link format. Vary it:
 
-- `academy.it-wala.com` (naked URL)
-- `https://academy.it-wala.com` (full URL)
-- `Visit ITWala Academy: academy.it-wala.com` (branded anchor)
-- `Learn more about AI courses: https://academy.it-wala.com/courses` (descriptive anchor)
+- `it-wala.com` (naked URL)
+- `https://it-wala.com` (full URL)
+- `Visit ITWala Academy: it-wala.com` (branded anchor)
+- `Learn more about AI courses: https://it-wala.com/courses` (descriptive anchor)
 
 ### 3. Create New Posts with Deep Links
 
@@ -146,7 +146,7 @@ Create follow-up posts linking to specific pages:
 
 Dive deep into Machine Learning, Neural Networks, and Real-World Applications.
 
-👉 Enroll now: https://academy.it-wala.com/courses/ai-fundamentals
+👉 Enroll now: https://it-wala.com/courses/ai-fundamentals
 
 #ArtificialIntelligence #MachineLearning #EdTech
 ```
@@ -158,7 +158,7 @@ Dive deep into Machine Learning, Neural Networks, and Real-World Applications.
 [Student Name] completed our Data Science program and landed a role at [Company]!
 
 Want similar results? Check out our programs:
-👉 https://academy.it-wala.com/courses
+👉 https://it-wala.com/courses
 
 #DataScience #CareerGrowth #Success
 ```
@@ -168,7 +168,7 @@ Want similar results? Check out our programs:
 📚 FREE Resource Alert!
 
 Download our comprehensive guide to [Topic]:
-👉 https://academy.it-wala.com/resources/guide-name
+👉 https://it-wala.com/resources/guide-name
 
 #FreeResource #Learning #AI
 ```
@@ -179,15 +179,15 @@ Update your LinkedIn profile to include ITWala Academy links:
 
 #### In "About" Section:
 ```
-Founder of ITWala Academy (https://academy.it-wala.com) - transforming careers through AI education and web development training.
+Founder of ITWala Academy (https://it-wala.com) - transforming careers through AI education and web development training.
 
-Explore our courses: https://academy.it-wala.com/courses
+Explore our courses: https://it-wala.com/courses
 ```
 
 #### In "Experience" Section:
 ```
 ITWala Academy
-https://academy.it-wala.com
+https://it-wala.com
 [Your role and description]
 ```
 
@@ -201,15 +201,15 @@ Write LinkedIn articles that naturally include backlinks:
 
 #### Article Idea 1: "How We're Revolutionizing AI Education"
 **Include links to:**
-- https://academy.it-wala.com/about
-- https://academy.it-wala.com/courses
-- https://academy.it-wala.com/blog/[relevant-post]
+- https://it-wala.com/about
+- https://it-wala.com/courses
+- https://it-wala.com/blog/[relevant-post]
 
 #### Article Idea 2: "Top 10 Skills for AI Professionals in 2026"
 **Include links to:**
-- https://academy.it-wala.com/courses/machine-learning
-- https://academy.it-wala.com/courses/deep-learning
-- https://academy.it-wala.com/courses/nlp
+- https://it-wala.com/courses/machine-learning
+- https://it-wala.com/courses/deep-learning
+- https://it-wala.com/courses/nlp
 
 ### 6. Use LinkedIn Carousel Posts
 
@@ -217,7 +217,7 @@ Create carousel posts with backlinks on each slide:
 
 **Slide 1**: Title + Hook
 **Slide 2-5**: Educational content
-**Slide 6**: CTA with link to `https://academy.it-wala.com/courses`
+**Slide 6**: CTA with link to `https://it-wala.com/courses`
 
 ## 📈 SEO Benefits of LinkedIn Backlinks
 
@@ -232,7 +232,7 @@ Create carousel posts with backlinks on each slide:
 
 ### Expected SEO Impact:
 
-- ✅ Improved domain authority for academy.it-wala.com
+- ✅ Improved domain authority for it-wala.com
 - ✅ Better search rankings for target keywords
 - ✅ Increased organic traffic
 - ✅ Enhanced brand credibility
@@ -244,7 +244,7 @@ Create carousel posts with backlinks on each slide:
 
 1. **Post 2-3 times per week** with relevant backlinks
 2. **Engage with comments** and add links in responses
-3. **Share blog posts** from academy.it-wala.com
+3. **Share blog posts** from it-wala.com
 4. **Create value-driven content** that naturally includes links
 
 ### Monthly Tasks:
@@ -257,7 +257,7 @@ Create carousel posts with backlinks on each slide:
 ### Quarterly Tasks:
 
 1. **Audit all LinkedIn posts** for broken or missing links
-2. **Create case studies** linking to academy.it-wala.com
+2. **Create case studies** linking to it-wala.com
 3. **Host LinkedIn Live** sessions promoting courses
 4. **Collaborate with influencers** for cross-promotion
 
@@ -324,7 +324,7 @@ Hi [Name],
 
 I noticed we share an interest in [AI/Web Development/Tech].
 
-I recently launched ITWala Academy (https://academy.it-wala.com) - offering practical courses in AI, Machine Learning, and Web Development.
+I recently launched ITWala Academy (https://it-wala.com) - offering practical courses in AI, Machine Learning, and Web Development.
 
 Would love to connect and share insights!
 
@@ -334,12 +334,12 @@ Best,
 
 ## 📌 Recommended Pages to Link From LinkedIn
 
-1. **Homepage**: https://academy.it-wala.com
-2. **Courses**: https://academy.it-wala.com/courses
-3. **About**: https://academy.it-wala.com/about
-4. **Blog**: https://academy.it-wala.com/blog (if you have one)
-5. **Contact**: https://academy.it-wala.com/contact
-6. **Specific Courses**: https://academy.it-wala.com/courses/[course-slug]
+1. **Homepage**: https://it-wala.com
+2. **Courses**: https://it-wala.com/courses
+3. **About**: https://it-wala.com/about
+4. **Blog**: https://it-wala.com/blog (if you have one)
+5. **Contact**: https://it-wala.com/contact
+6. **Specific Courses**: https://it-wala.com/courses/[course-slug]
 
 ## 🎯 Next Steps
 

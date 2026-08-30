@@ -11,7 +11,7 @@ import toast from 'react-hot-toast';
 import UnifiedHero from '@/components/home/UnifiedHero';
 import ServiceShowcase from '@/components/home/ServiceShowcase';
 import Stats from '@/components/home/Stats';
-import FeaturedCourses from '@/components/home/FeaturedCourses';
+import FeaturedCourses from '@/components/academy/FeaturedCourses';
 
 interface LoginFormData {
   email: string;

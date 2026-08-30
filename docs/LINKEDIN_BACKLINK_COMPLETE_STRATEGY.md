@@ -527,7 +527,7 @@ Mix up how you present the URLs:
 - ❌ Use only academy links (you have 4+ services!)
 - ❌ Link to the same page in every post
 - ❌ Ignore consulting & product development
-- ❌ Use wrong URLs (academy.it-wala.com ❌)
+- ❌ Use wrong URLs (it-wala.com ❌)
 - ❌ Forget to update all service pages
 
 ---

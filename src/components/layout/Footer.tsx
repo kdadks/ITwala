@@ -3,7 +3,26 @@ import Image from 'next/image';
 import { FaLinkedin, FaEnvelope, FaPhone, FaArrowUp } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
 
+import { useCMSData } from '@/lib/cms';
+
+const DEFAULT_FOOTER_CMS = {
+  footer: {
+    aboutText: 'Empowering professionals with cutting-edge AI and technology skills through comprehensive courses and expert consulting.',
+    contactEmail: 'contact@it-wala.com',
+    contactPhone: '+91 98765 43210',
+    address: 'Varanasi, Eastern UP, India',
+    copyrightText: '© 2026 ITwala. All rights reserved.',
+    linkedinUrl: 'https://linkedin.com',
+    twitterUrl: 'https://twitter.com',
+    githubUrl: 'https://github.com',
+    instagramUrl: 'https://instagram.com',
+  },
+};
+
 const Footer = () => {
+  const { cmsData } = useCMSData('global_header_footer', DEFAULT_FOOTER_CMS);
+  const footerCms = cmsData?.footer || DEFAULT_FOOTER_CMS.footer;
+
   const currentYear = new Date().getFullYear();
   const [showScrollTop, setShowScrollTop] = useState(false);
 
@@ -54,7 +73,7 @@ const Footer = () => {
             </Link>
             
             <p className="text-white text-sm max-w-md">
-              Empowering professionals with cutting-edge AI and technology skills through comprehensive courses and expert consulting.
+              {footerCms.aboutText}
             </p>
           </div>
 
@@ -62,19 +81,19 @@ const Footer = () => {
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
             <div className="flex items-center gap-4 text-sm">
               <a
-                href="mailto:support@it-wala.com"
+                href={`mailto:${footerCms.contactEmail || 'contact@it-wala.com'}`}
                 className="flex items-center space-x-2 text-white hover:text-white transition-colors duration-200"
               >
                 <FaEnvelope className="w-4 h-4" />
-                <span>support@it-wala.com</span>
+                <span>{footerCms.contactEmail || 'contact@it-wala.com'}</span>
               </a>
 
               <a
-                href="tel:+917982303199"
+                href={`tel:${footerCms.contactPhone || '+91 98765 43210'}`}
                 className="flex items-center space-x-2 text-white hover:text-white transition-colors duration-200"
               >
                 <FaPhone className="w-4 h-4" />
-                <span>+91 79823 03199</span>
+                <span>{footerCms.contactPhone || '+91 98765 43210'}</span>
               </a>
             </div>
 
@@ -107,8 +126,20 @@ const Footer = () => {
               <Link href="/ai-education-guide" className="block text-white hover:text-white transition-colors text-sm">
                 AI Education Guide
               </Link>
-              <Link href="/resources" className="block text-white hover:text-white transition-colors text-sm">
-                Learning Resources
+              <Link href="/resources" className="block text-white hover:text-white transition-colors text-sm font-medium text-amber-300">
+                Resources Hub
+              </Link>
+              <Link href="/resources/what-is-agentic-ai" className="block text-white/90 hover:text-white transition-colors text-xs pl-2 border-l border-white/20">
+                • Agentic AI Guide
+              </Link>
+              <Link href="/resources/ai-agents-vs-chatbots" className="block text-white/90 hover:text-white transition-colors text-xs pl-2 border-l border-white/20">
+                • AI vs Chatbots
+              </Link>
+              <Link href="/resources/what-is-mcp-model-context-protocol-explained" className="block text-white/90 hover:text-white transition-colors text-xs pl-2 border-l border-white/20">
+                • What is MCP Protocol?
+              </Link>
+              <Link href="/resources/how-to-become-an-ai-engineer-complete-roadmap" className="block text-white/90 hover:text-white transition-colors text-xs pl-2 border-l border-white/20">
+                • AI Engineer Roadmap
               </Link>
               <Link href="/about" className="block text-white hover:text-white transition-colors text-sm">
                 About Us

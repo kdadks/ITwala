@@ -17,8 +17,8 @@ export default function Document() {
         <meta property="og:title" content="ITWala - Web Development, AI Academy & IT Consulting Leader" />
         <meta property="og:description" content="Web development company, AI Academy with free AI education and courses for beginners and professionals, and IT consulting firm. Custom software, edutech, digital transformation & IT staffing worldwide." />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://academy.it-wala.com" />
-        <meta property="og:image" content="https://academy.it-wala.com/images/IT - WALA_logo (1).png" />
+        <meta property="og:url" content="https://it-wala.com" />
+        <meta property="og:image" content="https://it-wala.com/images/IT - WALA_logo (1).png" />
         <meta property="og:image:alt" content="ITWala - Complete IT Solutions" />
         <meta property="og:site_name" content="ITWala" />
         <meta property="og:locale" content="en_US" />
@@ -27,7 +27,7 @@ export default function Document() {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="ITWala - Web Dev, AI Education & IT Consulting" />
         <meta name="twitter:description" content="Global leader: Custom web development, AI education platform, product development, digital transformation consulting, training programs & IT staffing solutions." />
-        <meta name="twitter:image" content="https://academy.it-wala.com/images/IT - WALA_logo (1).png" />
+        <meta name="twitter:image" content="https://it-wala.com/images/IT - WALA_logo (1).png" />
         <meta name="twitter:image:alt" content="ITWala Logo" />
         
         {/* Additional SEO Meta Tags */}
@@ -46,9 +46,9 @@ export default function Document() {
             "name": "ITWala",
             "alternateName": "IT Wala",
             "description": "Global leader in web development, AI education, custom software development, IT consulting, product development, digital transformation, training & development, and IT staffing solutions",
-            "url": "https://academy.it-wala.com",
-            "logo": "https://academy.it-wala.com/images/IT - WALA_logo (1).png",
-            "image": "https://academy.it-wala.com/images/IT - WALA_logo (1).png",
+            "url": "https://it-wala.com",
+            "logo": "https://it-wala.com/images/IT - WALA_logo (1).png",
+            "image": "https://it-wala.com/images/IT - WALA_logo (1).png",
             "sameAs": [
               "https://www.linkedin.com/company/itwala",
               "https://twitter.com/itwala"

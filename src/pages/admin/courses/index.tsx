@@ -235,13 +235,23 @@ const AdminCourses: NextPage = () => {
 
       <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
         <div className="max-w-7xl mx-auto">
-              <div className="mb-8 flex justify-between items-center">
-                <h1 className="text-2xl font-bold text-gray-900">Manage Courses</h1>
-                <Link href="/admin/courses/create">
-                  <div className="px-4 py-2 bg-primary-500 text-white rounded-md hover:bg-primary-600 transition-colors">
-                    Create New Course
-                  </div>
-                </Link>
+              <div className="mb-8 flex justify-between items-center flex-wrap gap-4">
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">Manage Courses</h1>
+                  <p className="text-xs text-gray-500 mt-1">Course catalog items, pricing & status settings</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Link href="/admin/content">
+                    <div className="px-3.5 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 text-sm font-semibold transition-colors">
+                      Open Page CMS Hub
+                    </div>
+                  </Link>
+                  <Link href="/admin/courses/create">
+                    <div className="px-4 py-2 bg-primary-500 text-white rounded-md hover:bg-primary-600 text-sm font-semibold transition-colors">
+                      Create New Course
+                    </div>
+                  </Link>
+                </div>
               </div>
 
               <div className="bg-white rounded-lg shadow mb-6 p-4">

@@ -4,33 +4,42 @@ import { GetServerSideProps } from 'next';
 import UnifiedHero from '@/components/home/UnifiedHero';
 import ServiceShowcase from '@/components/home/ServiceShowcase';
 import Stats from '@/components/home/Stats';
-import FeaturedCourses from '@/components/home/FeaturedCourses';
+import FeaturedCourses from '@/components/academy/FeaturedCourses';
 import Testimonials from '@/components/home/Testimonials';
 import BacklinkingHub from '@/components/seo/BacklinkingHub';
 import { motion } from 'framer-motion';
 import { resolveCountryFromRequest, fromPagesReq } from '@/utils/countryDetection';
+import SEOHead from '@/components/seo/SEOHead';
+import { useCMSData } from '@/lib/cms';
 
 interface HomeProps {
   initialCountry: string;
 }
 
+const DEFAULT_SEO = {
+  hero: { title: '', subtitle: '' },
+  seo: {
+    metaTitle: 'ITWala - Web Development, AI Academy & IT Consulting Globally',
+    metaDescription: '#1 Web development company & AI Academy. Free AI education resources plus AI crash courses and full programs for beginners and professionals.',
+    keywords: 'web development company, AI education platform, AI academy, coding bootcamp',
+    ogImage: 'https://it-wala.com/images/IT - WALA_logo (1).png',
+  },
+};
+
 const Home: NextPage<HomeProps> = ({ initialCountry }) => {
+  const { cmsData } = useCMSData('home', DEFAULT_SEO);
+  const seo = cmsData.seo || DEFAULT_SEO.seo;
+
   return (
     <>
+      <SEOHead
+        title={seo.metaTitle}
+        description={seo.metaDescription}
+        keywords={seo.keywords}
+        canonicalUrl="https://it-wala.com"
+        ogImage={seo.ogImage || "https://it-wala.com/images/IT - WALA_logo (1).png"}
+      />
       <Head>
-        <title>ITWala - Web Development, AI Academy & AI Crash Courses Globally</title>
-        <meta name="description" content="#1 Web development company & AI Academy. Free AI education resources plus AI crash courses and full programs for beginners and professionals. Custom software, edutech training & IT consulting worldwide." />
-        <meta name="keywords" content="web development company, AI education platform, AI academy, AI crash course, free AI education, AI courses for beginners, AI courses for professionals, where to learn AI courses, edutech solutions, custom software development, AI development services, IT consulting firm, product development services, digital transformation consulting, training and development, IT staffing partner, full stack development, react development, node.js development, machine learning courses, AI training online, enterprise software development, mobile app development, cloud development services, DevOps consulting, agile development, software engineering, technology consulting, IT recruitment, tech talent acquisition, SaaS development, API development, microservices, e-learning platform, online courses, professional training" />
-        <meta property="og:title" content="ITWala - Web Development, AI Academy & AI Crash Courses" />
-        <meta property="og:description" content="Leading web development company and AI Academy. Free AI education resources, AI crash courses, and full AI/ML programs for beginners and professionals. Custom software, edutech solutions & IT consulting globally." />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://academy.it-wala.com" />
-        <meta property="og:image" content="https://academy.it-wala.com/images/IT - WALA_logo (1).png" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="ITWala - Web Dev, AI Academy & AI Crash Courses" />
-        <meta name="twitter:description" content="Web development, AI Academy with free resources and crash courses, custom software, product development, digital transformation, training programs & IT staffing solutions." />
-        <meta name="twitter:image" content="https://academy.it-wala.com/images/IT - WALA_logo (1).png" />
-        <link rel="canonical" href="https://academy.it-wala.com" />
         
         {/* Additional Schema for Homepage */}
         <script type="application/ld+json">
@@ -39,17 +48,17 @@ const Home: NextPage<HomeProps> = ({ initialCountry }) => {
             "@type": "WebSite",
             "name": "ITWala",
             "alternateName": "IT Wala",
-            "url": "https://academy.it-wala.com",
+            "url": "https://it-wala.com",
             "description": "Global leader in web development, AI education, custom software development, IT consulting, product development, digital transformation, training & IT staffing",
             "potentialAction": {
               "@type": "SearchAction",
-              "target": "https://academy.it-wala.com/courses?search={search_term_string}",
+              "target": "https://it-wala.com/courses?search={search_term_string}",
               "query-input": "required name=search_term_string"
             },
             "publisher": {
               "@type": "Organization",
               "name": "ITWala",
-              "logo": "https://academy.it-wala.com/images/IT - WALA_logo (1).png"
+              "logo": "https://it-wala.com/images/IT - WALA_logo (1).png"
             },
             "about": [
               {
@@ -106,7 +115,7 @@ const Home: NextPage<HomeProps> = ({ initialCountry }) => {
           viewport={{ once: true }}
           transition={{ delay: 0.2, duration: 0.5 }}
         >
-          <ServiceShowcase />
+          <ServiceShowcase showcaseData={cmsData.service_showcase} />
         </motion.div>
         
         <motion.div
@@ -133,7 +142,7 @@ const Home: NextPage<HomeProps> = ({ initialCountry }) => {
           viewport={{ once: true }}
           transition={{ delay: 0.4, duration: 0.5 }}
         >
-          <Testimonials />
+          <Testimonials testimonialsData={cmsData.testimonials} />
         </motion.div>
 
         <motion.div

@@ -17,9 +17,9 @@ For each of your 6 LinkedIn posts, here's exactly what to do RIGHT NOW:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━
 🔗 Learn more about our AI & Web Development programs:
-👉 https://academy.it-wala.com
+👉 https://it-wala.com
 
-📚 Explore courses: https://academy.it-wala.com/courses
+📚 Explore courses: https://it-wala.com/courses
 
 #AIEducation #WebDevelopment #ITConsulting #MachineLearning
 ```
@@ -30,9 +30,9 @@ If editing doesn't work, add this comment and pin it:
 ```
 🌟 For those interested in our programs:
 
-🎓 ITWala Academy: https://academy.it-wala.com
-📚 Course Catalog: https://academy.it-wala.com/courses
-💼 IT Consulting: https://academy.it-wala.com/services
+🎓 ITWala Academy: https://it-wala.com
+📚 Course Catalog: https://it-wala.com/courses
+💼 IT Consulting: https://it-wala.com/services
 
 Transform your career with hands-on AI and web development training!
 
@@ -53,8 +53,8 @@ Transform your career with hands-on AI and web development training!
 ━━━━━━━━━━━━━━━━━━━━━━━━━
 Want to dive deeper into this topic?
 
-🌐 Visit ITWala Academy: https://academy.it-wala.com
-🎓 Browse our courses: https://academy.it-wala.com/courses
+🌐 Visit ITWala Academy: https://it-wala.com
+🎓 Browse our courses: https://it-wala.com/courses
 
 #TechEducation #AI #Innovation
 ```
@@ -65,7 +65,7 @@ Want to dive deeper into this topic?
 
 If you're interested in learning more about AI and technology:
 
-🔗 ITWala Academy: academy.it-wala.com
+🔗 ITWala Academy: it-wala.com
 📖 Comprehensive courses in AI, ML, and Web Development
 
 Let's connect and grow together! 🚀
@@ -88,9 +88,9 @@ Let's connect and grow together! 🚀
 🚀 Ready to transform your skills?
 
 Discover our programs at ITWala Academy:
-👉 https://academy.it-wala.com
+👉 https://it-wala.com
 
-Explore courses: https://academy.it-wala.com/courses
+Explore courses: https://it-wala.com/courses
 
 #SkillDevelopment #AILearning #WebDev
 ```
@@ -104,8 +104,8 @@ ITWala Academy offers:
 ✅ Web Development bootcamps
 ✅ IT Consulting services
 
-🔗 Start learning: https://academy.it-wala.com
-📚 Course catalog: https://academy.it-wala.com/courses
+🔗 Start learning: https://it-wala.com
+📚 Course catalog: https://it-wala.com/courses
 
 #Education #CareerDevelopment
 ```
@@ -124,8 +124,8 @@ ITWala Academy offers:
 ━━━━━━━━━━━━━━━━━━━━━━━━━
 Learn more about cutting-edge technology:
 
-🌐 ITWala Academy: https://academy.it-wala.com
-🎯 Specialized courses: https://academy.it-wala.com/courses
+🌐 ITWala Academy: https://it-wala.com
+🎯 Specialized courses: https://it-wala.com/courses
 
 Join thousands of learners advancing their careers!
 
@@ -142,8 +142,8 @@ At ITWala Academy, we offer:
 • Industry-expert instructors
 • Flexible learning paths
 
-👉 Explore: https://academy.it-wala.com
-📚 Courses: https://academy.it-wala.com/courses
+👉 Explore: https://it-wala.com
+📚 Courses: https://it-wala.com/courses
 
 #EdTech #AI #Learning
 ```
@@ -163,9 +163,9 @@ At ITWala Academy, we offer:
 🔥 Take your skills to the next level!
 
 Visit ITWala Academy for expert-led training:
-🌐 https://academy.it-wala.com
+🌐 https://it-wala.com
 
-See all programs: https://academy.it-wala.com/courses
+See all programs: https://it-wala.com/courses
 
 #ProfessionalDevelopment #AI #Tech
 ```
@@ -179,8 +179,8 @@ ITWala Academy provides:
 ✨ Web development masterclasses
 ✨ Career support & mentorship
 
-🔗 Learn more: https://academy.it-wala.com
-📖 Browse courses: https://academy.it-wala.com/courses
+🔗 Learn more: https://it-wala.com
+📖 Browse courses: https://it-wala.com/courses
 
 Transform your career today!
 
@@ -201,8 +201,8 @@ Transform your career today!
 ━━━━━━━━━━━━━━━━━━━━━━━━━
 Want to dive deeper into this topic?
 
-🌐 Visit ITWala Academy: https://academy.it-wala.com
-🎓 Browse our courses: https://academy.it-wala.com/courses
+🌐 Visit ITWala Academy: https://it-wala.com
+🎓 Browse our courses: https://it-wala.com/courses
 
 #TechEducation #AI #Innovation
 ```
@@ -216,8 +216,8 @@ At ITWala Academy, we offer:
 ✅ Hands-on web development courses
 ✅ Expert-led training with real-world projects
 
-🔗 Explore: https://academy.it-wala.com
-📚 Courses: https://academy.it-wala.com/courses
+🔗 Explore: https://it-wala.com
+📚 Courses: https://it-wala.com/courses
 
 Transform your tech career today!
 
@@ -239,10 +239,10 @@ Transform your tech career today!
 🎯 Interested in technology and innovation?
 
 Discover ITWala Academy:
-👉 https://academy.it-wala.com
+👉 https://it-wala.com
 
 Explore our course offerings:
-📚 https://academy.it-wala.com/courses
+📚 https://it-wala.com/courses
 
 #Technology #Education #Innovation
 ```
@@ -257,8 +257,8 @@ ITWala Academy offers:
 🌐 IT consulting services
 
 Start your journey:
-🔗 https://academy.it-wala.com
-📚 https://academy.it-wala.com/courses
+🔗 https://it-wala.com
+📚 https://it-wala.com/courses
 
 Let's connect and learn together!
 
@@ -289,9 +289,9 @@ Let's connect and learn together!
 - [ ] Pin each comment (click three dots on comment → Pin)
 
 ### This Week:
-- [ ] Update LinkedIn profile "About" section with academy.it-wala.com
+- [ ] Update LinkedIn profile "About" section with it-wala.com
 - [ ] Add ITWala Academy to "Experience" section with website link
-- [ ] Add academy.it-wala.com to "Featured" section
+- [ ] Add it-wala.com to "Featured" section
 - [ ] Create 1 new post with backlink
 - [ ] Share 1 course/resource with backlink
 
@@ -316,8 +316,8 @@ Perfect for:
 ✅ [Audience 2]
 ✅ [Audience 3]
 
-🔗 Enroll now: https://academy.it-wala.com/courses/[course-slug]
-🌐 Learn more: https://academy.it-wala.com
+🔗 Enroll now: https://it-wala.com/courses/[course-slug]
+🌐 Learn more: https://it-wala.com
 
 #[CourseTopic] #Education #Learning
 ```
@@ -333,7 +333,7 @@ From [starting point] to [achievement] in just [timeframe]!
 This is what happens when dedication meets the right education.
 
 Want similar results?
-👉 https://academy.it-wala.com/courses
+👉 https://it-wala.com/courses
 
 #SuccessStory #CareerGrowth #AIEducation
 ```
@@ -354,8 +354,8 @@ Want similar results?
 [1-2 line explanation]
 
 Want to master these concepts?
-📚 Check out our comprehensive courses: https://academy.it-wala.com/courses
-🌐 Visit: https://academy.it-wala.com
+📚 Check out our comprehensive courses: https://it-wala.com/courses
+🌐 Visit: https://it-wala.com
 
 #[Topic] #Learning #TechEducation
 ```
@@ -366,9 +366,9 @@ Want to master these concepts?
 
 [Your perspective in 2-3 paragraphs]
 
-At ITWala Academy (https://academy.it-wala.com), we're preparing students for this future.
+At ITWala Academy (https://it-wala.com), we're preparing students for this future.
 
-Learn more about our programs: https://academy.it-wala.com/courses
+Learn more about our programs: https://it-wala.com/courses
 
 What's your take? Let's discuss! 👇
 
@@ -396,7 +396,7 @@ Here's my take:
 The truth? Learn both!
 
 We cover both in our comprehensive curriculum:
-👉 https://academy.it-wala.com/courses
+👉 https://it-wala.com/courses
 
 #[Topic] #CareerAdvice #TechEducation
 ```
@@ -410,8 +410,8 @@ We cover both in our comprehensive curriculum:
 This is why our students love learning with us!
 
 Curious about our approach?
-🌐 Visit: https://academy.it-wala.com
-📚 Explore courses: https://academy.it-wala.com/courses
+🌐 Visit: https://it-wala.com
+📚 Explore courses: https://it-wala.com/courses
 
 #EdTech #Teaching #Innovation
 ```
@@ -449,7 +449,7 @@ Curious about our approach?
 - Comments and engagement on posts with links
 
 ### Month 1 Goals:
-- 🎯 Get 100+ clicks to academy.it-wala.com from LinkedIn
+- 🎯 Get 100+ clicks to it-wala.com from LinkedIn
 - 🎯 10% increase in website traffic from LinkedIn
 - 🎯 20+ new relevant connections
 - 🎯 5+ course inquiries from LinkedIn
@@ -466,7 +466,7 @@ Acquisition → All Traffic → Source/Medium → linkedin.com / referral
 1. **Open all 6 LinkedIn post URLs in separate tabs** (5 min)
 2. **Edit each post** to add the backlinks provided above (15 min)
 3. **Update your LinkedIn profile**:
-   - About section: Add academy.it-wala.com
+   - About section: Add it-wala.com
    - Experience: Add website to ITWala Academy
    - Featured: Add website as featured link
    (10 min)
@@ -479,13 +479,13 @@ Acquisition → All Traffic → Source/Medium → linkedin.com / referral
 ## 💡 Pro Tips
 
 1. **Vary your links**: Don't use the same URL in every post. Alternate between:
-   - `https://academy.it-wala.com`
-   - `https://academy.it-wala.com/courses`
-   - `https://academy.it-wala.com/about`
+   - `https://it-wala.com`
+   - `https://it-wala.com/courses`
+   - `https://it-wala.com/about`
    - Specific course pages
 
 2. **Monitor which posts drive traffic**: Use UTM parameters:
-   - `https://academy.it-wala.com?utm_source=linkedin&utm_medium=post&utm_campaign=post1`
+   - `https://it-wala.com?utm_source=linkedin&utm_medium=post&utm_campaign=post1`
 
 3. **Engage authentically**: Reply to comments with helpful info + links when relevant
 

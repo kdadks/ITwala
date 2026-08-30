@@ -1,7 +1,33 @@
 import { motion } from 'framer-motion';
 import { FaMapMarkerAlt, FaPhone, FaEnvelope, FaClock } from 'react-icons/fa';
 
-const ContactInfo = () => {
+interface ContactInfoProps {
+  infoData?: {
+    email?: { address?: string; note?: string };
+    phone?: { number?: string; note?: string };
+    locations?: string[];
+    officeHours?: string[];
+    socialLinks?: { linkedin?: string };
+  };
+}
+
+const ContactInfo: React.FC<ContactInfoProps> = ({ infoData }) => {
+  const emailAddr = infoData?.email?.address || 'support@it-wala.com';
+  const emailNote = infoData?.email?.note || 'For general inquiries and support';
+  const phoneNumber = infoData?.phone?.number || '+91 7982303199';
+  const phoneNote = infoData?.phone?.note || 'Monday to Friday, 9AM to 5PM';
+  const locationList = infoData?.locations || [
+    'Ireland - Dublin',
+    'United Kingdom - London',
+    'India - Bengaluru, Lucknow'
+  ];
+  const hoursList = infoData?.officeHours || [
+    'Monday - Friday: 9 AM - 5 PM',
+    'Saturday: 10 AM - 3 PM',
+    'Sunday: Closed'
+  ];
+  const linkedinUrl = infoData?.socialLinks?.linkedin || 'https://www.linkedin.com/company/it-wala.com';
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -22,11 +48,11 @@ const ContactInfo = () => {
             <div className="ml-4">
               <h3 className="text-lg font-medium text-gray-900">Email</h3>
               <p className="mt-1 text-gray-600">
-                <a href="mailto:support@it-wala.com" className="hover:text-primary-600">
-                  support@it-wala.com
+                <a href={`mailto:${emailAddr}`} className="hover:text-primary-600">
+                  {emailAddr}
                 </a>
               </p>
-              <p className="mt-1 text-sm text-gray-500">For general inquiries and support</p>
+              <p className="mt-1 text-sm text-gray-500">{emailNote}</p>
             </div>
           </div>
           
@@ -39,11 +65,11 @@ const ContactInfo = () => {
             <div className="ml-4">
               <h3 className="text-lg font-medium text-gray-900">Phone</h3>
               <p className="mt-1 text-gray-600">
-                <a href="tel:+917982303199" className="hover:text-primary-600">
-                  +91 7982303199
+                <a href={`tel:${phoneNumber.replace(/\s+/g, '')}`} className="hover:text-primary-600">
+                  {phoneNumber}
                 </a>
               </p>
-              <p className="mt-1 text-sm text-gray-500">Monday to Friday, 9AM to 5PM</p>
+              <p className="mt-1 text-sm text-gray-500">{phoneNote}</p>
             </div>
           </div>
           
@@ -55,16 +81,11 @@ const ContactInfo = () => {
             </div>
             <div className="ml-4">
               <h3 className="text-lg font-medium text-gray-900">Office Locations</h3>
-              <p className="mt-1 text-gray-600">
-                Ireland - Dublin
-              </p>
-              <p className="mt-1 text-gray-600">
-                United Kingdom - London
-              </p>
-              <p className="mt-1 text-gray-600">
-                India - Bengaluru, Lucknow
-              </p>
-             
+              {locationList.map((loc, i) => (
+                <p key={i} className="mt-1 text-gray-600">
+                  {loc}
+                </p>
+              ))}
             </div>
           </div>
           
@@ -76,9 +97,9 @@ const ContactInfo = () => {
             </div>
             <div className="ml-4">
               <h3 className="text-lg font-medium text-gray-900">Office Hours</h3>
-              <p className="mt-1 text-gray-600">Monday - Friday: 9 AM - 5 PM</p>
-              <p className="mt-1 text-gray-600">Saturday: 10 AM - 3 PM</p>
-              <p className="mt-1 text-gray-600">Sunday: Closed</p>
+              {hoursList.map((hr, i) => (
+                <p key={i} className="mt-1 text-gray-600">{hr}</p>
+              ))}
             </div>
           </div>
         </div>

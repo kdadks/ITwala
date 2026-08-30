@@ -14,12 +14,12 @@ const AIEducationGuide: NextPage = () => {
         <meta property="og:title" content="Where to Learn AI: Complete Education Guide 2025 | ITWala Academy" />
         <meta property="og:description" content="A complete guide to where to learn AI in 2025 — free AI education resources, an AI crash course, and AI courses for beginners and professionals." />
         <meta property="og:type" content="article" />
-        <meta property="og:url" content="https://academy.it-wala.com/ai-education-guide" />
-        <meta property="og:image" content="https://academy.it-wala.com/images/IT - WALA_logo (1).png" />
+        <meta property="og:url" content="https://it-wala.com/ai-education-guide" />
+        <meta property="og:image" content="https://it-wala.com/images/IT - WALA_logo (1).png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Where to Learn AI: Complete Guide 2025" />
         <meta name="twitter:description" content="Free AI education, an AI crash course, and AI courses for beginners and professionals, plus career paths for 2025." />
-        <link rel="canonical" href="https://academy.it-wala.com/ai-education-guide" />
+        <link rel="canonical" href="https://it-wala.com/ai-education-guide" />
         
         <script type="application/ld+json">
           {JSON.stringify({
@@ -34,12 +34,12 @@ const AIEducationGuide: NextPage = () => {
             "publisher": {
               "@type": "EducationalOrganization",
               "name": "ITWala Academy",
-              "logo": "https://academy.it-wala.com/images/IT - WALA_logo (1).png"
+              "logo": "https://it-wala.com/images/IT - WALA_logo (1).png"
             },
             "datePublished": "2025-01-01",
             "dateModified": new Date().toISOString(),
-            "mainEntityOfPage": "https://academy.it-wala.com/ai-education-guide",
-            "image": "https://academy.it-wala.com/images/IT - WALA_logo (1).png",
+            "mainEntityOfPage": "https://it-wala.com/ai-education-guide",
+            "image": "https://it-wala.com/images/IT - WALA_logo (1).png",
             "about": [
               "AI Education",
               "Artificial Intelligence Learning",
