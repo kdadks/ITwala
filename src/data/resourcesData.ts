@@ -767,7 +767,7 @@ export const RESOURCES_DATA: ResourceArticle[] = [
     slug: 'how-much-does-it-cost-to-build-an-mvp',
     title: 'How Much Does It Cost to Build an MVP in 2026?',
     description: 'A comprehensive founder\'s guide breaking down real-world budgets, timelines, developer rates, and hidden costs for Minimum Viable Product (MVP) development.',
-    quickAnswer: 'Building a startup MVP in 2026 costs between $5,000–$15,000 for simple web applications, $15,000–$35,000 for custom SaaS platforms with AI features, and $35,000–$75,000 for complex multi-platform product ecosystems.',
+    quickAnswer: 'Building a startup MVP in 2026 costs between $2,000–$15,000 for simple web applications, $15,000–$35,000 for custom SaaS platforms with AI features, and $35,000–$75,000 for complex multi-platform product ecosystems.',
     primaryGoal: 'Product leads',
     category: 'Startup & Product',
     readTime: '12 min',
